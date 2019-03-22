@@ -9,7 +9,7 @@
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
   <groupId>br.pro.fagnerlima</groupId>
-  <artifactId>auth-service</artifactId>
+  <artifactId>spring-auth-service</artifactId>
   <version>1.0.0-beta</version>
   <name>financas-auth-service</name>
   <description>Serviço de autenticação do projeto Finanças</description>

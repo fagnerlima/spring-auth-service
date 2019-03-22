@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.financas.auth.api;
+package br.pro.fagnerlima.spring.auth.api;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -7,7 +7,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class FinancasAuthServiceApplicationTests {
+public class SpringAuthServiceApplicationTests {
 
 	@Test
 	public void contextLoads() {

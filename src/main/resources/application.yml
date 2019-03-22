@@ -1,2 +1,6 @@
-server
+server:
   port: 8010
+
+spring:
+  application:
+    name: spring-auth-service
