@@ -11,8 +11,8 @@
   <groupId>br.pro.fagnerlima</groupId>
   <artifactId>spring-auth-service</artifactId>
   <version>1.0.0-beta</version>
-  <name>financas-auth-service</name>
-  <description>Serviço de autenticação do projeto Finanças</description>
+  <name>spring-auth-service</name>
+  <description>Serviço de autenticação OAuth2 e JWT com Spring Boot</description>
 
   <properties>
     <java.version>11</java.version>
@@ -70,6 +70,11 @@
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 
