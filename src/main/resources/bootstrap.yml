@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: ${APPLICATION_NAME:spring-auth-service}
+
+auth-service:
+  
