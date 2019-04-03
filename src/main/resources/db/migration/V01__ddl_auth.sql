@@ -1,0 +1,62 @@
+CREATE SCHEMA auth;
+
+CREATE TABLE auth.grupo (
+  id SERIAL,
+  nome VARCHAR(128) NOT NULL,
+  ativo BOOLEAN NOT NULL DEFAULT TRUE,
+  data_criacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  id_usuario_criacao BIGINT NOT NULL,
+  data_atualizacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  id_usuario_atualizacao BIGINT NOT NULL,
+  version INTEGER DEFAULT 0,
+  CONSTRAINT pk_grupo PRIMARY KEY(id)
+);
+
+CREATE TABLE auth.permissao (
+  id SERIAL,
+  papel VARCHAR(128) NOT NULL,
+  data_criacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  id_usuario_criacao BIGINT NOT NULL,
+  data_atualizacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  id_usuario_atualizacao BIGINT NOT NULL,
+  version INTEGER DEFAULT 0,
+  CONSTRAINT pk_permissao PRIMARY KEY(id),
+  CONSTRAINT uk_permissao_papel UNIQUE(papel)
+);
+
+CREATE TABLE auth.usuario (
+  id SERIAL,
+  nome VARCHAR(128) NOT NULL,
+  email VARCHAR(128) NOT NULL,
+  valor_senha VARCHAR(64) NOT NULL,
+  reset_token_senha VARCHAR(255) NULL,
+  tentativas_erro_senha SMALLINT NULL,
+  data_ultima_alteracao_senha DATE NULL,
+  data_criacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  id_usuario_criacao BIGINT NOT NULL,
+  data_atualizacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  id_usuario_atualizacao BIGINT NOT NULL,
+  version INTEGER DEFAULT 0,
+  CONSTRAINT pk_usuario PRIMARY KEY(id),
+  CONSTRAINT uk_usuario_email UNIQUE(email)
+);
+
+CREATE TABLE auth.grupo_permissao (
+  id_grupo INTEGER NOT NULL,
+  id_permissao INTEGER NOT NULL,
+  CONSTRAINT pk_grupo_permissao PRIMARY KEY(id_grupo, id_permissao),
+  CONSTRAINT fk_grupo_permissao_id_grupo FOREIGN KEY(id_grupo) REFERENCES auth.grupo(id)
+    MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_grupo_permissao_id_permissao FOREIGN KEY(id_permissao) REFERENCES auth.permissao(id)
+    MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE TABLE auth.usuario_grupo (
+  id_usuario INTEGER NOT NULL,
+  id_grupo INTEGER NOT NULL,
+  CONSTRAINT pk_usuario_grupo PRIMARY KEY(id_usuario, id_grupo),
+  CONSTRAINT fk_usuario_grupo_id_usuario FOREIGN KEY(id_usuario) REFERENCES auth.usuario(id)
+    MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE,
+  CONSTRAINT fk_usuario_grupo_id_grupo FOREIGN KEY(id_grupo) REFERENCES auth.grupo(id)
+    MATCH SIMPLE ON UPDATE CASCADE ON DELETE CASCADE
+);
