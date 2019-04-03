@@ -26,7 +26,7 @@ import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
 @Audited
 @Entity
 @Table(name = "usuario", schema = "auth")
-public class Usuario extends BaseEntity<Long> {
+public class Usuario extends BaseEntity {
 
     private static final long serialVersionUID = 4992180182377301896L;
 

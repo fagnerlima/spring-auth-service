@@ -15,7 +15,7 @@ import org.hibernate.annotations.FetchMode;
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
 
-public class Grupo extends BaseEntity<Integer> {
+public class Grupo extends BaseEntity {
 
     private static final long serialVersionUID = -7881272704210120357L;
 

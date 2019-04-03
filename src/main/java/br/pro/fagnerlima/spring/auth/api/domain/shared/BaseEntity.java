@@ -19,13 +19,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 // TODO Implementar Listener
 @Audited
 @MappedSuperclass
-public abstract class BaseEntity<T extends Serializable> implements Serializable {
+public abstract class BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -1064151572841012966L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected T id;
+    protected Long id;
 
     @CreatedDate
     @Column(name = "data_criacao")
@@ -51,7 +51,7 @@ public abstract class BaseEntity<T extends Serializable> implements Serializable
         super();
     }
 
-    public T getId() {
+    public Long getId() {
         return id;
     }
 
@@ -103,7 +103,7 @@ public abstract class BaseEntity<T extends Serializable> implements Serializable
             return false;
         if (getClass() != obj.getClass())
             return false;
-        BaseEntity<?> other = (BaseEntity<?>) obj;
+        BaseEntity other = (BaseEntity) obj;
         if (id == null) {
             if (other.id != null)
                 return false;

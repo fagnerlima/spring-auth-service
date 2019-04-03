@@ -2,6 +2,6 @@ package br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.r
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 
-public interface UsuarioRepository extends BaseRepository<Usuario, Integer> {
+public interface UsuarioRepository extends BaseRepository<Usuario> {
 
 }
