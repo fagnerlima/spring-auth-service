@@ -17,7 +17,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 
 // TODO Implementar Listener
-@Audited
+//@Audited
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 

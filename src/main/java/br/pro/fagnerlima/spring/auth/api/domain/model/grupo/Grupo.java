@@ -3,18 +3,24 @@ package br.pro.fagnerlima.spring.auth.api.domain.model.grupo;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.envers.Audited;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
 
+//@Audited
+@Entity
+@Table(name = "grupo", schema = "auth")
 public class Grupo extends BaseEntity {
 
     private static final long serialVersionUID = -7881272704210120357L;

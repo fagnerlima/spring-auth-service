@@ -10,7 +10,7 @@ import org.hibernate.envers.Audited;
 
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
 
-@Audited
+//@Audited
 @Entity
 @Table(name = "permissao", schema = "auth")
 public class Permissao extends BaseEntity {

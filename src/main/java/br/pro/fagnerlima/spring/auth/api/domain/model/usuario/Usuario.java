@@ -23,7 +23,7 @@ import org.hibernate.envers.Audited;
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
 
-@Audited
+//@Audited
 @Entity
 @Table(name = "usuario", schema = "auth")
 public class Usuario extends BaseEntity {
