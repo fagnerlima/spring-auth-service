@@ -1,0 +1,42 @@
+spring:
+  jackson:
+    deserialization:
+      FAIL_ON_UNKNOWN_PROPERTIES: true
+    dateFormat: yyyy-MM-dd
+    jodaDateTimeFormat: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT-03:00
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/auth}
+    username: ${DB_USER:user.auth}
+    password: ${DB_PASSWORD:user.pass}
+    hikari:
+      maximumPoolSize: 10
+      connectionTimeout: 60000
+  jpa:
+    properties:
+#      org:
+#        hibernate:
+#          envers:
+#            audit_table_suffix: _auditoria
+#            revision_field_name: id_revisao
+#            revision_type_field_name: tipo_revisao
+#            default_schema: auditoria
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+  flyway:
+    schemas: public
+
+#auth-service:
+#  baseUrl: 
+#  apiInfo:
+#    title: 
+#    description: 
+#    version: 
+#    pack: 
+#  security:
+#    systemUserToken: 
+#    jwtTokenConfig:
+#      secret: 
+#      expiration: 
