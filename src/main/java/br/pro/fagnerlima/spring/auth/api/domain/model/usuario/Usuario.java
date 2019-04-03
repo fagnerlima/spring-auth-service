@@ -53,7 +53,11 @@ public class Usuario extends BaseEntity<Long> {
     @NotEmpty
     @ManyToMany
     @Fetch(FetchMode.JOIN)
-    @JoinTable(name = "t_usuario_grupo", schema = "autenticacao", joinColumns = @JoinColumn(name = "id_usuario"), inverseJoinColumns = @JoinColumn(name = "id_grupo"))
+    @JoinTable(
+            name = "usuario_grupo",
+            schema = "auth",
+            joinColumns = @JoinColumn(name = "id_usuario"),
+            inverseJoinColumns = @JoinColumn(name = "id_grupo"))
     private List<Grupo> grupos;
 
     public String getNome() {

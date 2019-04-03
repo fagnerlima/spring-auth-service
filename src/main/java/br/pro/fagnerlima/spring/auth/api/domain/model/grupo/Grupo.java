@@ -27,11 +27,10 @@ public class Grupo extends BaseEntity<Integer> {
     @ManyToMany
     @Fetch(FetchMode.JOIN)
     @JoinTable(
-        name = "grupo_permissao",
-        schema = "auth",
-        joinColumns = @JoinColumn(name = "id_grupo"),
-        inverseJoinColumns = @JoinColumn(name = "id_permissao")
-    )
+            name = "grupo_permissao",
+            schema = "auth",
+            joinColumns = @JoinColumn(name = "id_grupo"),
+            inverseJoinColumns = @JoinColumn(name = "id_permissao"))
     private List<Permissao> permissoes;
 
     @NotNull
