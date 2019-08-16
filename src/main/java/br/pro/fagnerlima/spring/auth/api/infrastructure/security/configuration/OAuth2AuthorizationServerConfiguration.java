@@ -12,41 +12,44 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
+import br.pro.fagnerlima.spring.auth.api.application.configuration.JwtProperties;
+import br.pro.fagnerlima.spring.auth.api.application.configuration.OAuth2Properties;
+
 @Configuration
 @EnableAuthorizationServer
 public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
-    private static final Integer ACCESS_TOKEN_VALIDITY_SECONDS = 5;
-    private static final Integer REFRESH_TOKEN_VALIDITY_SECONDS = 3600 * 24;
-    private static final String SIGNING_KEY = "spring-auth-service";
-
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Autowired
+    private OAuth2Properties oauth2Properties;
+
+    @Autowired
+    private JwtProperties jwtProperties;
+
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        // TODO Configurar para banco de dados
         clients.inMemory()
                 .withClient("angular")
                 .secret("{noop}@ngu1@r")
                 .scopes("read", "write")
                 .authorizedGrantTypes("password", "refresh_token")
-                .accessTokenValiditySeconds(ACCESS_TOKEN_VALIDITY_SECONDS)
-                .refreshTokenValiditySeconds(REFRESH_TOKEN_VALIDITY_SECONDS);
+                .accessTokenValiditySeconds(oauth2Properties.getAccessToken().getValiditySeconds());
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.tokenStore(tokenStore())
                 .accessTokenConverter(accessTokenConverter())
-                .reuseRefreshTokens(true)
+                .reuseRefreshTokens(false)
                 .authenticationManager(authenticationManager);
     }
 
     @Bean
     public JwtAccessTokenConverter accessTokenConverter() {
         JwtAccessTokenConverter converter = new JwtAccessTokenConverter();
-        converter.setSigningKey(SIGNING_KEY);
+        converter.setSigningKey(jwtProperties.getSigningKey());
 
         return converter;
     }

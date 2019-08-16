@@ -2,16 +2,16 @@ spring:
   jackson:
     deserialization:
       FAIL_ON_UNKNOWN_PROPERTIES: true
-    dateFormat: yyyy-MM-dd
-    jodaDateTimeFormat: yyyy-MM-dd HH:mm:ss
+    date-format: yyyy-MM-dd
+    joda-date-time-format: yyyy-MM-dd HH:mm:ss
     time-zone: GMT-03:00
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/auth}
     username: ${DB_USER:user.auth}
     password: ${DB_PASSWORD:user.pass}
     hikari:
-      maximumPoolSize: 10
-      connectionTimeout: 60000
+      maximum-pool-size: 10
+      connection-timeout: 60000
   jpa:
     properties:
 #      org:
@@ -28,15 +28,13 @@ spring:
   flyway:
     schemas: public
 
-#auth-service:
-#  baseUrl: 
-#  apiInfo:
-#    title: 
-#    description: 
-#    version: 
-#    pack: 
-#  security:
-#    systemUserToken: 
-#    jwtTokenConfig:
-#      secret: 
-#      expiration: 
+auth-service:
+  security:
+    oauth2:
+      access-token:
+        validity-seconds: ${OAUTH2_ACCESS_TOKEN_VALIDITY_SECONDS:1800}
+      refresh-token:
+        secure-cookie: ${OAUTH2_REFRESH_TOKEN_SECURE_COOKIE:false}
+        validity-seconds: ${OAUTH2_REFRESH_TOKEN_VALIDITY_SECONDS:86400}
+    jwt:
+      signing-key: ${JWT_SIGNING_KEY:spring-auth-service}
