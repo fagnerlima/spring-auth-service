@@ -29,10 +29,6 @@ public class GrupoController {
     public ResponseEntity<ResponseTO<Page<GrupoReducedResponseTO>>> findAll(Pageable pageable) {
         Page<Grupo> page = grupoService.findAll(pageable);
 
-        if (page.getTotalElements() == 0) {
-            return ResponseEntity.noContent().build();
-        }
-
         return responseService.ok((new GrupoAssembler()).from(page));
     }
 }
