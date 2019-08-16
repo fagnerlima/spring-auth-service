@@ -22,8 +22,8 @@ import br.pro.fagnerlima.spring.auth.api.application.configuration.OAuth2Propert
 @ControllerAdvice
 public class OAuth2SecurityHandler implements ResponseBodyAdvice<OAuth2AccessToken> {
 
+    private static final String TOKEN_RESOURCE = "/oauth/token";
     private static final String ACCESS_TOKEN_METHOD_NAME = "postAccessToken";
-    private static final String ACCESS_TOKEN_RESOURCE = "/oauth/token";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 
     @Autowired
@@ -51,7 +51,7 @@ public class OAuth2SecurityHandler implements ResponseBodyAdvice<OAuth2AccessTok
         Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(oauth2Properties.getRefreshToken().getSecureCookie());
-        refreshTokenCookie.setPath(request.getContextPath() + ACCESS_TOKEN_RESOURCE);
+        refreshTokenCookie.setPath(request.getContextPath() + TOKEN_RESOURCE);
         refreshTokenCookie.setMaxAge(oauth2Properties.getRefreshToken().getValiditySeconds());
         response.addCookie(refreshTokenCookie);
     }
