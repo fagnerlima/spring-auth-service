@@ -34,7 +34,7 @@ auth-service:
       access-token:
         validity-seconds: ${OAUTH2_ACCESS_TOKEN_VALIDITY_SECONDS:1800}
       refresh-token:
-        secure-cookie: ${OAUTH2_REFRESH_TOKEN_SECURE_COOKIE:false}
+        secure-cookie: ${OAUTH2_REFRESH_TOKEN_SECURE_COOKIE:true}
         validity-seconds: ${OAUTH2_REFRESH_TOKEN_VALIDITY_SECONDS:86400}
     jwt:
-      signing-key: ${JWT_SIGNING_KEY:spring-auth-service}
+      signing-key: ${JWT_SIGNING_KEY:5pr1ng-@uth-53rv1c3}
