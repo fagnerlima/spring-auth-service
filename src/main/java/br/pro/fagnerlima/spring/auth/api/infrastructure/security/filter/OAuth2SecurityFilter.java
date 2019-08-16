@@ -3,13 +3,13 @@ package br.pro.fagnerlima.spring.auth.api.infrastructure.security.filter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
@@ -33,12 +33,12 @@ public class OAuth2SecurityFilter implements Filter {
         if (TOKEN_RESOURCE.equalsIgnoreCase(httpServletRequest.getRequestURI())
                 && REFRESH_TOKEN_GRANT_TYPE.equals(httpServletRequest.getParameter(GRANT_TYPE_PARAMETER))
                 && httpServletRequest.getCookies() != null) {
-            for (Cookie cookie : httpServletRequest.getCookies()) {
-                if (cookie.getName().equals(REFRESH_TOKEN_COOKIE_NAME)) {
-                    String refreshToken = cookie.getValue();
-                    httpServletRequest = new AppHttpServletRequestWrapper(httpServletRequest, refreshToken);
-                }
-            }
+            String refreshToken = Stream.of(httpServletRequest.getCookies())
+                    .filter(cookie -> REFRESH_TOKEN_COOKIE_NAME.equals(cookie.getName()))
+                    .findFirst()
+                    .map(cookie -> cookie.getValue())
+                    .orElse(null);
+            httpServletRequest = new AppHttpServletRequestWrapper(httpServletRequest, refreshToken);
         }
 
         chain.doFilter(httpServletRequest, response);
