@@ -29,6 +29,8 @@ spring:
     schemas: public
 
 auth-service:
+  cors:
+    allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:4200}
   security:
     oauth2:
       access-token:

@@ -44,7 +44,7 @@ public class OAuth2SecurityFilter implements Filter {
         chain.doFilter(httpServletRequest, response);
     }
 
-    static class AppHttpServletRequestWrapper extends HttpServletRequestWrapper {
+    public static class AppHttpServletRequestWrapper extends HttpServletRequestWrapper {
 
         private String refreshToken;
 
