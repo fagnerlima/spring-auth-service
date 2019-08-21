@@ -13,8 +13,6 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
-
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
 
@@ -39,10 +37,6 @@ public class Grupo extends BaseEntity {
             inverseJoinColumns = @JoinColumn(name = "id_permissao"))
     private List<Permissao> permissoes;
 
-    @NotNull
-    @Column(name = "ativo", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private Boolean ativo;
-
     public String getNome() {
         return nome;
     }
@@ -57,14 +51,6 @@ public class Grupo extends BaseEntity {
 
     public void setPermissoes(List<Permissao> permissoes) {
         this.permissoes = permissoes;
-    }
-
-    public Boolean getAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
     }
 
     @Override

@@ -5,8 +5,6 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -18,7 +16,6 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
@@ -44,10 +41,11 @@ public class Usuario extends BaseEntity {
     @Embedded
     private Senha senha;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", length = 32)
-    private Status status;
+    @Column(name = "pendente", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
+    private Boolean pendente;
+
+    @Column(name = "bloqueado", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean bloqueado;
 
     @NotNull
     @NotEmpty
@@ -84,12 +82,20 @@ public class Usuario extends BaseEntity {
         this.senha = senha;
     }
 
-    public Status getStatus() {
-        return status;
+    public Boolean getPendente() {
+        return pendente;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public Boolean getBloqueado() {
+        return bloqueado;
+    }
+
+    public void setPendente(Boolean pendente) {
+        this.pendente = pendente;
+    }
+
+    public void setBloqueado(Boolean bloqueado) {
+        this.bloqueado = bloqueado;
     }
 
     public List<Grupo> getGrupos() {
@@ -102,6 +108,7 @@ public class Usuario extends BaseEntity {
 
     @Override
     public String toString() {
-        return String.format("Usuario [id=%s, nome=%s, email=%s, senha=%s, status=%s, grupos=%s]", id, nome, email, senha, status, grupos);
+        return String.format("Usuario [id=%s, nome=%s, email=%s, ativo=%s, pendente=%s, bloqueado=%s, grupos=%s]", id, nome, email, ativo,
+                pendente, bloqueado, grupos);
     }
 }

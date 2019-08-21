@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
@@ -23,6 +24,9 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
     private AuthenticationManager authenticationManager;
 
     @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
     private OAuth2Properties oauth2Properties;
 
     @Autowired
@@ -30,12 +34,14 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+        // TODO salvar em banco de dados
         clients.inMemory()
                 .withClient("angular")
-                .secret("{noop}@ngu1@r")
+                .secret("$2a$10$Uw1cy2aulRDtBVdIRGlUnegP3MtK9SIDIVeLP29aChu47.B6YWwky") // @ngu1@r
                 .scopes("read", "write")
                 .authorizedGrantTypes("password", "refresh_token")
-                .accessTokenValiditySeconds(oauth2Properties.getAccessToken().getValiditySeconds());
+                .accessTokenValiditySeconds(oauth2Properties.getAccessToken().getValiditySeconds())
+                .refreshTokenValiditySeconds(oauth2Properties.getRefreshToken().getValiditySeconds());
     }
 
     @Override
@@ -43,7 +49,8 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
         endpoints.tokenStore(tokenStore())
                 .accessTokenConverter(accessTokenConverter())
                 .reuseRefreshTokens(false)
-                .authenticationManager(authenticationManager);
+                .authenticationManager(authenticationManager)
+                .userDetailsService(userDetailsService);
     }
 
     @Bean
