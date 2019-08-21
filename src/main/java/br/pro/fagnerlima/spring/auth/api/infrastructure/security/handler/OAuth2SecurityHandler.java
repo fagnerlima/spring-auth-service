@@ -1,6 +1,5 @@
 package br.pro.fagnerlima.spring.auth.api.infrastructure.security.handler;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,17 +16,15 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import br.pro.fagnerlima.spring.auth.api.application.configuration.OAuth2Properties;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2SecurityService;
 
 @ControllerAdvice
 public class OAuth2SecurityHandler implements ResponseBodyAdvice<OAuth2AccessToken> {
 
-    private static final String TOKEN_RESOURCE = "/oauth/token";
     private static final String ACCESS_TOKEN_METHOD_NAME = "postAccessToken";
-    private static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 
     @Autowired
-    private OAuth2Properties oauth2Properties;
+    private OAuth2SecurityService oauth2SecurityService;
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -41,19 +38,10 @@ public class OAuth2SecurityHandler implements ResponseBodyAdvice<OAuth2AccessTok
         HttpServletResponse httpServletResponse = ((ServletServerHttpResponse) response).getServletResponse();
 
         String refreshToken = body.getRefreshToken().getValue();
-        addCookieRefreshToken(refreshToken, httpServletRequest, httpServletResponse);
+        oauth2SecurityService.addCookieRefreshToken(httpServletRequest, httpServletResponse, refreshToken);
         deleteBodyRefreshToken((DefaultOAuth2AccessToken) body);
 
         return body;
-    }
-
-    private void addCookieRefreshToken(String refreshToken, HttpServletRequest request, HttpServletResponse response) {
-        Cookie refreshTokenCookie = new Cookie(REFRESH_TOKEN_COOKIE_NAME, refreshToken);
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(oauth2Properties.getRefreshToken().getSecureCookie());
-        refreshTokenCookie.setPath(request.getContextPath() + TOKEN_RESOURCE);
-        refreshTokenCookie.setMaxAge(oauth2Properties.getRefreshToken().getValiditySeconds());
-        response.addCookie(refreshTokenCookie);
     }
 
     private void deleteBodyRefreshToken(DefaultOAuth2AccessToken token) {
