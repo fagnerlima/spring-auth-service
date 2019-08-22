@@ -25,9 +25,9 @@ public class OAuth2UserDetailsService implements UserDetailsService {
     private UsuarioRepository usuarioRepository;
 
     @Override
-    public UsuarioAuth loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByEmail(email);
-        // TODO implementar MessageService
+    public UsuarioAuth loadUserByUsername(String login) throws UsernameNotFoundException {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByLogin(login);
+        // TODO implementar MessageService e ApplicationExceptionHandler
         Usuario usuario = usuarioOpt.orElseThrow(() -> new UsernameNotFoundException("Usuário e/ou senha incorretos"));
 
         return new UsuarioAuth(usuario, getAuthorities(usuario));

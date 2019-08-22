@@ -40,7 +40,7 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
         // TODO salvar em banco de dados
         clients.inMemory()
                 .withClient("angular")
-                .secret("$2a$10$Uw1cy2aulRDtBVdIRGlUnegP3MtK9SIDIVeLP29aChu47.B6YWwky")
+                .secret("$2a$10$3yrT0M2xU9Qj24Mqv4xWkekbqLYm7p3nMeg4QPcHkOajGSG8rwsj2")
                 .scopes("read", "write")
                 .authorizedGrantTypes("password", "refresh_token")
                 .accessTokenValiditySeconds(oauth2Properties.getAccessToken().getValiditySeconds())

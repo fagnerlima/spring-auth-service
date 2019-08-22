@@ -1,5 +1,26 @@
 CREATE SCHEMA auth;
 
+CREATE TABLE auth.usuario (
+  id SERIAL,
+  nome VARCHAR(128) NOT NULL,
+  email VARCHAR(128) NOT NULL,
+  login VARCHAR(32) NOT NULL,
+  valor_senha VARCHAR(64) NOT NULL,
+  reset_token_senha VARCHAR(255) NULL,
+  tentativas_erro_senha SMALLINT NULL,
+  data_ultima_alteracao_senha DATE NULL,
+  pendente BOOLEAN NOT NULL DEFAULT TRUE,
+  bloqueado BOOLEAN NOT NULL DEFAULT FALSE,
+  ativo BOOLEAN NOT NULL DEFAULT TRUE,
+  data_criacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  id_usuario_criacao BIGINT NOT NULL,
+  data_atualizacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+  id_usuario_atualizacao BIGINT NOT NULL,
+  version INTEGER NOT NULL DEFAULT 0,
+  CONSTRAINT pk_usuario PRIMARY KEY(id),
+  CONSTRAINT uk_usuario_email UNIQUE(email)
+);
+
 CREATE TABLE auth.grupo (
   id SERIAL,
   nome VARCHAR(128) NOT NULL,
@@ -23,26 +44,6 @@ CREATE TABLE auth.permissao (
   version INTEGER NOT NULL DEFAULT 0,
   CONSTRAINT pk_permissao PRIMARY KEY(id),
   CONSTRAINT uk_permissao_papel UNIQUE(papel)
-);
-
-CREATE TABLE auth.usuario (
-  id SERIAL,
-  nome VARCHAR(128) NOT NULL,
-  email VARCHAR(128) NOT NULL,
-  valor_senha VARCHAR(64) NOT NULL,
-  reset_token_senha VARCHAR(255) NULL,
-  tentativas_erro_senha SMALLINT NULL,
-  data_ultima_alteracao_senha DATE NULL,
-  pendente BOOLEAN NOT NULL DEFAULT TRUE,
-  bloqueado BOOLEAN NOT NULL DEFAULT FALSE,
-  ativo BOOLEAN NOT NULL DEFAULT TRUE,
-  data_criacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-  id_usuario_criacao BIGINT NOT NULL,
-  data_atualizacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-  id_usuario_atualizacao BIGINT NOT NULL,
-  version INTEGER NOT NULL DEFAULT 0,
-  CONSTRAINT pk_usuario PRIMARY KEY(id),
-  CONSTRAINT uk_usuario_email UNIQUE(email)
 );
 
 CREATE TABLE auth.grupo_permissao (

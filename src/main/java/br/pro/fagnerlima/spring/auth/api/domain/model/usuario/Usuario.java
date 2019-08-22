@@ -38,6 +38,11 @@ public class Usuario extends BaseEntity {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @NotNull
+    @Size(min = 5, max = 32)
+    @Column(name = "login", nullable = false, unique = true)
+    private String login;
+
     @Embedded
     private Senha senha;
 
@@ -74,6 +79,14 @@ public class Usuario extends BaseEntity {
         this.email = email;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     public Senha getSenha() {
         return senha;
     }
@@ -108,7 +121,7 @@ public class Usuario extends BaseEntity {
 
     @Override
     public String toString() {
-        return String.format("Usuario [id=%s, nome=%s, email=%s, ativo=%s, pendente=%s, bloqueado=%s, grupos=%s]", id, nome, email, ativo,
-                pendente, bloqueado, grupos);
+        return String.format("Usuario [id=%s, nome=%s, email=%s, login=%s, ativo=%s, pendente=%s, bloqueado=%s, grupos=%s]", id, nome,
+                email, login, ativo, pendente, bloqueado, grupos);
     }
 }
