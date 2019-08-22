@@ -1,5 +1,6 @@
 package br.pro.fagnerlima.spring.auth.api.application.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -30,6 +31,12 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     @Override
     public Page<T> findAll(Pageable pageable) {
         return getRepository().findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<T> findAllActives() {
+        return getRepository().findByAtivo(true);
     }
 
     @Transactional

@@ -1,6 +1,6 @@
 package br.pro.fagnerlima.spring.auth.api.domain.model.grupo;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
 
@@ -35,7 +36,7 @@ public class Grupo extends BaseEntity {
             schema = "auth",
             joinColumns = @JoinColumn(name = "id_grupo"),
             inverseJoinColumns = @JoinColumn(name = "id_permissao"))
-    private List<Permissao> permissoes;
+    private Set<Permissao> permissoes;
 
     public String getNome() {
         return nome;
@@ -45,11 +46,11 @@ public class Grupo extends BaseEntity {
         this.nome = nome;
     }
 
-    public List<Permissao> getPermissoes() {
+    public Set<Permissao> getPermissoes() {
         return permissoes;
     }
 
-    public void setPermissoes(List<Permissao> permissoes) {
+    public void setPermissoes(Set<Permissao> permissoes) {
         this.permissoes = permissoes;
     }
 

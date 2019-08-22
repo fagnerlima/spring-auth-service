@@ -1,6 +1,6 @@
 package br.pro.fagnerlima.spring.auth.api.domain.model.usuario;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -61,7 +61,7 @@ public class Usuario extends BaseEntity {
             schema = "auth",
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_grupo"))
-    private List<Grupo> grupos;
+    private Set<Grupo> grupos;
 
     public String getNome() {
         return nome;
@@ -111,11 +111,11 @@ public class Usuario extends BaseEntity {
         this.bloqueado = bloqueado;
     }
 
-    public List<Grupo> getGrupos() {
+    public Set<Grupo> getGrupos() {
         return grupos;
     }
 
-    public void setGrupos(List<Grupo> grupos) {
+    public void setGrupos(Set<Grupo> grupos) {
         this.grupos = grupos;
     }
 
