@@ -13,7 +13,7 @@ public interface BaseService<T> {
 
     public List<T> findAllActives();
 
-    public T save(T entidade);
+    public T save(T entity);
 
-    public T update(Long id, T entidade);
+    public T update(Long id, T entity);
 }
