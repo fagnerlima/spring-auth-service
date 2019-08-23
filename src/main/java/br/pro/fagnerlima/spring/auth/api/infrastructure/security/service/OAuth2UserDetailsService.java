@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.security.UsuarioAuth;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.auth.UsuarioAuth;
 
 @Service
 public class OAuth2UserDetailsService implements UserDetailsService {

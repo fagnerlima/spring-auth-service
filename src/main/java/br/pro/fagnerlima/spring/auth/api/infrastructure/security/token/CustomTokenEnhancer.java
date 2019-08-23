@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 
-import br.pro.fagnerlima.spring.auth.api.infrastructure.security.UsuarioAuth;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.auth.UsuarioAuth;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2UserDetailsService;
 
 public class CustomTokenEnhancer implements TokenEnhancer {

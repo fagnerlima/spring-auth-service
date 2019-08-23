@@ -16,10 +16,10 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class OAuth2SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Bean
+    @Bean("authenticationManager")
     @Override
-    public AuthenticationManager authenticationManager() throws Exception {
-        return super.authenticationManager();
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
     }
 
     @Bean

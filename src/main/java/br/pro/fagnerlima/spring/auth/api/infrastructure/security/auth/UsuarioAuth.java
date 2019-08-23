@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.spring.auth.api.infrastructure.security;
+package br.pro.fagnerlima.spring.auth.api.infrastructure.security.auth;
 
 import java.util.Collection;
 
