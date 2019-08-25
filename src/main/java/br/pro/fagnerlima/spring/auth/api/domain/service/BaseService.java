@@ -16,4 +16,7 @@ public interface BaseService<T> {
     public T save(T entity);
 
     public T update(Long id, T entity);
+
+    public T switchActive(Long id);
+
 }

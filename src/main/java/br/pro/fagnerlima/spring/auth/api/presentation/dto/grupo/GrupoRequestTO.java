@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
+import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.converter.IdReference;
 
 public class GrupoRequestTO implements Serializable {
@@ -12,7 +13,7 @@ public class GrupoRequestTO implements Serializable {
 
     private String nome;
 
-    @IdReference(target = Grupo.class, property = "permissoes")
+    @IdReference(target = Permissao.class, property = "permissoes")
     private Set<Long> permissoes;
 
     private Boolean ativo;

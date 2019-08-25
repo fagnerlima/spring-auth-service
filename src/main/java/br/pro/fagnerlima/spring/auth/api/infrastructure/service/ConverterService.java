@@ -42,7 +42,7 @@ public class ConverterService {
         return dataList.stream().map(data -> convert(data, destinationType)).collect(Collectors.toList());
     }
 
-    public <T> T refreshReferences(Object data, T target) {
+    private <T> T refreshReferences(Object data, T target) {
         Field[] fields = data.getClass().getDeclaredFields();
 
         for (Field field : fields) {

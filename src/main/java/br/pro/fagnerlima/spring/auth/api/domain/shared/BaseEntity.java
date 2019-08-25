@@ -55,6 +55,10 @@ public abstract class BaseEntity implements Serializable {
         super();
     }
 
+    public void switchAtivo() {
+        ativo = !ativo;
+    }
+
     public Long getId() {
         return id;
     }

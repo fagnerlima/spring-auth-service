@@ -48,11 +48,7 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     @Transactional
     @Override
     public T save(T entity) {
-        Long idUsuario = getIdUsuario();
-        entity.setDataCriacao(LocalDateTime.now());
-        entity.setIdUsuarioCriacao(idUsuario);
-        entity.setDataAtualizacao(LocalDateTime.now());
-        entity.setIdUsuarioAtualizacao(idUsuario);
+        entity = auditSave(entity);
 
         return getRepository().save(entity);
     }
@@ -61,18 +57,49 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     @Override
     public T update(Long id, T entity) {
         T savedEntity = findById(id);
-        BeanUtils.copyProperties(entity, savedEntity, "id");
+        BeanUtils.copyProperties(entity, savedEntity, ignoredProperties());
+        savedEntity = auditUpdate(savedEntity);
 
-        Long idUsuario = getIdUsuario();
-        entity.setDataAtualizacao(LocalDateTime.now());
-        entity.setIdUsuarioAtualizacao(idUsuario);
+        return getRepository().save(savedEntity);
+    }
 
-        return save(savedEntity);
+    @Transactional
+    @Override
+    public T switchActive(Long id) {
+        T entity = findById(id);
+        entity.switchAtivo();
+
+        return update(id, entity);
+    }
+
+    protected String[] ignoredProperties() {
+        String[] ignoredProperties = { "id", "dataCriacao", "idUsuarioCriacao", "dataAtualizacao", "idUsuarioAtualizacao" };
+
+        return ignoredProperties;
     }
 
     protected Long getIdUsuario() {
         return userDetailsService.getUsuarioAuth().getUsuario().getId();
     }
 
+    protected T auditSave(T entity) {
+        Long idUsuario = getIdUsuario();
+        entity.setDataCriacao(LocalDateTime.now());
+        entity.setIdUsuarioCriacao(idUsuario);
+        entity.setDataAtualizacao(LocalDateTime.now());
+        entity.setIdUsuarioAtualizacao(idUsuario);
+
+        return entity;
+    }
+
+    protected T auditUpdate(T entity) {
+        Long idUsuario = getIdUsuario();
+        entity.setDataAtualizacao(LocalDateTime.now());
+        entity.setIdUsuarioAtualizacao(idUsuario);
+
+        return entity;
+    }
+
     protected abstract BaseRepository<T> getRepository();
+
 }
