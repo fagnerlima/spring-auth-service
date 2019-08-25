@@ -3,7 +3,6 @@ package br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo;
 import java.io.Serializable;
 import java.util.Set;
 
-import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.converter.IdReference;
 
