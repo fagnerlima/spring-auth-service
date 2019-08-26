@@ -22,9 +22,6 @@
     <spring-security-oauth2.version>2.3.6.RELEASE</spring-security-oauth2.version>
     <spring-security-jwt.version>1.0.10.RELEASE</spring-security-jwt.version>
     <modelmapper.version>2.3.5</modelmapper.version>
-    <jaxb-api.version>2.3.1</jaxb-api.version>
-    <javax-activation.version>1.2.0</javax-activation.version>
-    <jaxb-runtime.version>2.3.2</jaxb-runtime.version>
   </properties>
 
   <dependencies>
@@ -85,18 +82,15 @@
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
-      <version>${jaxb-api.version}</version>
     </dependency>
     <dependency>
       <groupId>com.sun.activation</groupId>
       <artifactId>javax.activation</artifactId>
-      <version>${javax-activation.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.glassfish.jaxb</groupId>
       <artifactId>jaxb-runtime</artifactId>
-      <version>${jaxb-runtime.version}</version>
     </dependency>
 
     <dependency>
