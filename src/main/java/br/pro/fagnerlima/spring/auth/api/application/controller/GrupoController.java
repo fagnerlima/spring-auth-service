@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ConverterService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ResponseService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
+import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoFilterRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoMinResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoReducedResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoRequestTO;
@@ -36,6 +39,9 @@ public class GrupoController {
     private GrupoService grupoService;
 
     @Autowired
+    private SpecificationFactory<Grupo> specificationFactory;
+
+    @Autowired
     private ConverterService converterService;
 
     @Autowired
@@ -43,8 +49,9 @@ public class GrupoController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_GRUPO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping
-    public ResponseEntity<ResponseTO<Page<GrupoReducedResponseTO>>> findAll(Pageable pageable) {
-        Page<Grupo> page = grupoService.findAll(pageable);
+    public ResponseEntity<ResponseTO<Page<GrupoReducedResponseTO>>> findAll(GrupoFilterRequestTO filterRequestTO, Pageable pageable) {
+        Specification<Grupo> specification = specificationFactory.create(filterRequestTO);
+        Page<Grupo> page = grupoService.findAll(specification, pageable);
         Page<GrupoReducedResponseTO> responseTOPage = converterService.convert(page, GrupoReducedResponseTO.class);
 
         return responseService.ok(responseTOPage);

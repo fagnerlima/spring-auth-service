@@ -8,6 +8,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
@@ -37,6 +38,12 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     @Override
     public Page<T> findAll(Pageable pageable) {
         return getRepository().findAll(pageable);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<T> findAll(Specification<T> specification, Pageable pageable) {
+        return getRepository().findAll(specification, pageable);
     }
 
     @Transactional(readOnly = true)
