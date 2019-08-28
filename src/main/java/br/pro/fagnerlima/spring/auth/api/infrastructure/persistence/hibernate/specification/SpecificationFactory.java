@@ -68,6 +68,8 @@ public class SpecificationFactory<T> {
                 predicate = buildPredicate(property, (Boolean) value);
             } else if (value instanceof LocalDate) {
                 predicate = buildPredicate(property, LocalDate.parse(value.toString()), operation);
+            } else if (value instanceof Enum<?>) {
+                predicate = buildPredicate(property, (Enum<?>) value);
             } else {
                 predicate = buildPredicate(property, value.toString(), operation);
             }
@@ -94,6 +96,10 @@ public class SpecificationFactory<T> {
     }
 
     private Predicate buildPredicate(String property, Boolean value) {
+        return criteriaBuilder.equal(root.get(property), value);
+    }
+
+    private Predicate buildPredicate(String property, Enum<?> value) {
         return criteriaBuilder.equal(root.get(property), value);
     }
 
