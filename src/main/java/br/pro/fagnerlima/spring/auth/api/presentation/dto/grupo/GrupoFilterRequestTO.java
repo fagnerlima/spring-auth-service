@@ -12,6 +12,9 @@ public class GrupoFilterRequestTO implements Serializable {
 
     private static final long serialVersionUID = 8652626915074598836L;
 
+    @SpecificationField
+    private Long id;
+
     @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE)
     private String nome;
 
@@ -22,10 +25,19 @@ public class GrupoFilterRequestTO implements Serializable {
         super();
     }
 
-    public GrupoFilterRequestTO(String nome, Boolean ativo) {
+    public GrupoFilterRequestTO(Long id, String nome, Boolean ativo) {
         super();
+        this.id = id;
         this.nome = nome;
         this.ativo = ativo;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNome() {
@@ -46,7 +58,7 @@ public class GrupoFilterRequestTO implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("GrupoFilterRequestTO [nome=%s, ativo=%s]", nome, ativo);
+        return String.format("GrupoFilterRequestTO [id=%s, nome=%s, ativo=%s]", id, nome, ativo);
     }
 
 }
