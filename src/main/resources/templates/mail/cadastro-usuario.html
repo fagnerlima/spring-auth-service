@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <header>
+    <h1>Spring Auth Service</h1>
+  </header>
+
+  <p>Uma conta foi cadastrada com este endereço de e-mail. Para ativá-la, siga os passos clicando no link abaixo.</p>
+
+  <ul style="list-style: none">
+    <li>
+      <b>Nome</b>:
+      <span th:text="${usuario.nome}"></span>
+    </li>
+    <li>
+      <b>Login</b>:
+      <span th:text="${usuario.login}"></span>
+    </li>
+    <li>
+      <b>Data de criação</b>:
+      <span th:text="${#temporals.format(usuario.dataCriacao, 'dd/MM/yyyy')}"></span>
+    </li>
+    <li>
+      <a th:href="@{${appBaseUrl} + '/usuario/confirmacao-cadastro?token=' + ${usuario.senha.resetToken}}">Clique aqui para confirmar o cadastro</a>
+    </li>
+  </ul>
+
+  <footer>
+    <p>&copy; Fagner Lima.</p>
+  </footer>
+</body>
+
+</html>
