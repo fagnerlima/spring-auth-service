@@ -1,6 +1,7 @@
 package br.pro.fagnerlima.spring.auth.api.domain.model.usuario;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -24,14 +25,31 @@ public class Senha {
 
     public Senha() {
         super();
+        tentativasErro = 0;
     }
 
-    public Senha(@Size(min = 6, max = 64) String valor, String resetToken, Integer tentativasErro, LocalDateTime dataUltimaAlteracao) {
+    public Senha(String valor, String resetToken, Integer tentativasErro, LocalDateTime dataUltimaAlteracao) {
         super();
         this.valor = valor;
         this.resetToken = resetToken;
         this.tentativasErro = tentativasErro;
         this.dataUltimaAlteracao = dataUltimaAlteracao;
+    }
+
+    public void clearResetToken() {
+        resetToken = null;
+    }
+
+    public void generateResetToken() {
+        resetToken = UUID.randomUUID().toString();
+    }
+
+    public void addTentativaErro() {
+        tentativasErro++;
+    }
+
+    public void resetTentativasErro() {
+        tentativasErro = 0;
     }
 
     public String getValor() {
@@ -44,10 +62,6 @@ public class Senha {
 
     public String getResetToken() {
         return resetToken;
-    }
-
-    public void setResetToken(String resetToken) {
-        this.resetToken = resetToken;
     }
 
     public Integer getTentativasErro() {

@@ -2,6 +2,8 @@ package br.pro.fagnerlima.spring.auth.api.application.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,11 +27,13 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.sp
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ConverterService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ResponseService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
+import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioEmailRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioFilterRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioMinResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioReducedResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioResponseTO;
+import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioSenhaResetTokenRequestTO;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -95,11 +99,31 @@ public class UsuarioController {
         return responseService.ok(responseTO);
     }
 
+    @PatchMapping("/senha")
+    public ResponseEntity<ResponseTO<UsuarioResponseTO>> updateSenhaByResetToken(@RequestBody UsuarioSenhaResetTokenRequestTO requestTO) {
+        Usuario usuario = usuarioService.updateSenhaByResetToken(requestTO.getResetToken(), requestTO.getSenha());
+        UsuarioResponseTO responseTO = converterService.convert(usuario, UsuarioResponseTO.class);
+
+        return responseService.ok(responseTO);
+    }
+
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USUARIO_ALTERAR_STATUS') and #oauth2.hasScope('write')")
     @PatchMapping("/{id}/ativo")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void switchActive(@PathVariable Long id) {
         usuarioService.switchActive(id);
+    }
+
+    @PostMapping("/recuperacao/login")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void recoverLogin(@Valid @RequestBody UsuarioEmailRequestTO requestTO) {
+        usuarioService.recoverLogin(requestTO.getEmail());
+    }
+
+    @PostMapping("/recuperacao/senha")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void recoverSenha(@Valid @RequestBody UsuarioEmailRequestTO requestTO) {
+        usuarioService.recoverSenha(requestTO.getEmail());
     }
 
 }

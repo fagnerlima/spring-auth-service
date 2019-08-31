@@ -12,6 +12,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
+import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.BaseService;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.BaseRepository;
@@ -20,7 +21,7 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2U
 public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseService<T> {
 
     @Autowired
-    protected OAuth2UserDetailsService userDetailsService;
+    private OAuth2UserDetailsService userDetailsService;
 
     @Transactional(readOnly = true)
     @Override
@@ -85,12 +86,12 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
         return ignoredProperties;
     }
 
-    protected Long getIdUsuario() {
-        return userDetailsService.getUsuarioAuth().getUsuario().getId();
+    protected Usuario getUsuarioAutenticacado() {
+        return userDetailsService.getUsuarioAuth().getUsuario();
     }
 
     protected T auditSave(T entity) {
-        Long idUsuario = getIdUsuario();
+        Long idUsuario = getUsuarioAutenticacado().getId();
         entity.setDataCriacao(LocalDateTime.now());
         entity.setIdUsuarioCriacao(idUsuario);
         entity.setDataAtualizacao(LocalDateTime.now());
@@ -100,11 +101,15 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     }
 
     protected T auditUpdate(T entity) {
-        Long idUsuario = getIdUsuario();
+        Long idUsuario = getUsuarioAutenticacado().getId();
         entity.setDataAtualizacao(LocalDateTime.now());
         entity.setIdUsuarioAtualizacao(idUsuario);
 
         return entity;
+    }
+
+    protected OAuth2UserDetailsService getUserDetailsService() {
+        return userDetailsService;
     }
 
     protected abstract BaseRepository<T> getRepository();

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+  <div th:replace="fragments/general.xhtml :: header"></div>
+
+  <p>Você solicitou recuperação de login.</p>
+
+  <p>Seu login é: <b th:text="${usuario.login}">login</b></p>
+
+  <div th:replace="fragments/general.xhtml :: footer"></div>
+</body>
+
+</html>

@@ -1,14 +1,17 @@
 package br.pro.fagnerlima.spring.auth.api.domain.model.usuario;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -19,13 +22,17 @@ import org.hibernate.annotations.FetchMode;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.listener.UsuarioListener;
 
 //@Audited
 @Entity
 @Table(name = "usuario", schema = "auth")
+@EntityListeners(UsuarioListener.class)
 public class Usuario extends BaseEntity {
 
     private static final long serialVersionUID = 4992180182377301896L;
+
+    public static final Long ADMIN_ID = 1L;
 
     @NotNull
     @Size(min = 5, max = 128)
@@ -43,6 +50,7 @@ public class Usuario extends BaseEntity {
     @Column(name = "login", nullable = false, unique = true)
     private String login;
 
+    @Valid
     @Embedded
     private Senha senha;
 
@@ -62,6 +70,24 @@ public class Usuario extends BaseEntity {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_grupo"))
     private Set<Grupo> grupos;
+
+    public void bloquear() {
+        setBloqueado(true);
+    }
+
+    public void updateSenha(String senha) {
+        this.senha.setValor(senha);
+        this.senha.clearResetToken();
+        this.senha.setDataUltimaAlteracao(LocalDateTime.now());
+
+        if (pendente) {
+            pendente = false;
+        }
+
+        if (bloqueado) {
+            bloqueado = false;
+        }
+    }
 
     public String getNome() {
         return nome;
@@ -99,12 +125,12 @@ public class Usuario extends BaseEntity {
         return pendente;
     }
 
-    public Boolean getBloqueado() {
-        return bloqueado;
-    }
-
     public void setPendente(Boolean pendente) {
         this.pendente = pendente;
+    }
+
+    public Boolean getBloqueado() {
+        return bloqueado;
     }
 
     public void setBloqueado(Boolean bloqueado) {

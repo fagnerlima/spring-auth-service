@@ -6,8 +6,12 @@ import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 
 public interface UsuarioRepository extends BaseRepository<Usuario> {
 
-    Optional<Usuario> findByEmail(String email);
+    Optional<Usuario> findByEmailContainingIgnoreCase(String email);
 
-    Optional<Usuario> findByLogin(String login);
+    Optional<Usuario> findByLoginContainingIgnoreCase(String login);
+
+    Optional<Usuario> findByEmailOrLogin(String login, String email);
+
+    Optional<Usuario> findBySenhaResetToken(String resetToken);
 
 }
