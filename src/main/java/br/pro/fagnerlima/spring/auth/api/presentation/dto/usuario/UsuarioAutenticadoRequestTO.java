@@ -1,0 +1,71 @@
+package br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario;
+
+import java.io.Serializable;
+import java.util.Set;
+
+import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.converter.IdReference;
+
+public class UsuarioAutenticadoRequestTO implements Serializable {
+
+    private static final long serialVersionUID = -4976627326375118702L;
+
+    private String nome;
+
+    private String email;
+
+    private String login;
+
+    @IdReference(target = Grupo.class, property = "grupos")
+    private Set<Long> grupos;
+
+    public UsuarioAutenticadoRequestTO() {
+        super();
+    }
+
+    public UsuarioAutenticadoRequestTO(String nome, String email, String login, Set<Long> grupos) {
+        super();
+        this.nome = nome;
+        this.email = email;
+        this.login = login;
+        this.grupos = grupos;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public Set<Long> getGrupos() {
+        return grupos;
+    }
+
+    public void setGrupos(Set<Long> grupos) {
+        this.grupos = grupos;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("UsuarioRequestTO [nome=%s, email=%s, login=%s, grupos=%s]", nome, email, login, grupos);
+    }
+
+}
