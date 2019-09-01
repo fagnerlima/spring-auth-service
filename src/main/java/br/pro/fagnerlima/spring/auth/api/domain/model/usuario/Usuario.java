@@ -54,9 +54,11 @@ public class Usuario extends BaseEntity {
     @Embedded
     private Senha senha;
 
+    @NotNull
     @Column(name = "pendente", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     private Boolean pendente;
 
+    @NotNull
     @Column(name = "bloqueado", nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean bloqueado;
 

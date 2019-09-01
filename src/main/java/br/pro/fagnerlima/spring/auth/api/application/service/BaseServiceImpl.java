@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +16,7 @@ import br.pro.fagnerlima.spring.auth.api.domain.service.BaseService;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.BaseRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2UserDetailsService;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.util.BeanUtils;
 
 public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseService<T> {
 
@@ -65,7 +65,7 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     @Override
     public T update(Long id, T entity) {
         T savedEntity = findById(id);
-        BeanUtils.copyProperties(entity, savedEntity, ignoredProperties());
+        BeanUtils.copyProperties(entity, savedEntity);
         savedEntity = auditUpdate(savedEntity);
 
         return getRepository().save(savedEntity);
@@ -80,18 +80,12 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
         return update(id, entity);
     }
 
-    protected String[] ignoredProperties() {
-        String[] ignoredProperties = { "id", "dataCriacao", "idUsuarioCriacao", "dataAtualizacao", "idUsuarioAtualizacao" };
-
-        return ignoredProperties;
-    }
-
-    protected Usuario getUsuarioAutenticacado() {
+    protected Usuario getUsuarioAutenticado() {
         return userDetailsService.getUsuarioAuth().getUsuario();
     }
 
     protected T auditSave(T entity) {
-        Long idUsuario = getUsuarioAutenticacado().getId();
+        Long idUsuario = getUsuarioAutenticado().getId();
         entity.setDataCriacao(LocalDateTime.now());
         entity.setIdUsuarioCriacao(idUsuario);
         entity.setDataAtualizacao(LocalDateTime.now());
@@ -101,7 +95,7 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     }
 
     protected T auditUpdate(T entity) {
-        Long idUsuario = getUsuarioAutenticacado().getId();
+        Long idUsuario = getUsuarioAutenticado().getId();
         entity.setDataAtualizacao(LocalDateTime.now());
         entity.setIdUsuarioAtualizacao(idUsuario);
 

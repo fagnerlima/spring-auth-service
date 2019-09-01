@@ -13,6 +13,8 @@ public class UsuarioResponseTO implements Serializable {
 
     private String nome;
 
+    private String email;
+
     private String login;
 
     private Boolean pendente;
@@ -27,11 +29,12 @@ public class UsuarioResponseTO implements Serializable {
         super();
     }
 
-    public UsuarioResponseTO(Long id, String nome, String login, Boolean pendente, Boolean bloqueado, Boolean ativo,
+    public UsuarioResponseTO(Long id, String nome, String email, String login, Boolean pendente, Boolean bloqueado, Boolean ativo,
             Set<GrupoResponseTO> grupos) {
         super();
         this.id = id;
         this.nome = nome;
+        this.email = email;
         this.login = login;
         this.pendente = pendente;
         this.bloqueado = bloqueado;
@@ -53,6 +56,14 @@ public class UsuarioResponseTO implements Serializable {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getLogin() {
@@ -97,8 +108,8 @@ public class UsuarioResponseTO implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("UsuarioResponseTO [id=%s, nome=%s, login=%s, pendente=%s, bloqueado=%s, ativo=%s, grupos=%s]", id, nome,
-                login, pendente, bloqueado, ativo, grupos);
+        return String.format("UsuarioResponseTO [id=%s, nome=%s, email=%s, login=%s, pendente=%s, bloqueado=%s, ativo=%s, grupos=%s]", id,
+                nome, email, login, pendente, bloqueado, ativo, grupos);
     }
 
 }

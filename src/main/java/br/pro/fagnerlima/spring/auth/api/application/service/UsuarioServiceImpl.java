@@ -110,7 +110,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
 
     @Override
     public Usuario updateSenhaAutenticado(String senhaAtual, String senhaNova) {
-        Usuario usuario = getUsuarioAutenticacado();
+        Usuario usuario = getUsuarioAutenticado();
 
         if (PasswordGeneratorUtils.validate(senhaAtual, usuario.getSenha().getValor())) {
             throw new InvalidActualPasswordException();

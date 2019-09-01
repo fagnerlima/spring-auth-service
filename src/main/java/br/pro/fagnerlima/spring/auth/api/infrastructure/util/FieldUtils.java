@@ -1,7 +1,6 @@
 package br.pro.fagnerlima.spring.auth.api.infrastructure.util;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -14,12 +13,12 @@ public class FieldUtils {
         return (Collection<Long>) field.get(data);
     }
 
-    public static Class<?> getGenericType(Field field) {
-        ParameterizedType fieldType = (ParameterizedType) field.getGenericType();
-
-        return (Class<?>) fieldType.getActualTypeArguments()[0];
-    }
-
+    /**
+     * Retorna todos os campos da classe {type}, incluindo os campos de suas superclasses.
+     *
+     * @param type classe alvo
+     * @return todos os campos da classe {type}
+     */
     public static List<Field> getAllFields(Class<?> type) {
         List<Field> fields = new ArrayList<>();
 
@@ -28,6 +27,21 @@ public class FieldUtils {
         }
 
         return fields;
+    }
+
+    /**
+     * Retorna o campo de nome {name} da classe {type}
+     *
+     * @param type classe alvo
+     * @param name nome do campo
+     * @return o campo de nome {name}
+     * @throws NoSuchFieldException
+     */
+    public static Field getField(Class<?> type, String name) throws NoSuchFieldException {
+        List<Field> fields = getAllFields(type);
+
+        return fields.stream().filter(field -> field.getName().equals(name)).findFirst()
+                .orElseThrow(() -> new NoSuchFieldException(name));
     }
 
 }
