@@ -10,6 +10,8 @@ public class UsuarioListener {
     @PrePersist
     public void onPrePersist(Usuario usuario) {
         setCase(usuario);
+        usuario.setPendente(true);
+        usuario.setBloqueado(false);
     }
 
     @PreUpdate

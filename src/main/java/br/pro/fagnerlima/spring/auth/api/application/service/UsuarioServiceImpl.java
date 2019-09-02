@@ -1,7 +1,5 @@
 package br.pro.fagnerlima.spring.auth.api.application.service;
 
-import java.time.LocalDateTime;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,10 +51,8 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     @Override
     public Usuario save(Usuario usuario) {
         checkUniqueFields(usuario);
-        usuario.getSenha().setValor(PasswordGeneratorUtils.encode(usuario.getSenha().getValor()));
         usuario.setSenha(new Senha());
         usuario.getSenha().generateResetToken();
-        usuario.getSenha().setDataUltimaAlteracao(LocalDateTime.now());
 
         Usuario usuarioSaved = super.save(usuario);
 
@@ -133,9 +129,9 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
         Usuario usuario = findByEmail(email);
         usuario.getSenha().generateResetToken();
 
-        Usuario usuarioSaved = this.save(usuario);
+        Usuario usuarioUpdated = this.update(usuario.getId(), usuario);
 
-        sendMailRecoverySenha(usuarioSaved);
+        sendMailRecoverySenha(usuarioUpdated);
     }
 
     @Override

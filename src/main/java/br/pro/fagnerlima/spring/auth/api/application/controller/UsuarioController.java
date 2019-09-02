@@ -101,7 +101,7 @@ public class UsuarioController {
 
     @PatchMapping("/senha")
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> updateSenhaByResetToken(@RequestBody UsuarioSenhaResetTokenRequestTO requestTO) {
-        Usuario usuario = usuarioService.updateSenhaByResetToken(requestTO.getResetToken(), requestTO.getSenha());
+        Usuario usuario = usuarioService.updateSenhaByResetToken(requestTO.getToken(), requestTO.getSenha());
         UsuarioResponseTO responseTO = converterService.convert(usuario, UsuarioResponseTO.class);
 
         return responseService.ok(responseTO);

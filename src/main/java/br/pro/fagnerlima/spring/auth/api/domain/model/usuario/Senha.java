@@ -20,21 +20,21 @@ public class Senha {
     @Column(name = "tentativas_erro_senha")
     private Integer tentativasErro;
 
-    @Column(name = "data_ultima_alteracao_senha")
-    private LocalDateTime dataUltimaAlteracao;
+    @Column(name = "data_atualizacao_senha")
+    private LocalDateTime dataAtualizacao;
 
     public Senha() {
         super();
         tentativasErro = 0;
-        dataUltimaAlteracao = LocalDateTime.now();
+        dataAtualizacao = LocalDateTime.now();
     }
 
-    public Senha(String valor, String resetToken, Integer tentativasErro, LocalDateTime dataUltimaAlteracao) {
+    public Senha(String valor, String resetToken, Integer tentativasErro, LocalDateTime dataAtualizacao) {
         super();
         this.valor = valor;
         this.resetToken = resetToken;
         this.tentativasErro = tentativasErro;
-        this.dataUltimaAlteracao = dataUltimaAlteracao;
+        this.dataAtualizacao = dataAtualizacao;
     }
 
     public void clearResetToken() {
@@ -73,19 +73,19 @@ public class Senha {
         this.tentativasErro = tentativasErro;
     }
 
-    public LocalDateTime getDataUltimaAlteracao() {
-        return dataUltimaAlteracao;
+    public LocalDateTime getDataAtualizacao() {
+        return dataAtualizacao;
     }
 
-    public void setDataUltimaAlteracao(LocalDateTime dataUltimaAlteracao) {
-        this.dataUltimaAlteracao = dataUltimaAlteracao;
+    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
+        this.dataAtualizacao = dataAtualizacao;
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((dataUltimaAlteracao == null) ? 0 : dataUltimaAlteracao.hashCode());
+        result = prime * result + ((dataAtualizacao == null) ? 0 : dataAtualizacao.hashCode());
         result = prime * result + ((resetToken == null) ? 0 : resetToken.hashCode());
         result = prime * result + ((tentativasErro == null) ? 0 : tentativasErro.hashCode());
         result = prime * result + ((valor == null) ? 0 : valor.hashCode());
@@ -101,10 +101,10 @@ public class Senha {
         if (getClass() != obj.getClass())
             return false;
         Senha other = (Senha) obj;
-        if (dataUltimaAlteracao == null) {
-            if (other.dataUltimaAlteracao != null)
+        if (dataAtualizacao == null) {
+            if (other.dataAtualizacao != null)
                 return false;
-        } else if (!dataUltimaAlteracao.equals(other.dataUltimaAlteracao))
+        } else if (!dataAtualizacao.equals(other.dataAtualizacao))
             return false;
         if (resetToken == null) {
             if (other.resetToken != null)
@@ -126,7 +126,7 @@ public class Senha {
 
     @Override
     public String toString() {
-        return String.format("Senha [valor=%s, resetToken=%s, tentativasErro=%s, dataUltimaAlteracao=%s]", valor, resetToken,
-                tentativasErro, dataUltimaAlteracao);
+        return String.format("Senha [valor=%s, resetToken=%s, tentativasErro=%s, dataAtualizacao=%s]", valor, resetToken,
+                tentativasErro, dataAtualizacao);
     }
 }

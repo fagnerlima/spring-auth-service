@@ -6,7 +6,7 @@ public class UsuarioSenhaResetTokenRequestTO implements Serializable {
 
     private static final long serialVersionUID = 1003205023105314425L;
 
-    private String resetToken;
+    private String token;
 
     private String senha;
 
@@ -14,18 +14,18 @@ public class UsuarioSenhaResetTokenRequestTO implements Serializable {
         super();
     }
 
-    public UsuarioSenhaResetTokenRequestTO(String resetToken, String senha) {
+    public UsuarioSenhaResetTokenRequestTO(String token, String senha) {
         super();
-        this.resetToken = resetToken;
+        this.token = token;
         this.senha = senha;
     }
 
-    public String getResetToken() {
-        return resetToken;
+    public String getToken() {
+        return token;
     }
 
-    public void setResetToken(String resetToken) {
-        this.resetToken = resetToken;
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getSenha() {
@@ -38,7 +38,7 @@ public class UsuarioSenhaResetTokenRequestTO implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("UsuarioSenhaRequestTO [resetToken=%s, senha=%s]", resetToken, senha);
+        return String.format("UsuarioSenhaRequestTO [token=%s, senha=%s]", token, senha);
     }
 
 }

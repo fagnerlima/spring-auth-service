@@ -80,7 +80,7 @@ public class Usuario extends BaseEntity {
     public void updateSenha(String senha) {
         this.senha.setValor(senha);
         this.senha.clearResetToken();
-        this.senha.setDataUltimaAlteracao(LocalDateTime.now());
+        this.senha.setDataAtualizacao(LocalDateTime.now());
 
         if (pendente) {
             pendente = false;
