@@ -8,7 +8,7 @@ CREATE TABLE auth.usuario (
   valor_senha VARCHAR(64),
   reset_token_senha VARCHAR(255),
   tentativas_erro_senha SMALLINT,
-  data_ultima_alteracao_senha DATE,
+  data_atualizacao_senha DATE,
   pendente BOOLEAN NOT NULL DEFAULT TRUE,
   bloqueado BOOLEAN NOT NULL DEFAULT FALSE,
   ativo BOOLEAN NOT NULL DEFAULT TRUE,
