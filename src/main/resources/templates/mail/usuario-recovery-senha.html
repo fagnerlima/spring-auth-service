@@ -7,13 +7,13 @@
 </head>
 
 <body>
-  <div th:replace="fragments/general.xhtml :: header"></div>
+  <div th:replace="fragments/mail/general.xhtml :: header"></div>
 
   <p>Você solicitou recuperação de senha. Para cadastrar uma nova senha, siga os passos clicando no link abaixo.</p>
 
   <p><a th:href="@{${appBaseUrl} + '/usuario/recuperacao-senha?token=' + ${usuario.senha.resetToken}}">Clique aqui para cadastrar uma nova senha</a></p>
 
-  <div th:replace="fragments/general.xhtml :: footer"></div>
+  <div th:replace="fragments/mail/general.xhtml :: footer"></div>
 </body>
 
 </html>

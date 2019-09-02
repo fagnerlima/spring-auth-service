@@ -47,9 +47,7 @@ public class MailFactory {
         Map<String, Object> data = new HashMap<>();
         data.put("usuario", usuario);
 
-        String text = createText(template, data);
-
-        return new MailRequestTO(usuario.getEmail(), subject, text);
+        return new MailRequestTO(usuario.getEmail(), subject, createText(template, data));
     }
 
     private String createText(String template, Map<String, Object> data) {

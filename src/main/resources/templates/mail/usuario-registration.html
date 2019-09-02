@@ -7,11 +7,11 @@
 </head>
 
 <body>
-  <div th:replace="fragments/general.xhtml :: header"></div>
+  <div th:replace="fragments/mail/general.xhtml :: header"></div>
 
   <p>Uma conta foi cadastrada com este endereço de e-mail. Para ativá-la, siga os passos clicando no link abaixo.</p>
 
-  <ul style="list-style: none">
+  <ul style="list-style: none; padding-left: 0;">
     <li>
       <b>Nome</b>:
       <span th:text="${usuario.nome}"></span>
@@ -29,7 +29,7 @@
     </li>
   </ul>
 
-  <div th:replace="fragments/general.xhtml :: footer"></div>
+  <div th:replace="fragments/mail/general.xhtml :: footer"></div>
 </body>
 
 </html>

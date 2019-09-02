@@ -7,13 +7,13 @@
 </head>
 
 <body>
-  <div th:replace="fragments/general.xhtml :: header"></div>
+  <div th:replace="fragments/mail/general.xhtml :: header"></div>
 
   <p>Você solicitou recuperação de login.</p>
 
   <p>Seu login é: <b th:text="${usuario.login}">login</b></p>
 
-  <div th:replace="fragments/general.xhtml :: footer"></div>
+  <div th:replace="fragments/mail/general.xhtml :: footer"></div>
 </body>
 
 </html>

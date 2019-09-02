@@ -26,6 +26,7 @@ public class Senha {
     public Senha() {
         super();
         tentativasErro = 0;
+        dataUltimaAlteracao = LocalDateTime.now();
     }
 
     public Senha(String valor, String resetToken, Integer tentativasErro, LocalDateTime dataUltimaAlteracao) {
