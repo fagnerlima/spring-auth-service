@@ -31,6 +31,7 @@ import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioBl
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioInativoException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioPendenteException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.service.exception.MailException;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
 
 @ControllerAdvice
@@ -103,6 +104,13 @@ public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExc
     @ExceptionHandler({ DuplicateKeyException.class })
     public ResponseEntity<Object> handleDuplicateKeyException(DuplicateKeyException exception, WebRequest request) {
         return handleException(exception, HttpStatus.BAD_REQUEST, request, exception.getMessage());
+    }
+
+    @ExceptionHandler({ MailException.class })
+    public ResponseEntity<Object> handleMailException(MailException exception, WebRequest request) {
+        logger.error(exception.getMessage(), exception);
+
+        return handleException(exception, HttpStatus.BAD_REQUEST, request, "mail.error");
     }
 
     @ExceptionHandler({ DataIntegrityViolationException.class })

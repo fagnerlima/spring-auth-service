@@ -10,6 +10,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import br.pro.fagnerlima.spring.auth.api.infrastructure.service.exception.MailException;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.email.MailRequestTO;
 
 @Service
@@ -34,7 +35,7 @@ public class MailService {
 
             mailSender.send(mimeMessage);
         } catch (MessagingException messagingException) {
-            throw new RuntimeException("Problemas no envio de e-mail", messagingException); // TODO implementar MessageService
+            throw new MailException(messagingException);
         }
     }
 
