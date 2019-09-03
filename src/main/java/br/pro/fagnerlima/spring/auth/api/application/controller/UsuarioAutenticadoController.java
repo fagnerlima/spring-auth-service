@@ -33,7 +33,7 @@ public class UsuarioAutenticadoController {
 
     @GetMapping
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> find() {
-        Usuario usuario = usuarioService.findAutenticado();
+        Usuario usuario = usuarioService.getAutenticado();
         UsuarioResponseTO responseTO = converterService.convert(usuario, UsuarioResponseTO.class);
 
         return responseService.ok(responseTO);

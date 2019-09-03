@@ -8,6 +8,7 @@ import br.pro.fagnerlima.spring.auth.api.application.service.exception.Duplicate
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidActualPasswordException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidTokenException;
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.NotAuthenticatedUserException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Senha;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
@@ -44,8 +45,12 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
 
     @Transactional(readOnly = true)
     @Override
-    public Usuario findAutenticado() {
-        return getUserDetailsService().getUsuarioAuth().getUsuario();
+    public Usuario getAutenticado() {
+        try {
+            return getUserDetailsService().getUsuarioAuth().getUsuario();
+        } catch (Exception exception) {
+            throw new NotAuthenticatedUserException();
+        }
     }
 
     @Override
@@ -147,14 +152,14 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     @Transactional(readOnly = true)
     private void checkUniqueEmail(Usuario usuario) {
         usuarioRepository.findByEmailContainingIgnoreCase(usuario.getEmail()).ifPresent(u -> {
-            throw new DuplicateKeyException("E-mail já cadastrado"); // TODO implementar MessageService
+            throw new DuplicateKeyException("usuario.duplicate-key.email");
         });
     }
 
     @Transactional(readOnly = true)
     private void checkUniqueLogin(Usuario usuario) {
         usuarioRepository.findByLoginContainingIgnoreCase(usuario.getLogin()).ifPresent(u -> {
-            throw new DuplicateKeyException("Login já cadastrado"); // TODO implementar MessageService
+            throw new DuplicateKeyException("usuario.duplicate-key.login");
         });
     }
 

@@ -14,7 +14,7 @@ public interface UsuarioService extends BaseService<Usuario> {
 
     void recoverSenha(String email);
 
-    Usuario findAutenticado();
+    Usuario getAutenticado();
 
     Usuario updateAutenticado(Usuario usuario);
 

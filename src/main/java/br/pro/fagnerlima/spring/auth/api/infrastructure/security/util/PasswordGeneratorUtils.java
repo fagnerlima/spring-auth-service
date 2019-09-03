@@ -10,7 +10,7 @@ import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidPa
 
 public class PasswordGeneratorUtils {
 
-    public static final String PASSWORD_PATTERN = "((?=.*\\d)(?=.*[a-z]).{6,20})";
+    public static final String PASSWORD_PATTERN = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,30}";
 
     private static Pattern pattern;
     private static Matcher matcher;
@@ -35,10 +35,9 @@ public class PasswordGeneratorUtils {
     
     public static boolean isValid(final String password) {
         pattern = Pattern.compile(PASSWORD_PATTERN);
-
         matcher = pattern.matcher(password);
-        return matcher.matches();
 
+        return matcher.matches();
     }
 
 }

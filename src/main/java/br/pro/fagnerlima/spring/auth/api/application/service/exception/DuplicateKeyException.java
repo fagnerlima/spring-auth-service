@@ -4,10 +4,6 @@ public class DuplicateKeyException extends RuntimeException {
 
     private static final long serialVersionUID = -1914234820108287912L;
 
-    public DuplicateKeyException() {
-        super();
-    }
-
     public DuplicateKeyException(String message) {
         super(message);
     }
