@@ -141,8 +141,7 @@ public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExc
     }
 
     protected ResponseEntity<Object> handleException(Exception exception, HttpStatus status, WebRequest request, String key) {
-        ResponseTO<List<String>> response = new ResponseTO<>();
-        response.setErrors(Arrays.asList((messageService.getMessage(key))));
+        ResponseTO<List<String>> response = new ResponseTO<>(Arrays.asList((messageService.getMessage(key))));
 
         return handleExceptionInternal(exception, response, new HttpHeaders(), status, request);
     }
