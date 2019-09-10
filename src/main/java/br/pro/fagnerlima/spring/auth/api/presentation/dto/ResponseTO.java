@@ -21,6 +21,17 @@ public final class ResponseTO<T> implements Serializable {
         this.data = data;
     }
 
+    public ResponseTO(T data, List<String> links) {
+        super();
+        this.data = data;
+        this.links = links;
+    }
+
+    public ResponseTO(List<String> errors) {
+        super();
+        this.errors = errors;
+    }
+
     public T getData() {
         return data;
     }

@@ -1,8 +1,12 @@
 package br.pro.fagnerlima.spring.auth.api.application.handler;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import javax.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +54,7 @@ public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExc
     }
 
     @ExceptionHandler({ NotAuthenticatedUserException.class })
-    public ResponseEntity<Object> handleInvalidPermissionException(NotAuthenticatedUserException exception, WebRequest request) {
+    public ResponseEntity<Object> handleNotAuthenticatedUserException(NotAuthenticatedUserException exception, WebRequest request) {
         return handleException(exception, HttpStatus.BAD_REQUEST, request, "security.not-authenticated");
     }
 
@@ -116,6 +120,15 @@ public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExc
     @ExceptionHandler({ DataIntegrityViolationException.class })
     public ResponseEntity<Object> handleDataIntegrityViolationException(DataIntegrityViolationException exception, WebRequest request) {
         return handleException(exception, HttpStatus.BAD_REQUEST, request, "resource.invalid-operation");
+    }
+
+    @ExceptionHandler({ ConstraintViolationException.class })
+    public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException exception, WebRequest request) {
+        List<String> errors = exception.getConstraintViolations().stream()
+                .map(e -> MessageFormat.format(e.getMessage(), e.getPropertyPath())).collect(Collectors.toList());
+        ResponseTO<String> responseTO = new ResponseTO<>(errors);
+
+        return handleExceptionInternal(exception, responseTO, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @Override
