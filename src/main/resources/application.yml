@@ -41,6 +41,11 @@ spring:
 
 auth-service:
   app-base-url: ${APP_BASE_URL:http://localhost:4200}
+  api-info:
+    title: ${API_TITLE:Spring Auth Service}
+    description: ${API_DESCRIPTION:Documentação da API}
+    version: ${API_VERSION:1.0.0}
+    base-package: br.pro.fagnerlima.spring.auth.api.application
   cors:
     allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:4200}
   security:

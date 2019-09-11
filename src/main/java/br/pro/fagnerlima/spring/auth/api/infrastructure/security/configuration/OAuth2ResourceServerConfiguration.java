@@ -11,10 +11,20 @@ import org.springframework.security.oauth2.provider.expression.OAuth2MethodSecur
 @Configuration
 public class OAuth2ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
+    private final String ALLOWED_URLS[] = {
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs",
+            "/webjars/**",
+            "/usuarios/recuperacao/login",
+            "/usuarios/recuperacao/senha",
+            "/usuarios/senha"
+    };
+
     @Override
     public void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-//                .antMatchers("/resource").permitAll()
+                .antMatchers(ALLOWED_URLS).permitAll()
                 .anyRequest().authenticated()
                 .and().csrf().disable();
     }
