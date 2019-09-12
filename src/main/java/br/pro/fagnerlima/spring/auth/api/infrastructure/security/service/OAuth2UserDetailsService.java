@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioBloqueadoException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioInativoException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioPendenteException;
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioSemGrupoAtivoException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.auth.UsuarioAuth;
@@ -49,8 +50,10 @@ public class OAuth2UserDetailsService implements UserDetailsService {
 
     private Collection<? extends GrantedAuthority> getAuthorities(Usuario usuario) {
         Set<SimpleGrantedAuthority> authorities = new HashSet<>();
-        usuario.getGrupos().forEach(grupo -> grupo.getPermissoes()
-                .forEach(permissao -> authorities.add(new SimpleGrantedAuthority(permissao.getPapel().toUpperCase()))));
+        usuario.getGrupos().stream()
+                .filter(g -> g.getAtivo())
+                .forEach(g -> g.getPermissoes()
+                        .forEach(p -> authorities.add(new SimpleGrantedAuthority(p.getPapel().toUpperCase()))));
 
         return authorities;
     }
@@ -58,6 +61,12 @@ public class OAuth2UserDetailsService implements UserDetailsService {
     private void validateUsuario(Usuario usuario) {
         if (!usuario.getAtivo()) {
             throw new UsuarioInativoException();
+        }
+
+        long countGruposAtivos = usuario.getGrupos().stream().filter(g -> g.getAtivo()).count();
+
+        if (countGruposAtivos == 0) {
+            throw new UsuarioSemGrupoAtivoException();
         }
 
         if (usuario.getPendente()) {
