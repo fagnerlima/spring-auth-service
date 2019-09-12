@@ -34,6 +34,7 @@ import br.pro.fagnerlima.spring.auth.api.application.service.exception.NotAuthen
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioBloqueadoException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioInativoException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioPendenteException;
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioSemGrupoAtivoException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.exception.MailException;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
@@ -93,6 +94,11 @@ public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExc
     @ExceptionHandler({ UsuarioInativoException.class })
     public ResponseEntity<Object> handleUsuarioInativoException(UsuarioInativoException exception, WebRequest request) {
         return handleException(exception, HttpStatus.BAD_REQUEST, request, "usuario.inativo");
+    }
+
+    @ExceptionHandler({ UsuarioSemGrupoAtivoException.class })
+    public ResponseEntity<Object> handleUsuarioSemGrupoAtivoException(UsuarioSemGrupoAtivoException exception, WebRequest request) {
+        return handleException(exception, HttpStatus.BAD_REQUEST, request, "usuario.sem-grupo-ativo");
     }
 
     @ExceptionHandler({ UsuarioPendenteException.class })
