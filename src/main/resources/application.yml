@@ -1,4 +1,5 @@
 spring:
+  port: ${PORT:8080}
   jackson:
     deserialization:
       FAIL_ON_UNKNOWN_PROPERTIES: true
