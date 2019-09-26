@@ -30,8 +30,8 @@ spring:
   mail:
     host: ${MAIL_HOST:smtp.gmail.com}
     port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    username: ${MAIL_USERNAME:username}
+    password: ${MAIL_PASSWORD:password}
     properties:
       mail:
         smtp:
@@ -57,4 +57,4 @@ auth-service:
         validity-seconds: ${OAUTH2_REFRESH_TOKEN_VALIDITY_SECONDS:86400}
     jwt:
       signing-key: ${JWT_SIGNING_KEY:5pr1ng-@uth-53rv1c3}
-  mail-sender: ${MAIL_SENDER}
+  mail-sender: ${MAIL_SENDER:sender@email.com}
