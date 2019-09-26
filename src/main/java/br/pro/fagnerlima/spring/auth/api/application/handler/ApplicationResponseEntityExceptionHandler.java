@@ -59,13 +59,6 @@ public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExc
         return handleException(exception, HttpStatus.BAD_REQUEST, request, "security.not-authenticated");
     }
 
-    @ExceptionHandler({ BadCredentialsException.class, UsernameNotFoundException.class })
-    public ResponseEntity<Object> handleBadCredentialsException(RuntimeException exception, WebRequest request) {
-        logger.error(exception.getMessage(), exception);
-
-        return handleException(exception, HttpStatus.BAD_REQUEST, request, "resource.usuario.invalid-credentials");
-    }
-
     @ExceptionHandler({ InformationNotFoundException.class })
     public ResponseEntity<Object> handleInformationNotFoundException(InformationNotFoundException exception, WebRequest request) {
         return handleException(exception, HttpStatus.NOT_FOUND, request, "resource.information-not-found");
@@ -89,26 +82,6 @@ public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExc
     @ExceptionHandler({ InvalidTokenException.class })
     public ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException exception, WebRequest request) {
         return handleException(exception, HttpStatus.BAD_REQUEST, request, "security.invalid-token");
-    }
-
-    @ExceptionHandler({ UsuarioInativoException.class })
-    public ResponseEntity<Object> handleUsuarioInativoException(UsuarioInativoException exception, WebRequest request) {
-        return handleException(exception, HttpStatus.BAD_REQUEST, request, "usuario.inativo");
-    }
-
-    @ExceptionHandler({ UsuarioSemGrupoAtivoException.class })
-    public ResponseEntity<Object> handleUsuarioSemGrupoAtivoException(UsuarioSemGrupoAtivoException exception, WebRequest request) {
-        return handleException(exception, HttpStatus.BAD_REQUEST, request, "usuario.sem-grupo-ativo");
-    }
-
-    @ExceptionHandler({ UsuarioPendenteException.class })
-    public ResponseEntity<Object> handleUsuarioPendenteException(UsuarioPendenteException exception, WebRequest request) {
-        return handleException(exception, HttpStatus.BAD_REQUEST, request, "usuario.pendente");
-    }
-
-    @ExceptionHandler({ UsuarioBloqueadoException.class })
-    public ResponseEntity<Object> handleUsuarioBloqueadoException(UsuarioBloqueadoException exception, WebRequest request) {
-        return handleException(exception, HttpStatus.BAD_REQUEST, request, "usuario.bloqueado");
     }
 
     @ExceptionHandler({ DuplicateKeyException.class })

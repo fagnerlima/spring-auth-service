@@ -4,4 +4,12 @@ public class UsuarioInativoException extends RuntimeException {
 
     private static final long serialVersionUID = 6728533506014311890L;
 
+    public UsuarioInativoException() {
+        super();
+    }
+
+    public UsuarioInativoException(String message) {
+        super(message);
+    }
+
 }

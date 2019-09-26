@@ -21,12 +21,16 @@ import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioSe
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.auth.UsuarioAuth;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
 
 @Service
 public class OAuth2UserDetailsService implements UserDetailsService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private MessageService messageService;
 
     @Override
     public UsuarioAuth loadUserByUsername(String login) throws UsernameNotFoundException {
@@ -60,21 +64,21 @@ public class OAuth2UserDetailsService implements UserDetailsService {
 
     private void validateUsuario(Usuario usuario) {
         if (!usuario.getAtivo()) {
-            throw new UsuarioInativoException();
+            throw new UsuarioInativoException(messageService.getMessage("usuario.inativo"));
         }
 
         long countGruposAtivos = usuario.getGrupos().stream().filter(g -> g.getAtivo()).count();
 
         if (countGruposAtivos == 0) {
-            throw new UsuarioSemGrupoAtivoException();
+            throw new UsuarioSemGrupoAtivoException(messageService.getMessage("usuario.sem-grupo-ativo"));
         }
 
         if (usuario.getPendente()) {
-            throw new UsuarioPendenteException();
+            throw new UsuarioPendenteException(messageService.getMessage("usuario.pendente"));
         }
 
         if (usuario.getBloqueado()) {
-            throw new UsuarioBloqueadoException();
+            throw new UsuarioBloqueadoException(messageService.getMessage("usuario.bloqueado"));
         }
     }
 
