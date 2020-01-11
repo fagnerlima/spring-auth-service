@@ -28,11 +28,7 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     public T findById(Long id) {
         Optional<T> entityOpt = getRepository().findById(id);
 
-        if (!entityOpt.isPresent()) {
-            throw new InformationNotFoundException();
-        }
-
-        return entityOpt.get();
+        return entityOpt.orElseThrow(() -> new InformationNotFoundException());
     }
 
     @Transactional(readOnly = true)
