@@ -1,22 +1,22 @@
 DO $$
 DECLARE
-  _papeis VARCHAR[] := ARRAY[
-    'ROLE_ADMIN',
-    'ROLE_SYSTEM',
-    'ROLE_GRUPO_LISTAR',
-    'ROLE_GRUPO_BUSCAR',
-    'ROLE_GRUPO_SALVAR',
-    'ROLE_GRUPO_EDITAR',
-    'ROLE_GRUPO_ALTERAR_STATUS',
-    'ROLE_USUARIO_LISTAR',
-    'ROLE_USUARIO_BUSCAR',
-    'ROLE_USUARIO_SALVAR',
-    'ROLE_USUARIO_EDITAR',
-    'ROLE_USUARIO_ALTERAR_STATUS',
-    'ROLE_PERMISSAO_LISTAR',
-    'ROLE_PERMISSAO_BUSCAR'
+  _permissoes VARCHAR[] := ARRAY[
+    ['ROLE_ADMIN', 'Administrador'],
+    ['ROLE_SYSTEM', 'Sistema'],
+    ['ROLE_GRUPO_LISTAR', 'Grupo - Listar'],
+    ['ROLE_GRUPO_BUSCAR', 'Grupo - Buscar'],
+    ['ROLE_GRUPO_SALVAR', 'Grupo - Salvar'],
+    ['ROLE_GRUPO_EDITAR', 'Grupo - Editar'],
+    ['ROLE_GRUPO_ALTERAR_STATUS', 'Grupo - Alterar status'],
+    ['ROLE_USUARIO_LISTAR', 'Usuário - Listar'],
+    ['ROLE_USUARIO_BUSCAR', 'Usuário - Buscar'],
+    ['ROLE_USUARIO_SALVAR', 'Usuário - Salvar'],
+    ['ROLE_USUARIO_EDITAR', 'Usuário - Editar'],
+    ['ROLE_USUARIO_ALTERAR_STATUS', 'Usuário - Alterar status'],
+    ['ROLE_PERMISSAO_LISTAR', 'Permissão - Listar'],
+    ['ROLE_PERMISSAO_BUSCAR', 'Permissão - Buscar']
   ];
-  _papel VARCHAR;
+  _permissao VARCHAR[];
 BEGIN
   -- Usuário e Grupo Administrador
   INSERT INTO auth.usuario (id, nome, email, login, valor_senha, tentativas_erro_senha, data_atualizacao_senha, pendente, bloqueado, data_criacao, id_usuario_criacao, data_atualizacao, id_usuario_atualizacao) VALUES
@@ -30,10 +30,10 @@ BEGIN
   ALTER SEQUENCE auth.grupo_id_seq RESTART WITH 2;
 
   -- Permissões
-  FOREACH _papel IN ARRAY _papeis
+  FOREACH _permissao SLICE 1 IN ARRAY _permissoes
   LOOP
-    INSERT INTO auth.permissao (papel, data_criacao, id_usuario_criacao, data_atualizacao, id_usuario_atualizacao) VALUES
-      (_papel, NOW(), 1, NOW(), 1);
+    INSERT INTO auth.permissao (papel, descricao, data_criacao, id_usuario_criacao, data_atualizacao, id_usuario_atualizacao) VALUES
+      (_permissao[1], _permissao[2], NOW(), 1, NOW(), 1);
   END LOOP;
 
   INSERT INTO auth.grupo_permissao (id_grupo, id_permissao) VALUES

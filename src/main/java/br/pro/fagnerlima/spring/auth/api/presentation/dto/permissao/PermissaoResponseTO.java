@@ -10,14 +10,17 @@ public class PermissaoResponseTO implements Serializable {
 
     private String papel;
 
+    private String descricao;
+
     public PermissaoResponseTO() {
         super();
     }
 
-    public PermissaoResponseTO(Long id, String papel) {
+    public PermissaoResponseTO(Long id, String papel, String descricao) {
         super();
         this.id = id;
         this.papel = papel;
+        this.descricao = descricao;
     }
 
     public Long getId() {
@@ -36,9 +39,17 @@ public class PermissaoResponseTO implements Serializable {
         this.papel = papel;
     }
 
-    @Override
+    public String getDescricao() {
+		return descricao;
+	}
+
+	public void setDescricao(String descricao) {
+		this.descricao = descricao;
+	}
+
+	@Override
     public String toString() {
-        return String.format("PermissaoResponseTO [id=%s, papel=%s]", id, papel);
+        return String.format("PermissaoResponseTO [id=%s, papel=%s, descricao=%s]", id, papel, descricao);
     }
 
 }

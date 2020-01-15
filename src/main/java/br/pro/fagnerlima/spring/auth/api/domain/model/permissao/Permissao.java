@@ -20,6 +20,11 @@ public class Permissao extends BaseEntity {
     @Column(name = "papel", length = 128, nullable = false)
     private String papel;
 
+    @NotNull
+    @Size(min = 3, max = 128)
+    @Column(name = "descricao", length = 128, nullable = false)
+    private String descricao;
+
     public String getPapel() {
         return papel;
     }
@@ -28,8 +33,16 @@ public class Permissao extends BaseEntity {
         this.papel = papel;
     }
 
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
     @Override
     public String toString() {
-        return String.format("Permissao [id=%s, papel=%s]", id, papel);
+        return String.format("Permissao [id=%s, papel=%s, descricao=%s]", id, papel, descricao);
     }
 }

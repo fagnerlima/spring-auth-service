@@ -36,6 +36,7 @@ CREATE TABLE auth.grupo (
 CREATE TABLE auth.permissao (
   id SERIAL,
   papel VARCHAR(128) NOT NULL,
+  descricao VARCHAR(128) NOT NULL,
   ativo BOOLEAN NOT NULL DEFAULT TRUE,
   data_criacao TIMESTAMP WITHOUT TIME ZONE NOT NULL,
   id_usuario_criacao BIGINT NOT NULL,
