@@ -40,12 +40,12 @@ public class PermissaoResponseTO implements Serializable {
     }
 
     public String getDescricao() {
-		return descricao;
-	}
+        return descricao;
+    }
 
-	public void setDescricao(String descricao) {
-		this.descricao = descricao;
-	}
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
 	@Override
     public String toString() {

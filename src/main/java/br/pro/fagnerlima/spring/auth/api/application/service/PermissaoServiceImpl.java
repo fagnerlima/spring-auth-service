@@ -1,6 +1,9 @@
 package br.pro.fagnerlima.spring.auth.api.application.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
@@ -13,6 +16,12 @@ public class PermissaoServiceImpl extends BaseServiceImpl<Permissao> implements 
 
     @Autowired
     private PermissaoRepository permissaoRepository;
+
+    @Override
+    @Cacheable("PermissaoServiceImpl_findAllActives")
+    public List<Permissao> findAllActives() {
+        return super.findAllActives();
+    }
 
     @Override
     protected BaseRepository<Permissao> getRepository() {
