@@ -20,7 +20,7 @@ public class PermissaoServiceImpl extends BaseServiceImpl<Permissao> implements 
     @Override
     @Cacheable("PermissaoServiceImpl_findAllActives")
     public List<Permissao> findAllActives() {
-        return super.findAllActives();
+        return permissaoRepository.findAllActives();
     }
 
     @Override

@@ -57,7 +57,7 @@ public class OAuth2UserDetailsService implements UserDetailsService {
         usuario.getGrupos().stream()
                 .filter(g -> g.getAtivo())
                 .forEach(g -> g.getPermissoes()
-                        .forEach(p -> authorities.add(new SimpleGrantedAuthority(p.getPapel().toUpperCase()))));
+                        .forEach(p -> authorities.add(new SimpleGrantedAuthority(p.getPapel().name()))));
 
         return authorities;
     }

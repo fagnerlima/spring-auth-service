@@ -2,6 +2,8 @@ package br.pro.fagnerlima.spring.auth.api.domain.model.permissao;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -17,19 +19,20 @@ public class Permissao extends BaseEntity {
 
     @NotNull
     @Size(min = 3, max = 128)
+    @Enumerated(EnumType.STRING)
     @Column(name = "papel", length = 128, nullable = false)
-    private String papel;
+    private Papel papel;
 
     @NotNull
     @Size(min = 3, max = 128)
     @Column(name = "descricao", length = 128, nullable = false)
     private String descricao;
 
-    public String getPapel() {
+    public Papel getPapel() {
         return papel;
     }
 
-    public void setPapel(String papel) {
+    public void setPapel(Papel papel) {
         this.papel = papel;
     }
 
