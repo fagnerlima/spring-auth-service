@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.service.PermissaoService;
@@ -18,6 +19,7 @@ public class PermissaoServiceImpl extends BaseServiceImpl<Permissao> implements 
     private PermissaoRepository permissaoRepository;
 
     @Override
+    @Transactional(readOnly = true)
     @Cacheable("PermissaoServiceImpl_findAllActives")
     public List<Permissao> findAllActives() {
         return permissaoRepository.findAllActives();

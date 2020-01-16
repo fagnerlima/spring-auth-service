@@ -17,6 +17,7 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.re
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.PasswordGeneratorUtils;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MailService;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
 
 @Service
 public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements UsuarioService {
@@ -30,11 +31,14 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     @Autowired
     private MailFactory mailFactory;
 
+    @Autowired
+    private MessageService messageService;
+
     @Transactional(readOnly = true)
     @Override
     public Usuario findByEmail(String email) {
         return usuarioRepository.findByEmailContainingIgnoreCase(email)
-                .orElseThrow(() -> new InformationNotFoundException("Usuário não encontrado")); // TODO implementar MessageService
+                .orElseThrow(() -> new InformationNotFoundException(messageService.getMessage("resource.information-not-found")));
     }
 
     @Transactional(readOnly = true)
