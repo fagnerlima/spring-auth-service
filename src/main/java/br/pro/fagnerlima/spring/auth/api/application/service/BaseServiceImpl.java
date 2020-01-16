@@ -1,6 +1,5 @@
 package br.pro.fagnerlima.spring.auth.api.application.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -52,8 +51,6 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     @Transactional
     @Override
     public T save(T entity) {
-        entity = auditSave(entity);
-
         return getRepository().save(entity);
     }
 
@@ -62,7 +59,6 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     public T update(Long id, T entity) {
         T savedEntity = findById(id);
         BeanUtils.copyProperties(entity, savedEntity);
-        savedEntity = auditUpdate(savedEntity);
 
         return getRepository().save(savedEntity);
     }
@@ -78,24 +74,6 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
 
     protected Usuario getUsuarioAutenticado() {
         return userDetailsService.getUsuarioAuth().getUsuario();
-    }
-
-    protected T auditSave(T entity) {
-        Long idUsuario = getUsuarioAutenticado().getId();
-        entity.setDataCriacao(LocalDateTime.now());
-        entity.setIdUsuarioCriacao(idUsuario);
-        entity.setDataAtualizacao(LocalDateTime.now());
-        entity.setIdUsuarioAtualizacao(idUsuario);
-
-        return entity;
-    }
-
-    protected T auditUpdate(T entity) {
-        Long idUsuario = getUsuarioAutenticado().getId();
-        entity.setDataAtualizacao(LocalDateTime.now());
-        entity.setIdUsuarioAtualizacao(idUsuario);
-
-        return entity;
     }
 
     protected OAuth2UserDetailsService getUserDetailsService() {

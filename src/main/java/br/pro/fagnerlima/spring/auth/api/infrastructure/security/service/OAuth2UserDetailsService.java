@@ -35,17 +35,19 @@ public class OAuth2UserDetailsService implements UserDetailsService {
     @Override
     public UsuarioAuth loadUserByUsername(String login) throws UsernameNotFoundException {
         Optional<Usuario> usuarioOpt = usuarioRepository.findByLoginContainingIgnoreCase(login);
-        Usuario usuario = usuarioOpt.orElseThrow(() -> new UsernameNotFoundException("Usuário e/ou senha incorretos"));
+        Usuario usuario = usuarioOpt.orElseThrow(() -> new UsernameNotFoundException("Usuário e/ou senha incorretos")); // TODO externalizar
 
         validateUsuario(usuario);
 
         return new UsuarioAuth(usuario, getAuthorities(usuario));
     }
 
-    public UsuarioAuth getUsuarioAuth() {
-        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    public String getUsernameAuth() {
+        return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+    }
 
-        return loadUserByUsername(username);
+    public UsuarioAuth getUsuarioAuth() {
+        return loadUserByUsername(getUsernameAuth());
     }
 
     public UsuarioAuth getUsuarioAuth(OAuth2Authentication authentication) {

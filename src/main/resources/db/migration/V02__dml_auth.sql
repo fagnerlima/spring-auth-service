@@ -19,10 +19,10 @@ DECLARE
   _permissao VARCHAR[];
 BEGIN
   -- Usuário e Grupo Administrador
-  INSERT INTO auth.usuario (id, nome, email, login, valor_senha, tentativas_erro_senha, data_atualizacao_senha, pendente, bloqueado, data_criacao, id_usuario_criacao, data_atualizacao, id_usuario_atualizacao) VALUES
-    (1, 'Administrador', 'admin@email.com', 'admin', '$2a$10$NjHXi93qH9xoxYjk4nGiauYwVcK5qQTDxl7itopsOixNhL05396.K', 0, NOW(), FALSE, FALSE, NOW(), 1, NOW(), 1);
-  INSERT INTO auth.grupo (id, nome, data_criacao, id_usuario_criacao, data_atualizacao, id_usuario_atualizacao) VALUES
-    (1, 'Administrador', NOW(), 1, NOW(), 1);
+  INSERT INTO auth.usuario (id, nome, email, login, valor_senha, tentativas_erro_senha, data_atualizacao_senha, pendente, bloqueado, created_at, created_by, updated_at, updated_by) VALUES
+    (1, 'Administrador', 'admin@email.com', 'admin', '$2a$10$NjHXi93qH9xoxYjk4nGiauYwVcK5qQTDxl7itopsOixNhL05396.K', 0, NOW(), FALSE, FALSE, NOW(), 'admin', NOW(), 'admin');
+  INSERT INTO auth.grupo (id, nome, created_at, created_by, updated_at, updated_by) VALUES
+    (1, 'Administrador', NOW(), 'admin', NOW(), 'admin');
   INSERT INTO auth.usuario_grupo (id_usuario, id_grupo) VALUES
     (1, 1);
 
@@ -32,8 +32,8 @@ BEGIN
   -- Permissões
   FOREACH _permissao SLICE 1 IN ARRAY _permissoes
   LOOP
-    INSERT INTO auth.permissao (papel, descricao, data_criacao, id_usuario_criacao, data_atualizacao, id_usuario_atualizacao) VALUES
-      (_permissao[1], _permissao[2], NOW(), 1, NOW(), 1);
+    INSERT INTO auth.permissao (papel, descricao) VALUES
+      (_permissao[1], _permissao[2]);
   END LOOP;
 
   INSERT INTO auth.grupo_permissao (id_grupo, id_permissao) VALUES

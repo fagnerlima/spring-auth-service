@@ -8,9 +8,12 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
 
-//@Audited
+@Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
 @Entity
 @Table(name = "permissao", schema = "auth")
 public class Permissao extends BaseEntity {

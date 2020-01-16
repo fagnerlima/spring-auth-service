@@ -1,7 +1,6 @@
 package br.pro.fagnerlima.spring.auth.api.domain.shared;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
@@ -11,13 +10,6 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedBy;
-import org.springframework.data.annotation.LastModifiedDate;
-
-// TODO Implementar Listener
-//@Audited
 @MappedSuperclass
 public abstract class BaseEntity implements Serializable {
 
@@ -30,22 +22,6 @@ public abstract class BaseEntity implements Serializable {
     @NotNull
     @Column(name = "ativo", nullable = false, columnDefinition = "BOOLEAN DEFAULT TRUE")
     protected Boolean ativo;
-
-    @CreatedDate
-    @Column(name = "data_criacao")
-    protected LocalDateTime dataCriacao;
-
-    @CreatedBy
-    @Column(name = "id_usuario_criacao")
-    protected Long idUsuarioCriacao;
-
-    @LastModifiedDate
-    @Column(name = "data_atualizacao")
-    protected LocalDateTime dataAtualizacao;
-
-    @LastModifiedBy
-    @Column(name = "id_usuario_atualizacao")
-    protected Long idUsuarioAtualizacao;
 
     @Version
     @Column(name = "version", nullable = false, columnDefinition = "INTEGER DEFAULT 0")
@@ -77,38 +53,6 @@ public abstract class BaseEntity implements Serializable {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
-    }
-
-    public LocalDateTime getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(LocalDateTime dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
-
-    public Long getIdUsuarioCriacao() {
-        return idUsuarioCriacao;
-    }
-
-    public void setIdUsuarioCriacao(Long idUsuarioCriacao) {
-        this.idUsuarioCriacao = idUsuarioCriacao;
-    }
-
-    public LocalDateTime getDataAtualizacao() {
-        return dataAtualizacao;
-    }
-
-    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
-        this.dataAtualizacao = dataAtualizacao;
-    }
-
-    public Long getIdUsuarioAtualizacao() {
-        return idUsuarioAtualizacao;
-    }
-
-    public void setIdUsuarioAtualizacao(Long idUsuarioAtualizacao) {
-        this.idUsuarioAtualizacao = idUsuarioAtualizacao;
     }
 
     @Override

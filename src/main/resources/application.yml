@@ -14,17 +14,15 @@ spring:
       connection-timeout: 60000
   jpa:
     properties:
-#      org:
-#        hibernate:
-#          envers:
-#            audit_table_suffix: _auditoria
-#            revision_field_name: id_revisao
-#            revision_type_field_name: tipo_revisao
-#            default_schema: auditoria
+      org:
+        hibernate:
+          envers:
+            default_schema: audit
+            audit_table_suffix: _aud
       hibernate:
         temp:
           use_jdbc_metadata_defaults: false
-    database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+    database-platform: org.hibernate.dialect.PostgreSQL95Dialect
   flyway:
     schemas: public
   mail:
