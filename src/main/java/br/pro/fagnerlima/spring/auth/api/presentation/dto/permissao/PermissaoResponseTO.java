@@ -2,13 +2,15 @@ package br.pro.fagnerlima.spring.auth.api.presentation.dto.permissao;
 
 import java.io.Serializable;
 
+import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Papel;
+
 public class PermissaoResponseTO implements Serializable {
 
     private static final long serialVersionUID = 9134172781125306932L;
 
     private Long id;
 
-    private String papel;
+    private Papel papel;
 
     private String descricao;
 
@@ -16,7 +18,7 @@ public class PermissaoResponseTO implements Serializable {
         super();
     }
 
-    public PermissaoResponseTO(Long id, String papel, String descricao) {
+    public PermissaoResponseTO(Long id, Papel papel, String descricao) {
         super();
         this.id = id;
         this.papel = papel;
@@ -27,15 +29,15 @@ public class PermissaoResponseTO implements Serializable {
         return id;
     }
 
-    public String getPapel() {
-        return papel;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setPapel(String papel) {
+    public Papel getPapel() {
+        return papel;
+    }
+
+    public void setPapel(Papel papel) {
         this.papel = papel;
     }
 
@@ -47,7 +49,7 @@ public class PermissaoResponseTO implements Serializable {
         this.descricao = descricao;
     }
 
-	@Override
+    @Override
     public String toString() {
         return String.format("PermissaoResponseTO [id=%s, papel=%s, descricao=%s]", id, papel, descricao);
     }
