@@ -1,6 +1,7 @@
 package br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationEntity;
@@ -15,6 +16,9 @@ public class GrupoFilterRequestTO implements Serializable {
     @SpecificationField
     private Long id;
 
+    @SpecificationField(property = "id")
+    private Set<Long> ids;
+
     @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE)
     private String nome;
 
@@ -25,19 +29,20 @@ public class GrupoFilterRequestTO implements Serializable {
         super();
     }
 
-    public GrupoFilterRequestTO(Long id, String nome, Boolean ativo) {
-        super();
-        this.id = id;
-        this.nome = nome;
-        this.ativo = ativo;
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Set<Long> getIds() {
+        return ids;
+    }
+
+    public void setIds(Set<Long> ids) {
+        this.ids = ids;
     }
 
     public String getNome() {
@@ -58,7 +63,7 @@ public class GrupoFilterRequestTO implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("GrupoFilterRequestTO [id=%s, nome=%s, ativo=%s]", id, nome, ativo);
+        return String.format("GrupoFilterRequestTO [id=%s, ids=%s, nome=%s, ativo=%s]", id, ids, nome, ativo);
     }
 
 }

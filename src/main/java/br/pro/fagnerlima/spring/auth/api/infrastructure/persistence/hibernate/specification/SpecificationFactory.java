@@ -4,8 +4,10 @@ import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -33,15 +35,15 @@ public class SpecificationFactory<T> {
                 predicates = new ArrayList<>();
 
                 SpecificationEntity specificationEntity = data.getClass().getAnnotation(SpecificationEntity.class);
-                List<Field> dataFields = FieldUtils.getAllFields(data.getClass());
+                List<Field> dataFields = FieldUtils.getAllFields(data.getClass(), SpecificationField.class);
                 List<Field> entityFields = FieldUtils.getAllFields(specificationEntity.value());
 
-                for (Field field : dataFields) {
-                    field.setAccessible(true);
-                    Object value = field.get(data);
+                for (Field dataField : dataFields) {
+                    dataField.setAccessible(true);
+                    Object value = dataField.get(data);
 
-                    if (value != null && entityFields.stream().filter(ef -> ef.getName() == field.getName()).findFirst().isPresent()) {
-                        addPredicate(field, field.get(data));
+                    if (value != null && hasProperty(entityFields, dataField)) {
+                        addPredicate(dataField, dataField.get(data));
                     }
                 }
 
@@ -52,6 +54,18 @@ public class SpecificationFactory<T> {
 
             return null;
         };
+    }
+
+    private Boolean hasProperty(List<Field> entityFields, Field dataField) {
+        return entityFields.stream().filter(ef -> {
+                if (ef.getName().equals(dataField.getName())) {
+                    return true;
+                }
+
+                SpecificationField specificationField = dataField.getAnnotation(SpecificationField.class);
+
+                return ef.getName().equals(specificationField.property());
+            }).findFirst().isPresent();
     }
 
     private void addPredicate(Field field, Object value) {
@@ -70,6 +84,8 @@ public class SpecificationFactory<T> {
                 predicate = buildPredicate(property, LocalDate.parse(value.toString()), operation);
             } else if (value instanceof Enum<?>) {
                 predicate = buildPredicate(property, (Enum<?>) value);
+            } else if (value instanceof Set) {
+                predicate = buildPredicate(property, (Set<?>) value);
             } else {
                 predicate = buildPredicate(property, value.toString(), operation);
             }
@@ -118,6 +134,13 @@ public class SpecificationFactory<T> {
             default:
                 return criteriaBuilder.equal(root.get(property), value);
         }
+    }
+
+    private Predicate buildPredicate(String property, Set<?> value) {
+        In<Object> in = criteriaBuilder.in(root.get(property));
+        value.stream().forEach(v -> in.value(v));
+
+        return in;
     }
 
     private Predicate buildPredicate(String property, String value, SpecificationOperation operation) {

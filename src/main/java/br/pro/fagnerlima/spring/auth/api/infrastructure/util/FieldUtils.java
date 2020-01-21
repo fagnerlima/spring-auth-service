@@ -1,10 +1,12 @@
 package br.pro.fagnerlima.spring.auth.api.infrastructure.util;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FieldUtils {
 
@@ -27,6 +29,21 @@ public class FieldUtils {
         }
 
         return fields;
+    }
+
+    /**
+     * Retorna todos os campos da classe {type} anotados com {annotation}, incluindo os campos de suas superclasses.
+     *
+     * @param type classe alvo
+     * @param annotationField annotation dos campos
+     * @return todos os campos da classe {type} com a annotation {annotation}
+     */
+    public static <T extends Annotation> List<Field> getAllFields(Class<?> type, Class<T> annotationField) {
+        List<Field> fields = getAllFields(type);
+
+        return fields.stream()
+                .filter(f -> f.getAnnotation(annotationField) != null)
+                .collect(Collectors.toList());
     }
 
     /**
