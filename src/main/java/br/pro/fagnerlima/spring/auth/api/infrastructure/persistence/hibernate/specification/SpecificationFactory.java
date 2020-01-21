@@ -3,8 +3,8 @@ package br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.s
 import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaBuilder.In;
@@ -58,13 +58,13 @@ public class SpecificationFactory<T> {
 
     private Boolean hasProperty(List<Field> entityFields, Field dataField) {
         return entityFields.stream().filter(ef -> {
-                if (ef.getName().equals(dataField.getName())) {
-                    return true;
-                }
-
                 SpecificationField specificationField = dataField.getAnnotation(SpecificationField.class);
 
-                return ef.getName().equals(specificationField.property());
+                if (specificationField.property() != null) {
+                    return ef.getName().equals(specificationField.property());
+                }
+
+                return ef.getName().equals(dataField.getName());
             }).findFirst().isPresent();
     }
 
@@ -84,8 +84,8 @@ public class SpecificationFactory<T> {
                 predicate = buildPredicate(property, LocalDate.parse(value.toString()), operation);
             } else if (value instanceof Enum<?>) {
                 predicate = buildPredicate(property, (Enum<?>) value);
-            } else if (value instanceof Set) {
-                predicate = buildPredicate(property, (Set<?>) value);
+            } else if (value instanceof Collection) {
+                predicate = buildPredicate(property, (Collection<?>) value);
             } else {
                 predicate = buildPredicate(property, value.toString(), operation);
             }
@@ -136,7 +136,7 @@ public class SpecificationFactory<T> {
         }
     }
 
-    private Predicate buildPredicate(String property, Set<?> value) {
+    private Predicate buildPredicate(String property, Collection<?> value) {
         In<Object> in = criteriaBuilder.in(root.get(property));
         value.stream().forEach(v -> in.value(v));
 
