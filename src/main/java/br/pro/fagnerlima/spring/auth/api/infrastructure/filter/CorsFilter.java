@@ -15,7 +15,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
-import br.pro.fagnerlima.spring.auth.api.application.configuration.CorsProperties;
+import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.CorsProperties;
 
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)

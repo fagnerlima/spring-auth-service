@@ -5,11 +5,11 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.WebAppProperties;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.email.MailRequestTO;
 
@@ -28,8 +28,8 @@ public class MailFactory {
     @Autowired
     private TemplateEngine templateEngine;
 
-    @Value("${auth-service.app-base-url}")
-    private String appBaseUrl;
+    @Autowired
+    private WebAppProperties webAppProperties;
 
     public MailRequestTO createRegistrationUsuario(Usuario usuario) {
         return createTemplateUsuario(TEMPLATE_REGISTRATION_USUARIO, SUBJECT_REGISTRATION_USUARIO, usuario);
@@ -52,7 +52,7 @@ public class MailFactory {
 
     private String createText(String template, Map<String, Object> data) {
         Context context = new Context(new Locale("pt", "BR"));
-        data.put("appBaseUrl", appBaseUrl);
+        data.put("webAppBaseUrl", webAppProperties.getBaseUrl());
         data.entrySet().forEach(d -> context.setVariable(d.getKey(), d.getValue()));
 
         return templateEngine.process(template, context);

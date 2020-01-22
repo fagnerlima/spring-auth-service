@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import br.pro.fagnerlima.spring.auth.api.application.configuration.ApiInfoProperties;
+import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.ApiInfoProperties;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;

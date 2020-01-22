@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import br.pro.fagnerlima.spring.auth.api.application.configuration.OAuth2Properties;
+import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.OAuth2Properties;
 
 @Service
 public class OAuth2SecurityService {

@@ -38,12 +38,13 @@ spring:
             enable: true
 
 auth-service:
-  app-base-url: ${APP_BASE_URL:http://localhost:4200}
   api-info:
     title: ${API_TITLE:Spring Auth Service}
     description: ${API_DESCRIPTION:Documentação da API}
     version: ${API_VERSION:1.0.0}
     base-package: br.pro.fagnerlima.spring.auth.api.application
+  web-app:
+    base-url: ${WEB_APP_BASE_URL:http://localhost:4200}
   cors:
     allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:4200}
   security:
@@ -55,4 +56,5 @@ auth-service:
         validity-seconds: ${OAUTH2_REFRESH_TOKEN_VALIDITY_SECONDS:86400}
     jwt:
       signing-key: ${JWT_SIGNING_KEY:5pr1ng-@uth-53rv1c3}
-  mail-sender: ${MAIL_SENDER:sender@email.com}
+  mail:
+    sender: ${MAIL_SENDER:sender@email.com}

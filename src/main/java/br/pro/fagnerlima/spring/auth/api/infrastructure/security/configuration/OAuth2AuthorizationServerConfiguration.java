@@ -16,8 +16,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
-import br.pro.fagnerlima.spring.auth.api.application.configuration.JwtProperties;
-import br.pro.fagnerlima.spring.auth.api.application.configuration.OAuth2Properties;
+import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.JwtProperties;
+import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.OAuth2Properties;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.token.CustomTokenEnhancer;
 
 @Configuration
