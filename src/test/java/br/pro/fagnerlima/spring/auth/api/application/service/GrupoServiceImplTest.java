@@ -72,7 +72,7 @@ public class GrupoServiceImplTest {
 
         Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
 
-        assertPageable(gruposPage, 0, 10, 0, 0, 1);
+        assertPageableNoContent(gruposPage, 0, 10);
     }
 
     private void assertIsAdmin(Grupo grupo) {
@@ -90,6 +90,10 @@ public class GrupoServiceImplTest {
         assertEquals(page.getTotalElements(), totalElements);
         assertEquals(page.getTotalPages(), totalPages);
         assertEquals(page.getContent().size(), numberOfElements);
+    }
+
+    private void assertPageableNoContent(Page<?> page, int number, int size) {
+        assertPageable(page, number, size, 0, 0, 0);
     }
 
 }

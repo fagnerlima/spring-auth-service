@@ -11,6 +11,7 @@ import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -60,7 +61,7 @@ public class SpecificationFactory<T> {
         return entityFields.stream().filter(ef -> {
                 SpecificationField specificationField = dataField.getAnnotation(SpecificationField.class);
 
-                if (specificationField.property() != null) {
+                if (StringUtils.isNotEmpty(specificationField.property())) {
                     return ef.getName().equals(specificationField.property());
                 }
 
@@ -71,8 +72,7 @@ public class SpecificationFactory<T> {
     private void addPredicate(Field field, Object value) {
         if (field.isAnnotationPresent(SpecificationField.class)) {
             SpecificationField specificationField = field.getAnnotation(SpecificationField.class);
-            String property = specificationField.property() == null || specificationField.property().isBlank()
-                    ? field.getName() : specificationField.property();
+            String property = StringUtils.isEmpty(specificationField.property()) ? field.getName() : specificationField.property();
             SpecificationOperation operation = specificationField.operation();
             Predicate predicate = null;
 
