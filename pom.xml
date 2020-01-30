@@ -21,6 +21,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <spring-security-oauth2.version>2.3.6.RELEASE</spring-security-oauth2.version>
     <spring-security-jwt.version>1.0.10.RELEASE</spring-security-jwt.version>
+    <junit-jupiter.version>5.6.0</junit-jupiter.version>
     <modelmapper.version>2.3.5</modelmapper.version>
     <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
     <springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
@@ -143,6 +144,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit-jupiter.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
