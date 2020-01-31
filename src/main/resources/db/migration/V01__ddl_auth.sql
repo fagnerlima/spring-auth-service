@@ -1,3 +1,5 @@
+CREATE EXTENSION unaccent;
+
 CREATE SCHEMA auth;
 
 CREATE TABLE auth.usuario (

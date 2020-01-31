@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaBuilder.In;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
@@ -144,15 +145,40 @@ public class SpecificationFactory<T> {
     }
 
     private Predicate buildPredicate(String property, String value, SpecificationOperation operation) {
+        Expression<String> x;
+        String y;
+
         switch (operation) {
-            case EQUAL:
-                return criteriaBuilder.equal(root.get(property), value);
             case EQUAL_IGNORE_CASE:
-                return criteriaBuilder.equal(criteriaBuilder.lower(root.get(property)), value.toLowerCase());
+                x = criteriaBuilder.lower(root.get(property));
+                y = value.toLowerCase();
+
+                return criteriaBuilder.equal(x, y);
+            case LIKE:
+                x = root.get(property);
+                y = "%" + value + "%";
+
+                return criteriaBuilder.like(x, y);
             case LIKE_IGNORE_CASE:
-                return criteriaBuilder.like(criteriaBuilder.lower(root.get(property)), "%" + value.toLowerCase() + "%");
+                x = criteriaBuilder.lower(root.get(property));
+                y = "%" + value.toLowerCase() + "%";
+
+                return criteriaBuilder.like(x, y);
+            case EQUALS_IGNORE_CASE_UNACCENT:
+                x = criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(property)));
+                y = br.pro.fagnerlima.spring.auth.api.infrastructure.util.StringUtils.unaccent(value.toLowerCase());
+
+                return criteriaBuilder.equal(x, y);
+            case LIKE_IGNORE_CASE_UNACCENT:
+                x = criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(property)));
+                y = "%" + br.pro.fagnerlima.spring.auth.api.infrastructure.util.StringUtils.unaccent(value.toLowerCase()) + "%";
+
+                return criteriaBuilder.like(x, y);
             default:
-                return criteriaBuilder.equal(root.get(property), value);
+                x = root.get(property);
+                y = value;
+
+                return criteriaBuilder.equal(x, y);
         }
     }
 

@@ -19,7 +19,7 @@ public class GrupoFilterRequestTO implements Serializable {
     @SpecificationField(property = "id")
     private Set<Long> ids;
 
-    @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE)
+    @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE_UNACCENT)
     private String nome;
 
     @SpecificationField
