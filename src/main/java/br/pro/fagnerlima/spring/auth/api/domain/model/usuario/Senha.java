@@ -29,8 +29,14 @@ public class Senha {
         dataAtualizacao = LocalDateTime.now();
     }
 
+    public Senha(@Size(min = 6, max = 64) String valor, String resetToken) {
+        this();
+        this.valor = valor;
+        this.resetToken = resetToken;
+    }
+
     public Senha(String valor, String resetToken, Integer tentativasErro, LocalDateTime dataAtualizacao) {
-        super();
+        this();
         this.valor = valor;
         this.resetToken = resetToken;
         this.tentativasErro = tentativasErro;

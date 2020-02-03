@@ -33,7 +33,7 @@ public class Usuario extends AuditedBaseEntity {
 
     private static final long serialVersionUID = 4992180182377301896L;
 
-    public static final Long ADMIN_ID = 1L;
+    public static final Long ID_ADMIN = 1L;
 
     @NotNull
     @Size(min = 5, max = 128)
@@ -73,6 +73,39 @@ public class Usuario extends AuditedBaseEntity {
             joinColumns = @JoinColumn(name = "id_usuario"),
             inverseJoinColumns = @JoinColumn(name = "id_grupo"))
     private Set<Grupo> grupos;
+
+    public Usuario() {
+        super();
+        pendente = true;
+        bloqueado = false;
+    }
+
+    public Usuario(@NotNull @Size(min = 5, max = 128) String nome, @NotNull @Size(min = 5, max = 128) @Email String email,
+            @NotNull @Size(min = 5, max = 32) String login, @Valid Senha senha, @NotNull @NotEmpty Set<Grupo> grupos) {
+        this();
+        this.nome = nome;
+        this.email = email;
+        this.login = login;
+        this.senha = senha;
+        this.grupos = grupos;
+    }
+
+    public Usuario(@NotNull @Size(min = 5, max = 128) String nome, @NotNull @Size(min = 5, max = 128) @Email String email,
+            @NotNull @Size(min = 5, max = 32) String login, @Valid Senha senha, @NotNull Boolean pendente, @NotNull Boolean bloqueado,
+            @NotNull @NotEmpty Set<Grupo> grupos) {
+        this();
+        this.nome = nome;
+        this.email = email;
+        this.login = login;
+        this.senha = senha;
+        this.pendente = pendente;
+        this.bloqueado = bloqueado;
+        this.grupos = grupos;
+    }
+
+    public Boolean isAdmin() {
+        return id != null && id.equals(ID_ADMIN);
+    }
 
     public void bloquear() {
         setBloqueado(true);
