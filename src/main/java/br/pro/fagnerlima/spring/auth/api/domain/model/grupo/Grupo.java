@@ -25,6 +25,8 @@ public class Grupo extends AuditedBaseEntity {
 
     private static final long serialVersionUID = -7881272704210120357L;
 
+    public static final Long ID_ADMIN = 1L;
+
     @NotNull
     @Size(min = 5, max = 128)
     @Column(name = "nome", length = 128, nullable = false)
@@ -38,6 +40,26 @@ public class Grupo extends AuditedBaseEntity {
             joinColumns = @JoinColumn(name = "id_grupo"),
             inverseJoinColumns = @JoinColumn(name = "id_permissao"))
     private Set<Permissao> permissoes;
+
+    public Grupo() {
+        super();
+    }
+
+    public Grupo(@NotNull @Size(min = 5, max = 128) String nome) {
+        super();
+        this.nome = nome;
+    }
+
+    public Grupo(@NotNull @Size(min = 5, max = 128) String nome, Set<Permissao> permissoes, Boolean ativo) {
+        super();
+        this.nome = nome;
+        this.permissoes = permissoes;
+        this.ativo = ativo;
+    }
+
+    public Boolean isAdmin() {
+        return id != null && id.equals(ID_ADMIN);
+    }
 
     public String getNome() {
         return nome;

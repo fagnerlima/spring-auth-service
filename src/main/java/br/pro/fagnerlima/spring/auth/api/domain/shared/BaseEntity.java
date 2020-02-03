@@ -29,6 +29,7 @@ public abstract class BaseEntity implements Serializable {
 
     public BaseEntity() {
         super();
+        ativo = true;
     }
 
     public void ativar() {
