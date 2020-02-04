@@ -15,5 +15,9 @@ public enum Papel {
     ROLE_USUARIO_EDITAR,
     ROLE_USUARIO_ALTERAR_STATUS,
     ROLE_PERMISSAO_LISTAR,
-    ROLE_PERMISSAO_BUSCAR
+    ROLE_PERMISSAO_BUSCAR;
+
+    public Boolean isAdmin() {
+        return this.equals(ROLE_ADMIN);
+    }
 }

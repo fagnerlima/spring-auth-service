@@ -22,7 +22,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
-import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Papel;
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.GrupoRepository;
@@ -62,7 +61,7 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindByIdAdministrador() {
-        Grupo grupo = grupoService.findById(1L);
+        Grupo grupo = grupoService.findById(Grupo.ID_ADMIN);
 
         assertIsAdmin(grupo);
     }
@@ -76,10 +75,9 @@ public class GrupoServiceImplTest {
     }
 
     @Test
-    public void testFindAllBySpecificationAndPageable() {
+    public void testFindAllBySpecificationAndPageable_filterById() {
         GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
         grupoFilterRequestTO.setId(1L);
-        grupoFilterRequestTO.setNome("admin");
 
         Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
 
@@ -88,17 +86,32 @@ public class GrupoServiceImplTest {
     }
 
     @Test
-    public void testFindAllBySpecificationAndPageable_withAccent() {
+    public void testFindAllBySpecificationAndPageable_filterByNome() {
+        grupoRepository.save(new Grupo("Gerência"));
         grupoRepository.save(new Grupo("Recepção"));
 
         GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
         grupoFilterRequestTO.setNome("recepcao");
-        grupoFilterRequestTO.setAtivo(true);
 
         Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
 
         assertPage(gruposPage, 10, 0, 1, 1, 1);
         assertThat(gruposPage.getContent().get(0).getNome()).isEqualTo("Recepção");
+    }
+
+    @Test
+    public void testFindAllBySpecificationAndPageable_filterByAtivo() {
+        grupoRepository.save(new Grupo("Gerência"));
+        grupoRepository.save(new Grupo("Recepção", null, false));
+
+        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
+        grupoFilterRequestTO.setAtivo(true);
+
+        Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
+
+        assertPage(gruposPage, 10, 0, 2, 1, 2);
+        assertThat(gruposPage.getContent().stream()
+                .anyMatch(g -> !g.getAtivo())).isFalse();
     }
 
     @Test
@@ -180,11 +193,10 @@ public class GrupoServiceImplTest {
     }
 
     private void assertIsAdmin(Grupo grupo) {
-        assertThat(grupo.getId().intValue()).isEqualTo(1);
+        assertThat(grupo.getId()).isEqualTo(Grupo.ID_ADMIN);
         assertThat(grupo.getNome()).isEqualTo("Administrador");
         assertThat(grupo.getPermissoes().stream()
-                .map(Permissao::getPapel)
-                .anyMatch(p -> p.equals(Papel.ROLE_ADMIN))).isTrue();
+                .anyMatch(Permissao::hasAdmin)).isTrue();
     }
 
 }

@@ -15,7 +15,7 @@ public class UsuarioFilterRequestTO implements Serializable {
     @SpecificationField
     private Long id;
 
-    @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE)
+    @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE_UNACCENT)
     private String nome;
 
     @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE)

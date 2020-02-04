@@ -31,6 +31,10 @@ public class Permissao extends BaseEntity {
     @Column(name = "descricao", length = 128, nullable = false)
     private String descricao;
 
+    public Boolean hasAdmin() {
+        return papel != null && papel.isAdmin();
+    }
+
     public Papel getPapel() {
         return papel;
     }
