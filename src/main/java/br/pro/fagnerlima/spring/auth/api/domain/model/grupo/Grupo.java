@@ -45,18 +45,6 @@ public class Grupo extends AuditedBaseEntity {
         super();
     }
 
-    public Grupo(@NotNull @Size(min = 5, max = 128) String nome) {
-        super();
-        this.nome = nome;
-    }
-
-    public Grupo(@NotNull @Size(min = 5, max = 128) String nome, Set<Permissao> permissoes, Boolean ativo) {
-        super();
-        this.nome = nome;
-        this.permissoes = permissoes;
-        this.ativo = ativo;
-    }
-
     public Boolean isAdmin() {
         return id != null && id.equals(ID_ADMIN);
     }
