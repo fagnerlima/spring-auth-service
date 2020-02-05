@@ -96,19 +96,20 @@ public class SpecificationFactory<T> {
     }
 
     private Predicate buildPredicate(String property, Integer value, SpecificationOperation operation) {
+        Expression<Integer> x = root.get(property);
+        Integer y = value;
+
         switch (operation) {
-            case EQUAL:
-                return criteriaBuilder.equal(root.get(property), value);
             case GREATER_THAN:
-                return criteriaBuilder.greaterThan(root.get(property), value);
+                return criteriaBuilder.greaterThan(x, y);
             case LESS_THAN:
-                return criteriaBuilder.lessThan(root.get(property), value);
+                return criteriaBuilder.lessThan(x, y);
             case GREATER_THAN_OR_EQUAL:
-                return criteriaBuilder.greaterThan(root.get(property), value);
+                return criteriaBuilder.greaterThan(x, y);
             case LESS_THAN_OR_EQUAL:
-                return criteriaBuilder.lessThanOrEqualTo(root.get(property), value);
+                return criteriaBuilder.lessThanOrEqualTo(x, y);
             default:
-                return criteriaBuilder.equal(root.get(property), value);
+                return criteriaBuilder.equal(x, y);
         }
     }
 
@@ -121,19 +122,20 @@ public class SpecificationFactory<T> {
     }
 
     private Predicate buildPredicate(String property, LocalDate value, SpecificationOperation operation) {
+        Expression<LocalDate> x = root.get(property);
+        LocalDate y = value;
+
         switch (operation) {
-            case EQUAL:
-                return criteriaBuilder.equal(root.get(property), value);
             case GREATER_THAN:
-                return criteriaBuilder.greaterThan(root.get(property), value);
+                return criteriaBuilder.greaterThan(x, y);
             case LESS_THAN:
-                return criteriaBuilder.lessThan(root.get(property), value);
+                return criteriaBuilder.lessThan(x, y);
             case GREATER_THAN_OR_EQUAL:
-                return criteriaBuilder.greaterThanOrEqualTo(root.get(property), value);
+                return criteriaBuilder.greaterThanOrEqualTo(x, y);
             case LESS_THAN_OR_EQUAL:
-                return criteriaBuilder.lessThanOrEqualTo(root.get(property), value);
+                return criteriaBuilder.lessThanOrEqualTo(x, y);
             default:
-                return criteriaBuilder.equal(root.get(property), value);
+                return criteriaBuilder.equal(x, y);
         }
     }
 
