@@ -1,8 +1,10 @@
 package br.pro.fagnerlima.spring.auth.api.application.service;
 
 import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.assertPage;
+import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.assertPageNoContent;
 import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.mockAuthenticationForAuditing;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -18,6 +20,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidTokenException;
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.NotAuthenticatedUserException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Senha;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
@@ -56,10 +61,53 @@ public class UsuarioServiceImplTest {
     }
 
     @Test
-    public void testFindByAdministrador() {
+    public void testFindById() {
         Usuario usuario = usuarioService.findById(Usuario.ID_ADMIN);
 
         assertIsAdmin(usuario);
+    }
+
+    @Test
+    public void testFindById_whenNotFound() {
+        assertThrows(InformationNotFoundException.class, () -> usuarioService.findById(99L));
+    }
+
+    @Test
+    public void findByEmail() {
+        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
+        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
+
+        Usuario usuario = usuarioService.findByEmail("jose.paula@email.com");
+
+        assertThat(usuario.getNome()).isEqualTo("José de Paula");
+    }
+
+    @Test
+    public void findByEmail_whenNotFound() {
+        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
+        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
+
+        assertThrows(InformationNotFoundException.class, () -> usuarioService.findByEmail("test@email.com"));
+    }
+
+    @Test
+    public void findBySenhaResetToken() {
+        String resetToken = createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza",
+                Arrays.asList(Grupo.ID_ADMIN)).getSenha().getResetToken();
+        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
+
+        Usuario usuario = usuarioService.findBySenhaResetToken(resetToken);
+
+        assertThat(usuario.getNome()).isEqualTo("José de Souza");
+    }
+
+    @Test
+    public void findBySenhaResetToken_whenNotFound() {
+        String resetToken = createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza",
+                Arrays.asList(Grupo.ID_ADMIN)).getSenha().getResetToken();
+        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
+
+        assertThrows(InvalidTokenException.class, () -> usuarioService.findBySenhaResetToken(resetToken + "modify"));
     }
 
     @Test
@@ -141,6 +189,44 @@ public class UsuarioServiceImplTest {
         assertPage(usuariosPage, 10, 0, 2, 1, 2);
         assertThat(usuariosPage.getContent().stream()
                 .anyMatch(u -> !u.getAtivo())).isFalse();
+    }
+
+    @Test
+    public void testFindAllBySpecificationAndPageable_notFound() {
+        createAndSaveUsuarioAtivo("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
+        createAndSaveUsuarioInativo("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
+
+        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
+        usuarioFilterRequestTO.setNome("ronaldo");
+
+        Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
+
+        assertPageNoContent(usuariosPage, 10, 0);
+    }
+
+    @Test
+    public void findAllActives() {
+        createAndSaveUsuarioAtivo("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
+        createAndSaveUsuarioInativo("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
+        createAndSaveUsuarioAtivo("Antônio Santiago", "antonio.santiago@email.com", "antonio.santiago", Arrays.asList(Grupo.ID_ADMIN));
+
+        List<Usuario> usuarios = usuarioService.findAllActives();
+
+        assertThat(usuarios).hasSize(3);
+    }
+
+    @Test
+    public void testGetAutenticado() {
+        Usuario usuario = usuarioService.getAutenticado();
+
+        assertIsAdmin(usuario);
+    }
+
+    @Test
+    public void testGetAutenticado_whenNotAuthenticated() {
+        mockAuthenticationForAuditing(null);
+
+        assertThrows(NotAuthenticatedUserException.class, () -> usuarioService.getAutenticado());
     }
 
     private void assertIsAdmin(Usuario usuario) {

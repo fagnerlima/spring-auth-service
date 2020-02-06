@@ -5,13 +5,13 @@ import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.assertPage
 import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.assertPageNoContent;
 import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.mockAuthenticationForAuditing;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,10 +60,14 @@ public class GrupoServiceImplTest {
     }
 
     @Test
-    public void testFindByIdAdministrador() {
+    public void testFindById() {
         Grupo grupo = grupoService.findById(Grupo.ID_ADMIN);
-
         assertIsAdmin(grupo);
+    }
+
+    @Test
+    public void testFindById_whenNotFound() {
+        assertThrows(InformationNotFoundException.class, () -> grupoService.findById(99L));
     }
 
     @Test
@@ -139,7 +143,7 @@ public class GrupoServiceImplTest {
 
         List<Grupo> grupos = grupoService.findAllActives();
 
-        assertThat(grupos.size()).isEqualTo(4);
+        assertThat(grupos).hasSize(4);
     }
 
     @Test
@@ -148,7 +152,7 @@ public class GrupoServiceImplTest {
 
         assertThat(grupo.getId()).isGreaterThan(1L);
         assertThat(grupo.getNome()).isEqualTo("Recepção");
-        assertThat(grupo.getPermissoes().size()).isEqualTo(3);
+        assertThat(grupo.getPermissoes()).hasSize(3);
         assertThat(grupo.getAtivo()).isTrue();
         assertAuditingFields(grupo, MOCK_LOGGED_USERNAME);
     }
@@ -162,7 +166,7 @@ public class GrupoServiceImplTest {
 
         assertThat(grupo.getId()).isEqualTo(idGrupo);
         assertThat(grupo.getNome()).isEqualTo("Recepção");
-        assertThat(grupo.getPermissoes().size()).isEqualTo(3);
+        assertThat(grupo.getPermissoes()).hasSize(3);
         assertThat(grupo.getAtivo()).isTrue();
         assertAuditingFields(grupo, MOCK_LOGGED_USERNAME);
     }
@@ -171,7 +175,7 @@ public class GrupoServiceImplTest {
     public void testUpdate_whenNotFound() {
         Grupo grupo = createAndSaveGrupoInativo("Recepção", null);
 
-        Assertions.assertThrows(InformationNotFoundException.class, () -> grupoService.update(99L, grupo));
+        assertThrows(InformationNotFoundException.class, () -> grupoService.update(99L, grupo));
     }
 
     @Test
@@ -182,14 +186,14 @@ public class GrupoServiceImplTest {
 
         assertThat(grupo.getId()).isEqualTo(idGrupo);
         assertThat(grupo.getNome()).isEqualTo("Recepção");
-        assertThat(grupo.getPermissoes().size()).isEqualTo(3);
+        assertThat(grupo.getPermissoes()).hasSize(3);
         assertThat(grupo.getAtivo()).isTrue();
         assertAuditingFields(grupo, MOCK_LOGGED_USERNAME);
     }
 
     @Test
     public void testSwitchActive_whenNotFound() {
-        Assertions.assertThrows(InformationNotFoundException.class, () -> grupoService.switchActive(99L));
+        assertThrows(InformationNotFoundException.class, () -> grupoService.switchActive(99L));
     }
 
     private void assertIsAdmin(Grupo grupo) {
