@@ -76,8 +76,8 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterById() {
-        createAndSaveGrupo("Gerência");
-        createAndSaveGrupo("Recepção");
+        createAndSaveGrupoAtivo("Gerência", Arrays.asList(3L, 4L, 5L));
+        createAndSaveGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
 
         GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
         grupoFilterRequestTO.setId(1L);
@@ -90,8 +90,8 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByNome() {
-        createAndSaveGrupo("Gerência");
-        createAndSaveGrupo("Recepção");
+        createAndSaveGrupoAtivo("Gerência", Arrays.asList(3L, 4L, 5L));
+        createAndSaveGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
 
         GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
         grupoFilterRequestTO.setNome("recepcao");
@@ -104,8 +104,8 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByAtivo() {
-        createAndSaveGrupo("Gerência");
-        createAndSaveGrupo("Recepção", false);
+        createAndSaveGrupoAtivo("Gerência", Arrays.asList(3L, 4L, 5L));
+        createAndSaveGrupoInativo("Recepção", Arrays.asList(3L, 4L, 5L));
 
         GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
         grupoFilterRequestTO.setAtivo(true);
@@ -119,8 +119,8 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_notFound() {
-        createAndSaveGrupo("Gerência");
-        createAndSaveGrupo("Recepção");
+        createAndSaveGrupoAtivo("Gerência", Arrays.asList(3L, 4L, 5L));
+        createAndSaveGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
 
         GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
         grupoFilterRequestTO.setNome("recursos humanos");
@@ -132,10 +132,10 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllActives() {
-        createAndSaveGrupo("Recepção", true);
-        createAndSaveGrupo("Gerência", true);
-        createAndSaveGrupo("Recursos Humanos", false);
-        createAndSaveGrupo("Vendas", true);
+        createAndSaveGrupoAtivo("Gerência", Arrays.asList(3L, 4L, 5L));
+        createAndSaveGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
+        createAndSaveGrupoInativo("Recursos Humanos", Arrays.asList(3L, 4L, 5L));
+        createAndSaveGrupoAtivo("Vendas", Arrays.asList(3L, 4L, 5L));
 
         List<Grupo> grupos = grupoService.findAllActives();
 
@@ -144,7 +144,7 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testSave() {
-        Grupo grupo = createAndSaveGrupo("Recepção", Arrays.asList(3L, 4L, 5L), true);
+        Grupo grupo = createAndSaveGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
 
         assertThat(grupo.getId()).isGreaterThan(1L);
         assertThat(grupo.getNome()).isEqualTo("Recepção");
@@ -155,9 +155,9 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testUpdate() {
-        Long idGrupo = createAndSaveGrupo("Recepção", false).getId();
+        Long idGrupo = createAndSaveGrupoInativo("Recepção", null).getId();
 
-        Grupo grupo = createGrupo("Recepção", Arrays.asList(3L, 4L, 5L), true);
+        Grupo grupo = createGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
         grupo = grupoService.update(idGrupo, grupo);
 
         assertThat(grupo.getId()).isEqualTo(idGrupo);
@@ -169,14 +169,14 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testUpdate_whenNotFound() {
-        Grupo grupo = createGrupo("Recepção", false);
+        Grupo grupo = createAndSaveGrupoInativo("Recepção", null);
 
         Assertions.assertThrows(InformationNotFoundException.class, () -> grupoService.update(99L, grupo));
     }
 
     @Test
     public void testSwitchActive() {
-        Long idGrupo = createAndSaveGrupo("Recepção", Arrays.asList(3L, 4L, 5L), false).getId();
+        Long idGrupo = createAndSaveGrupoInativo("Recepção", Arrays.asList(3L, 4L, 5L)).getId();
 
         Grupo grupo = grupoService.switchActive(idGrupo);
 
@@ -199,42 +199,31 @@ public class GrupoServiceImplTest {
                 .anyMatch(Permissao::hasAdmin)).isTrue();
     }
 
-    private Grupo createGrupo(String nome) {
+    private Grupo createGrupoAtivo(String nome, List<Long> idsPermissoes) {
         Grupo grupo = new Grupo();
         grupo.setNome(nome);
+
+        if (idsPermissoes != null && !idsPermissoes.isEmpty()) {
+            List<Permissao> permissoes = permissaoRepository.findAllById(idsPermissoes);
+            grupo.setPermissoes(new HashSet<>(permissoes));
+        }
 
         return grupo;
     }
 
-    private Grupo createAndSaveGrupo(String nome) {
-        return grupoRepository.save(createGrupo(nome));
+    private Grupo createAndSaveGrupoAtivo(String nome, List<Long> idsPermissoes) {
+        return grupoRepository.save(createGrupoAtivo(nome, idsPermissoes));
     }
 
-    private Grupo createGrupo(String nome, Boolean ativo) {
-        Grupo grupo = new Grupo();
-        grupo.setNome(nome);
-        grupo.setAtivo(ativo);
+    private Grupo createGrupoInativo(String nome, List<Long> idsPermissoes) {
+        Grupo grupo = createGrupoAtivo(nome, idsPermissoes);
+        grupo.inativar();
 
         return grupo;
     }
 
-    private Grupo createAndSaveGrupo(String nome, Boolean ativo) {
-        return grupoRepository.save(createGrupo(nome, ativo));
-    }
-
-    private Grupo createGrupo(String nome, List<Long> idsPermissoes, Boolean ativo) {
-        List<Permissao> permissoes = permissaoRepository.findAllById(idsPermissoes);
-
-        Grupo grupo = new Grupo();
-        grupo.setNome(nome);
-        grupo.setAtivo(ativo);
-        grupo.setPermissoes(new HashSet<>(permissoes));
-
-        return grupo;
-    }
-    
-    private Grupo createAndSaveGrupo(String nome, List<Long> idsPermissoes, Boolean ativo) {
-        return grupoRepository.save(createGrupo(nome, idsPermissoes, ativo));
+    private Grupo createAndSaveGrupoInativo(String nome, List<Long> idsPermissoes) {
+        return grupoRepository.save(createGrupoInativo(nome, idsPermissoes));
     }
 
 }

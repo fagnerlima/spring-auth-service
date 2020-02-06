@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
+import org.assertj.core.internal.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -70,6 +71,9 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterById() {
+        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
+        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
+
         UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
         usuarioFilterRequestTO.setId(Usuario.ID_ADMIN);
 
@@ -81,11 +85,8 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByNome() {
-        List<Grupo> grupos = grupoRepository.findAllById(Arrays.asList(Grupo.ID_ADMIN));
-        usuarioRepository.save(new Usuario("José de Souza", "jose.souza@email.com", "jose.souza", new Senha(null, "token123"), true, false,
-                new HashSet<>(grupos)));
-        usuarioRepository.save(new Usuario("José de Paula", "jose.paula@email.com", "jose.paula", new Senha(null, "token456"), true, false,
-                new HashSet<>(grupos)));
+        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
+        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
 
         UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
         usuarioFilterRequestTO.setNome("jose");
@@ -99,11 +100,8 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByEmail() {
-        List<Grupo> grupos = grupoRepository.findAllById(Arrays.asList(Grupo.ID_ADMIN));
-        usuarioRepository.save(new Usuario("José de Souza", "jose.souza@email.com", "jose.souza", new Senha(null, "token123"), true, false,
-                new HashSet<>(grupos)));
-        usuarioRepository.save(new Usuario("José de Paula", "jose.paula@email.com", "jose.paula", new Senha(null, "token456"), true, false,
-                new HashSet<>(grupos)));
+        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
+        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
 
         UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
         usuarioFilterRequestTO.setEmail("jose");
@@ -117,11 +115,8 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByLogin() {
-        List<Grupo> grupos = grupoRepository.findAllById(Arrays.asList(Grupo.ID_ADMIN));
-        usuarioRepository.save(new Usuario("José de Souza", "jose.souza@email.com", "jose.souza", new Senha(null, "token123"), true, false,
-                new HashSet<>(grupos)));
-        usuarioRepository.save(new Usuario("José de Paula", "jose.paula@email.com", "jose.paula", new Senha(null, "token456"), true, false,
-                new HashSet<>(grupos)));
+        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
+        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
 
         UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
         usuarioFilterRequestTO.setEmail("jose");
@@ -135,14 +130,8 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByAtivo() {
-        List<Grupo> grupos = grupoRepository.findAllById(Arrays.asList(Grupo.ID_ADMIN));
-        usuarioRepository.save(new Usuario("José de Souza", "jose.souza@email.com", "jose.souza", new Senha(null, "token123"), true, false,
-                new HashSet<>(grupos)));
-
-        Usuario usuarioInativo = new Usuario("José de Paula", "jose.paula@email.com", "jose.paula", new Senha(null, "token456"), true, false,
-                new HashSet<>(grupos));
-        usuarioInativo.setAtivo(false);
-        usuarioRepository.save(usuarioInativo);
+        createAndSaveUsuarioAtivo("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
+        createAndSaveUsuarioInativo("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
 
         UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
         usuarioFilterRequestTO.setAtivo(true);
@@ -159,6 +148,64 @@ public class UsuarioServiceImplTest {
         assertThat(usuario.getNome()).isEqualTo("Administrador");
         assertThat(usuario.getGrupos().stream()
                 .anyMatch(Grupo::isAdmin)).isTrue();
+    }
+
+    private Usuario createUsuarioPendente(String nome, String email, String login, List<Long> idsGrupos) {
+        List<Grupo> grupos = grupoRepository.findAllById(idsGrupos);
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(nome);
+        usuario.setEmail(email);
+        usuario.setLogin(login);
+        usuario.setSenha(new Senha(null, RandomString.make(32)));
+        usuario.setPendente(true);
+        usuario.setBloqueado(false);
+        usuario.setGrupos(new HashSet<>(grupos));
+
+        return usuario;
+    }
+
+    private Usuario createAndSaveUsuarioPendente(String nome, String email, String login, List<Long> idsGrupos) {
+        return usuarioRepository.save(createUsuarioPendente(nome, email, login, idsGrupos));
+    }
+
+    private Usuario createUsuarioAtivo(String nome, String email, String login, List<Long> idsGrupos) {
+        List<Grupo> grupos = grupoRepository.findAllById(idsGrupos);
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(nome);
+        usuario.setEmail(email);
+        usuario.setLogin(login);
+        usuario.setSenha(new Senha(null, RandomString.make(32)));
+        usuario.setPendente(false);
+        usuario.setBloqueado(false);
+        usuario.setGrupos(new HashSet<>(grupos));
+
+        return usuario;
+    }
+
+    private Usuario createAndSaveUsuarioAtivo(String nome, String email, String login, List<Long> idsGrupos) {
+        return usuarioRepository.save(createUsuarioAtivo(nome, email, login, idsGrupos));
+    }
+
+    private Usuario createUsuarioInativo(String nome, String email, String login, List<Long> idsGrupos) {
+        List<Grupo> grupos = grupoRepository.findAllById(idsGrupos);
+
+        Usuario usuario = new Usuario();
+        usuario.setNome(nome);
+        usuario.setEmail(email);
+        usuario.setLogin(login);
+        usuario.setSenha(new Senha(null, RandomString.make(32)));
+        usuario.setPendente(false);
+        usuario.setBloqueado(false);
+        usuario.setGrupos(new HashSet<>(grupos));
+        usuario.inativar();
+
+        return usuario;
+    }
+
+    private Usuario createAndSaveUsuarioInativo(String nome, String email, String login, List<Long> idsGrupos) {
+        return usuarioRepository.save(createUsuarioInativo(nome, email, login, idsGrupos));
     }
 
 }

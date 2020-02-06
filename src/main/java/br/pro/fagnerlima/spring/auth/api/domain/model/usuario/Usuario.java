@@ -80,29 +80,6 @@ public class Usuario extends AuditedBaseEntity {
         bloqueado = false;
     }
 
-    public Usuario(@NotNull @Size(min = 5, max = 128) String nome, @NotNull @Size(min = 5, max = 128) @Email String email,
-            @NotNull @Size(min = 5, max = 32) String login, @Valid Senha senha, @NotNull @NotEmpty Set<Grupo> grupos) {
-        this();
-        this.nome = nome;
-        this.email = email;
-        this.login = login;
-        this.senha = senha;
-        this.grupos = grupos;
-    }
-
-    public Usuario(@NotNull @Size(min = 5, max = 128) String nome, @NotNull @Size(min = 5, max = 128) @Email String email,
-            @NotNull @Size(min = 5, max = 32) String login, @Valid Senha senha, @NotNull Boolean pendente, @NotNull Boolean bloqueado,
-            @NotNull @NotEmpty Set<Grupo> grupos) {
-        this();
-        this.nome = nome;
-        this.email = email;
-        this.login = login;
-        this.senha = senha;
-        this.pendente = pendente;
-        this.bloqueado = bloqueado;
-        this.grupos = grupos;
-    }
-
     public Boolean isAdmin() {
         return id != null && id.equals(ID_ADMIN);
     }
