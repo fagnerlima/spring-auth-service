@@ -1,8 +1,8 @@
 package br.pro.fagnerlima.spring.auth.api.application.service;
 
-import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.assertPage;
-import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.assertPageNoContent;
-import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.mockAuthenticationForAuditing;
+import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertPage;
+import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertPageNoContent;
+import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.mockAuthenticationForAuditing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

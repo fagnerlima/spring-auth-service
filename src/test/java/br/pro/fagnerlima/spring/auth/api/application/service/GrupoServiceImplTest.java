@@ -1,9 +1,9 @@
 package br.pro.fagnerlima.spring.auth.api.application.service;
 
-import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.assertAuditingFields;
-import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.assertPage;
-import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.assertPageNoContent;
-import static br.pro.fagnerlima.spring.auth.api.test.ServiceTestUtils.mockAuthenticationForAuditing;
+import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertAuditingFields;
+import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertPage;
+import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertPageNoContent;
+import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.mockAuthenticationForAuditing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -28,6 +28,7 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.re
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.PermissaoRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoFilterRequestTO;
+import br.pro.fagnerlima.spring.auth.api.testcase.builder.GrupoBuilder;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -50,6 +51,23 @@ public class GrupoServiceImplTest {
     @BeforeEach
     public void setUp() throws Exception {
         mockAuthenticationForAuditing(MOCK_LOGGED_USERNAME);
+
+        grupoRepository.save(new GrupoBuilder()
+                .withNome("Gerência")
+                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(1L))))
+                .build());
+        grupoRepository.save(new GrupoBuilder()
+                .withNome("Recepção")
+                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(2L, 3L, 4L))))
+                .build());
+        grupoRepository.save(new GrupoBuilder()
+                .withNome("Recursos Humanos")
+                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(2L, 3L, 4L, 5L))))
+                .build());
+        grupoRepository.save(new GrupoBuilder()
+                .withNome("Vendas")
+                .withAtivo(false)
+                .build());
     }
 
     @AfterEach
@@ -74,15 +92,12 @@ public class GrupoServiceImplTest {
     public void testFindAllByPageable() {
         Page<Grupo> gruposPage = grupoService.findAll(PageRequest.of(0, 10));
 
-        assertPage(gruposPage, 10, 0, 1, 1, 1);
+        assertPage(gruposPage, 10, 0, 5, 1, 5);
         assertIsAdmin(gruposPage.getContent().get(0));
     }
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterById() {
-        createAndSaveGrupoAtivo("Gerência", Arrays.asList(3L, 4L, 5L));
-        createAndSaveGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
-
         GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
         grupoFilterRequestTO.setId(1L);
 
@@ -94,9 +109,6 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByNome() {
-        createAndSaveGrupoAtivo("Gerência", Arrays.asList(3L, 4L, 5L));
-        createAndSaveGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
-
         GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
         grupoFilterRequestTO.setNome("recepcao");
 
@@ -108,26 +120,20 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByAtivo() {
-        createAndSaveGrupoAtivo("Gerência", Arrays.asList(3L, 4L, 5L));
-        createAndSaveGrupoInativo("Recepção", Arrays.asList(3L, 4L, 5L));
-
         GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
         grupoFilterRequestTO.setAtivo(true);
 
         Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
 
-        assertPage(gruposPage, 10, 0, 2, 1, 2);
+        assertPage(gruposPage, 10, 0, 4, 1, 4);
         assertThat(gruposPage.getContent().stream()
                 .anyMatch(g -> !g.getAtivo())).isFalse();
     }
 
     @Test
     public void testFindAllBySpecificationAndPageable_notFound() {
-        createAndSaveGrupoAtivo("Gerência", Arrays.asList(3L, 4L, 5L));
-        createAndSaveGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
-
         GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
-        grupoFilterRequestTO.setNome("recursos humanos");
+        grupoFilterRequestTO.setNome("tecnologia da informação");
 
         Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
 
@@ -136,11 +142,6 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllActives() {
-        createAndSaveGrupoAtivo("Gerência", Arrays.asList(3L, 4L, 5L));
-        createAndSaveGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
-        createAndSaveGrupoInativo("Recursos Humanos", Arrays.asList(3L, 4L, 5L));
-        createAndSaveGrupoAtivo("Vendas", Arrays.asList(3L, 4L, 5L));
-
         List<Grupo> grupos = grupoService.findAllActives();
 
         assertThat(grupos).hasSize(4);
@@ -148,10 +149,13 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testSave() {
-        Grupo grupo = createAndSaveGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
+        Grupo grupo = grupoService.save(new GrupoBuilder()
+                .withNome("Marketing")
+                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(4L, 5L, 6L))))
+                .build());
 
         assertThat(grupo.getId()).isGreaterThan(1L);
-        assertThat(grupo.getNome()).isEqualTo("Recepção");
+        assertThat(grupo.getNome()).isEqualTo("Marketing");
         assertThat(grupo.getPermissoes()).hasSize(3);
         assertThat(grupo.getAtivo()).isTrue();
         assertAuditingFields(grupo, MOCK_LOGGED_USERNAME);
@@ -159,13 +163,19 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testUpdate() {
-        Long idGrupo = createAndSaveGrupoInativo("Recepção", null).getId();
+        Long idGrupo = grupoService.save(new GrupoBuilder()
+                .withNome("Marketing")
+                .withAtivo(false)
+                .build()).getId();
 
-        Grupo grupo = createGrupoAtivo("Recepção", Arrays.asList(3L, 4L, 5L));
-        grupo = grupoService.update(idGrupo, grupo);
+        Grupo grupo = grupoService.update(idGrupo, new GrupoBuilder()
+                .withNome("Marketing")
+                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(4L, 5L, 6L))))
+                .withAtivo(true)
+                .build());
 
         assertThat(grupo.getId()).isEqualTo(idGrupo);
-        assertThat(grupo.getNome()).isEqualTo("Recepção");
+        assertThat(grupo.getNome()).isEqualTo("Marketing");
         assertThat(grupo.getPermissoes()).hasSize(3);
         assertThat(grupo.getAtivo()).isTrue();
         assertAuditingFields(grupo, MOCK_LOGGED_USERNAME);
@@ -173,19 +183,25 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testUpdate_whenNotFound() {
-        Grupo grupo = createAndSaveGrupoInativo("Recepção", null);
+        Grupo grupo = grupoService.save(new GrupoBuilder()
+                .withNome("Marketing")
+                .build());
 
         assertThrows(InformationNotFoundException.class, () -> grupoService.update(99L, grupo));
     }
 
     @Test
     public void testSwitchActive() {
-        Long idGrupo = createAndSaveGrupoInativo("Recepção", Arrays.asList(3L, 4L, 5L)).getId();
+        Long idGrupo = grupoService.save(new GrupoBuilder()
+                .withNome("Marketing")
+                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(4L, 5L, 6L))))
+                .withAtivo(false)
+                .build()).getId();
 
         Grupo grupo = grupoService.switchActive(idGrupo);
 
         assertThat(grupo.getId()).isEqualTo(idGrupo);
-        assertThat(grupo.getNome()).isEqualTo("Recepção");
+        assertThat(grupo.getNome()).isEqualTo("Marketing");
         assertThat(grupo.getPermissoes()).hasSize(3);
         assertThat(grupo.getAtivo()).isTrue();
         assertAuditingFields(grupo, MOCK_LOGGED_USERNAME);
@@ -201,33 +217,6 @@ public class GrupoServiceImplTest {
         assertThat(grupo.getNome()).isEqualTo("Administrador");
         assertThat(grupo.getPermissoes().stream()
                 .anyMatch(Permissao::hasAdmin)).isTrue();
-    }
-
-    private Grupo createGrupoAtivo(String nome, List<Long> idsPermissoes) {
-        Grupo grupo = new Grupo();
-        grupo.setNome(nome);
-
-        if (idsPermissoes != null && !idsPermissoes.isEmpty()) {
-            List<Permissao> permissoes = permissaoRepository.findAllById(idsPermissoes);
-            grupo.setPermissoes(new HashSet<>(permissoes));
-        }
-
-        return grupo;
-    }
-
-    private Grupo createAndSaveGrupoAtivo(String nome, List<Long> idsPermissoes) {
-        return grupoRepository.save(createGrupoAtivo(nome, idsPermissoes));
-    }
-
-    private Grupo createGrupoInativo(String nome, List<Long> idsPermissoes) {
-        Grupo grupo = createGrupoAtivo(nome, idsPermissoes);
-        grupo.inativar();
-
-        return grupo;
-    }
-
-    private Grupo createAndSaveGrupoInativo(String nome, List<Long> idsPermissoes) {
-        return grupoRepository.save(createGrupoInativo(nome, idsPermissoes));
     }
 
 }
