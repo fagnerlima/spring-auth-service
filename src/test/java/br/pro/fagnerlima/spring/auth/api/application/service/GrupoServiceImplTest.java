@@ -29,6 +29,7 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.re
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoFilterRequestTO;
 import br.pro.fagnerlima.spring.auth.api.testcase.builder.GrupoBuilder;
+import br.pro.fagnerlima.spring.auth.api.testcase.builder.GrupoFilterRequestTOBuilder;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -98,8 +99,9 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterById() {
-        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
-        grupoFilterRequestTO.setId(1L);
+        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTOBuilder()
+                .withId(1L)
+                .build();
 
         Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
 
@@ -109,8 +111,9 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByNome() {
-        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
-        grupoFilterRequestTO.setNome("recepcao");
+        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTOBuilder()
+                .withNome("recepcao")
+                .build();
 
         Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
 
@@ -120,8 +123,9 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByAtivo() {
-        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
-        grupoFilterRequestTO.setAtivo(true);
+        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTOBuilder()
+                .withAtivo(true)
+                .build();
 
         Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
 
@@ -132,8 +136,9 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_notFound() {
-        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTO();
-        grupoFilterRequestTO.setNome("tecnologia da informação");
+        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTOBuilder()
+                .withNome("tecnologia da informacao")
+                .build();
 
         Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
 
