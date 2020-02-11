@@ -1,6 +1,7 @@
 package br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario;
 
 import java.io.Serializable;
+import java.util.Set;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationEntity;
@@ -14,6 +15,9 @@ public class UsuarioFilterRequestTO implements Serializable {
 
     @SpecificationField
     private Long id;
+
+    @SpecificationField(property = "id")
+    private Set<Long> ids;
 
     @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE_UNACCENT)
     private String nome;
@@ -31,21 +35,20 @@ public class UsuarioFilterRequestTO implements Serializable {
         super();
     }
 
-    public UsuarioFilterRequestTO(Long id, String nome, String email, String login, Boolean ativo) {
-        super();
-        this.id = id;
-        this.nome = nome;
-        this.email = email;
-        this.login = login;
-        this.ativo = ativo;
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Set<Long> getIds() {
+        return ids;
+    }
+
+    public void setIds(Set<Long> ids) {
+        this.ids = ids;
     }
 
     public String getNome() {
