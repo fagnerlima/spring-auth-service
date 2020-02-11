@@ -1,5 +1,7 @@
 package br.pro.fagnerlima.spring.auth.api.application.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,6 +57,12 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
         } catch (Exception exception) {
             throw new NotAuthenticatedUserException();
         }
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<Usuario> findAllActives() {
+        return usuarioRepository.findByAtivoAndPendenteAndBloqueado(true, false, false);
     }
 
     @Override

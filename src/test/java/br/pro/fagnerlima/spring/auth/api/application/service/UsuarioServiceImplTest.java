@@ -9,8 +9,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
-import org.assertj.core.internal.bytebuddy.utility.RandomString;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +31,8 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.re
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioFilterRequestTO;
+import br.pro.fagnerlima.spring.auth.api.testcase.builder.UsuarioBuilder;
+import br.pro.fagnerlima.spring.auth.api.testcase.builder.UsuarioFilterRequestTOBuilder;
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -51,6 +53,57 @@ public class UsuarioServiceImplTest {
     @BeforeEach
     public void setUp() throws Exception {
         mockAuthenticationForAuditing("admin");
+
+        usuarioRepository.save(new UsuarioBuilder()
+                .withNome("José de Souza")
+                .withEmail("jose.souza@email.com")
+                .withLogin("jose.souza")
+                .withAtivo(true)
+                .withSenha(new Senha(null, "token#jose.souza"))
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .build());
+        usuarioRepository.save(new UsuarioBuilder()
+                .withNome("José de Paula")
+                .withEmail("jose.paula@email.com")
+                .withLogin("jose.paula")
+                .withAtivo(true)
+                .withSenha(new Senha(null, "token#jose.paula"))
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .build());
+
+        Usuario usuarioInativo = usuarioRepository.save(new UsuarioBuilder()
+                .withNome("Maria da Silva")
+                .withEmail("maria.silva@email.com")
+                .withLogin("maria.silva")
+                .withAtivo(false)
+                .withSenha(new Senha("senha#maria.silva", null))
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .build());
+        usuarioInativo.setPendente(false);
+        usuarioRepository.save(usuarioInativo);
+
+        Usuario usuarioBloqueado = usuarioRepository.save(new UsuarioBuilder()
+                .withNome("Isabel Santos")
+                .withEmail("isabel.santos@email.com")
+                .withLogin("isabel.santos")
+                .withAtivo(true)
+                .withSenha(new Senha("senha#isabel.santos", null))
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .build());
+        usuarioBloqueado.setPendente(false);
+        usuarioBloqueado.setBloqueado(true);
+        usuarioRepository.save(usuarioBloqueado);
+
+        Usuario usuarioAtivo = usuarioRepository.save(new UsuarioBuilder()
+                .withNome("Fagner Lima")
+                .withEmail("fagner.lima@email.com")
+                .withLogin("fagner.lima")
+                .withAtivo(true)
+                .withSenha(new Senha("senha#fagner.lima", null))
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .build());
+        usuarioAtivo.setPendente(false);
+        usuarioRepository.save(usuarioAtivo);
     }
 
     @AfterEach
@@ -69,14 +122,11 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testFindById_whenNotFound() {
-        assertThrows(InformationNotFoundException.class, () -> usuarioService.findById(99L));
+        assertThrows(InformationNotFoundException.class, () -> usuarioService.findById(999L));
     }
 
     @Test
     public void findByEmail() {
-        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
-        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
-
         Usuario usuario = usuarioService.findByEmail("jose.paula@email.com");
 
         assertThat(usuario.getNome()).isEqualTo("José de Paula");
@@ -84,46 +134,33 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void findByEmail_whenNotFound() {
-        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
-        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
-
         assertThrows(InformationNotFoundException.class, () -> usuarioService.findByEmail("test@email.com"));
     }
 
     @Test
     public void findBySenhaResetToken() {
-        String resetToken = createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza",
-                Arrays.asList(Grupo.ID_ADMIN)).getSenha().getResetToken();
-        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
-
-        Usuario usuario = usuarioService.findBySenhaResetToken(resetToken);
+        Usuario usuario = usuarioService.findBySenhaResetToken("token#jose.souza");
 
         assertThat(usuario.getNome()).isEqualTo("José de Souza");
     }
 
     @Test
     public void findBySenhaResetToken_whenNotFound() {
-        String resetToken = createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza",
-                Arrays.asList(Grupo.ID_ADMIN)).getSenha().getResetToken();
-        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
-
-        assertThrows(InvalidTokenException.class, () -> usuarioService.findBySenhaResetToken(resetToken + "modify"));
+        assertThrows(InvalidTokenException.class, () -> usuarioService.findBySenhaResetToken("token?jose.souza"));
     }
 
     @Test
     public void testFindAllByPageable() {
         Page<Usuario> usuariosPage = usuarioService.findAll(PageRequest.of(0, 10));
 
-        assertPage(usuariosPage, 10, 0, 1, 1, 1);
+        assertPage(usuariosPage, 10, 0, 6, 1, 6);
     }
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterById() {
-        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
-        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
-
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
-        usuarioFilterRequestTO.setId(Usuario.ID_ADMIN);
+        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+                .withId(Usuario.ID_ADMIN)
+                .build();
 
         Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
 
@@ -133,71 +170,53 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByNome() {
-        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
-        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
-
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
-        usuarioFilterRequestTO.setNome("jose");
+        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+                .withNome("jose")
+                .build();
 
         Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
 
         assertPage(usuariosPage, 10, 0, 2, 1, 2);
-        assertThat(usuariosPage.getContent().stream()
-                .anyMatch(u -> !u.getNome().contains("José"))).isFalse();
     }
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByEmail() {
-        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
-        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
-
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
-        usuarioFilterRequestTO.setEmail("jose");
+        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+                .withEmail("jose")
+                .build();
 
         Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
 
         assertPage(usuariosPage, 10, 0, 2, 1, 2);
-        assertThat(usuariosPage.getContent().stream()
-                .anyMatch(u -> !u.getEmail().contains("jose"))).isFalse();
     }
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByLogin() {
-        createAndSaveUsuarioPendente("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
-        createAndSaveUsuarioPendente("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
-
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
-        usuarioFilterRequestTO.setEmail("jose");
+        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+                .withNome("jose")
+                .build();
 
         Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
 
         assertPage(usuariosPage, 10, 0, 2, 1, 2);
-        assertThat(usuariosPage.getContent().stream()
-                .anyMatch(u -> !u.getEmail().contains("jose"))).isFalse();
     }
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByAtivo() {
-        createAndSaveUsuarioAtivo("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
-        createAndSaveUsuarioInativo("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
-
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
-        usuarioFilterRequestTO.setAtivo(true);
+        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+                .withAtivo(true)
+                .build();
 
         Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
 
-        assertPage(usuariosPage, 10, 0, 2, 1, 2);
-        assertThat(usuariosPage.getContent().stream()
-                .anyMatch(u -> !u.getAtivo())).isFalse();
+        assertPage(usuariosPage, 10, 0, 5, 1, 5);
     }
 
     @Test
     public void testFindAllBySpecificationAndPageable_notFound() {
-        createAndSaveUsuarioAtivo("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
-        createAndSaveUsuarioInativo("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
-
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTO();
-        usuarioFilterRequestTO.setNome("ronaldo");
+        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+                .withNome("alberto")
+                .build();
 
         Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
 
@@ -206,13 +225,9 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void findAllActives() {
-        createAndSaveUsuarioAtivo("José de Souza", "jose.souza@email.com", "jose.souza", Arrays.asList(Grupo.ID_ADMIN));
-        createAndSaveUsuarioInativo("José de Paula", "jose.paula@email.com", "jose.paula", Arrays.asList(Grupo.ID_ADMIN));
-        createAndSaveUsuarioAtivo("Antônio Santiago", "antonio.santiago@email.com", "antonio.santiago", Arrays.asList(Grupo.ID_ADMIN));
-
         List<Usuario> usuarios = usuarioService.findAllActives();
 
-        assertThat(usuarios).hasSize(3);
+        assertThat(usuarios).hasSize(2);
     }
 
     @Test
@@ -236,62 +251,8 @@ public class UsuarioServiceImplTest {
                 .anyMatch(Grupo::isAdmin)).isTrue();
     }
 
-    private Usuario createUsuarioPendente(String nome, String email, String login, List<Long> idsGrupos) {
-        List<Grupo> grupos = grupoRepository.findAllById(idsGrupos);
-
-        Usuario usuario = new Usuario();
-        usuario.setNome(nome);
-        usuario.setEmail(email);
-        usuario.setLogin(login);
-        usuario.setSenha(new Senha(null, RandomString.make(32)));
-        usuario.setPendente(true);
-        usuario.setBloqueado(false);
-        usuario.setGrupos(new HashSet<>(grupos));
-
-        return usuario;
-    }
-
-    private Usuario createAndSaveUsuarioPendente(String nome, String email, String login, List<Long> idsGrupos) {
-        return usuarioRepository.save(createUsuarioPendente(nome, email, login, idsGrupos));
-    }
-
-    private Usuario createUsuarioAtivo(String nome, String email, String login, List<Long> idsGrupos) {
-        List<Grupo> grupos = grupoRepository.findAllById(idsGrupos);
-
-        Usuario usuario = new Usuario();
-        usuario.setNome(nome);
-        usuario.setEmail(email);
-        usuario.setLogin(login);
-        usuario.setSenha(new Senha(null, RandomString.make(32)));
-        usuario.setPendente(false);
-        usuario.setBloqueado(false);
-        usuario.setGrupos(new HashSet<>(grupos));
-
-        return usuario;
-    }
-
-    private Usuario createAndSaveUsuarioAtivo(String nome, String email, String login, List<Long> idsGrupos) {
-        return usuarioRepository.save(createUsuarioAtivo(nome, email, login, idsGrupos));
-    }
-
-    private Usuario createUsuarioInativo(String nome, String email, String login, List<Long> idsGrupos) {
-        List<Grupo> grupos = grupoRepository.findAllById(idsGrupos);
-
-        Usuario usuario = new Usuario();
-        usuario.setNome(nome);
-        usuario.setEmail(email);
-        usuario.setLogin(login);
-        usuario.setSenha(new Senha(null, RandomString.make(32)));
-        usuario.setPendente(false);
-        usuario.setBloqueado(false);
-        usuario.setGrupos(new HashSet<>(grupos));
-        usuario.inativar();
-
-        return usuario;
-    }
-
-    private Usuario createAndSaveUsuarioInativo(String nome, String email, String login, List<Long> idsGrupos) {
-        return usuarioRepository.save(createUsuarioInativo(nome, email, login, idsGrupos));
+    private Set<Grupo> findGruposByIds(Long... ids) {
+        return new HashSet<>(grupoRepository.findAllById(Arrays.asList(ids)));
     }
 
 }

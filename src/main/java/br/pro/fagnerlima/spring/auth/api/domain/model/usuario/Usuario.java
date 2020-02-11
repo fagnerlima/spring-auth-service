@@ -76,9 +76,6 @@ public class Usuario extends AuditedBaseEntity {
 
     public Usuario() {
         super();
-        pendente = true;
-        bloqueado = false;
-        senha = new Senha();
     }
 
     public Boolean isAdmin() {
