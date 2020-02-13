@@ -8,6 +8,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.DuplicateKeyException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidTokenException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.NotAuthenticatedUserException;
@@ -267,6 +270,7 @@ public class UsuarioServiceImplTest {
                 .build();
         usuarioService.save(usuario);
 
+        verifySendMailRegistration();
         assertThat(usuario.getId()).isNotNull();
         assertThat(usuario.getEmail()).isEqualTo("miguel.lima@email.com");
         assertThat(usuario.getLogin()).isEqualTo("miguel.lima");
@@ -277,11 +281,84 @@ public class UsuarioServiceImplTest {
         assertAuditingFields(usuario, MOCK_LOGGED_USERNAME);
     }
 
+    @Test
+    public void testSave_whenEmailNotUnique() {
+        Usuario usuario1 = new UsuarioBuilder()
+                .withNome("Miguel Lima")
+                .withEmail("miguel.lima@email.com")
+                .withLogin("miguel.lima")
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .withAtivo(true)
+                .build();
+        usuarioService.save(usuario1);
+
+        Usuario usuario2 = new UsuarioBuilder()
+                .withNome("Miguel Lima")
+                .withEmail("miguel.lima@email.com")
+                .withLogin("miguel.lima1")
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .withAtivo(true)
+                .build();
+
+        assertThrows(DuplicateKeyException.class, () -> usuarioService.save(usuario2), "usuario.duplicate-key.email");
+    }
+
+    @Test
+    public void testSave_whenLoginNotUnique() {
+        Usuario usuario1 = new UsuarioBuilder()
+                .withNome("Miguel Lima")
+                .withEmail("miguel.lima@email.com")
+                .withLogin("miguel.lima")
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .withAtivo(true)
+                .build();
+        usuarioService.save(usuario1);
+
+        Usuario usuario2 = new UsuarioBuilder()
+                .withNome("Miguel Lima")
+                .withEmail("miguel.lima1@email.com")
+                .withLogin("miguel.lima")
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .withAtivo(true)
+                .build();
+
+        assertThrows(DuplicateKeyException.class, () -> usuarioService.save(usuario2), "usuario.duplicate-key.login");
+    }
+
+    @Test
+    public void testUpdate() {
+        Usuario usuario = new UsuarioBuilder()
+                .withNome("Miguel Lima")
+                .withEmail("miguel.lima@email.com")
+                .withLogin("miguel.lima")
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .withAtivo(true)
+                .build();
+        usuarioService.save(usuario);
+
+        Usuario usuarioModificado = new UsuarioBuilder()
+                .withNome("Miguel Araújo Lima")
+                .withEmail("miguel.lima@email.com")
+                .withLogin("miguel.lima")
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .withAtivo(true)
+                .build();
+        Usuario usuarioAtualizado = usuarioService.update(usuario.getId(), usuarioModificado);
+
+        verifySendMailRegistration();
+        assertThat(usuarioAtualizado.getId()).isEqualTo(usuario.getId());
+        assertThat(usuarioAtualizado.getNome()).isEqualTo("Miguel Araújo Lima");
+    }
+
     private void assertIsAdmin(Usuario usuario) {
         assertThat(usuario.getId()).isEqualTo(Usuario.ID_ADMIN);
         assertThat(usuario.getNome()).isEqualTo("Administrador");
         assertThat(usuario.getGrupos().stream()
                 .anyMatch(Grupo::isAdmin)).isTrue();
+    }
+
+    private void verifySendMailRegistration() {
+        verify(mailService, times(1)).send(any(MailRequestTO.class));
     }
 
     private Set<Grupo> findGruposByIds(Long... ids) {
