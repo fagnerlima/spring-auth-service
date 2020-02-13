@@ -1,10 +1,13 @@
 package br.pro.fagnerlima.spring.auth.api.application.service;
 
+import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertAuditingFields;
 import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertPage;
 import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertPageNoContent;
 import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.mockAuthenticationForAuditing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -16,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
@@ -30,6 +34,8 @@ import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.GrupoRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MailService;
+import br.pro.fagnerlima.spring.auth.api.presentation.dto.email.MailRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioFilterRequestTO;
 import br.pro.fagnerlima.spring.auth.api.testcase.builder.UsuarioBuilder;
 import br.pro.fagnerlima.spring.auth.api.testcase.builder.UsuarioFilterRequestTOBuilder;
@@ -37,6 +43,8 @@ import br.pro.fagnerlima.spring.auth.api.testcase.builder.UsuarioFilterRequestTO
 @ActiveProfiles("test")
 @SpringBootTest
 public class UsuarioServiceImplTest {
+
+    private static final String MOCK_LOGGED_USERNAME = "admin";
 
     @Autowired
     private UsuarioService usuarioService;
@@ -50,9 +58,13 @@ public class UsuarioServiceImplTest {
     @Autowired
     private SpecificationFactory<Usuario> specificationFactory;
 
+    @MockBean
+    private MailService mailService;
+
     @BeforeEach
     public void setUp() throws Exception {
         mockAuthenticationForAuditing("admin");
+        doNothing().when(mailService).send(any(MailRequestTO.class));
 
         usuarioRepository.save(new UsuarioBuilder()
                 .withNome("José de Souza")
@@ -242,6 +254,27 @@ public class UsuarioServiceImplTest {
         mockAuthenticationForAuditing(null);
 
         assertThrows(NotAuthenticatedUserException.class, () -> usuarioService.getAutenticado());
+    }
+
+    @Test
+    public void testSave() {
+        Usuario usuario = new UsuarioBuilder()
+                .withNome("Miguel Lima")
+                .withEmail("miguel.LIMA@email.com")
+                .withLogin("MIGUEL.lima")
+                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .withAtivo(true)
+                .build();
+        usuarioService.save(usuario);
+
+        assertThat(usuario.getId()).isNotNull();
+        assertThat(usuario.getEmail()).isEqualTo("miguel.lima@email.com");
+        assertThat(usuario.getLogin()).isEqualTo("miguel.lima");
+        assertThat(usuario.getPendente()).isTrue();
+        assertThat(usuario.getBloqueado()).isFalse();
+        assertThat(usuario.getSenha().getResetToken()).isNotBlank();
+        assertThat(usuario.getSenha().getValor()).isNull();
+        assertAuditingFields(usuario, MOCK_LOGGED_USERNAME);
     }
 
     private void assertIsAdmin(Usuario usuario) {
