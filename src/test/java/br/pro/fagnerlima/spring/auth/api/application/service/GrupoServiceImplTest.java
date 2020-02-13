@@ -219,7 +219,6 @@ public class GrupoServiceImplTest {
 
     private void assertIsAdmin(Grupo grupo) {
         assertThat(grupo.getId()).isEqualTo(Grupo.ID_ADMIN);
-        assertThat(grupo.getNome()).isEqualTo("Administrador");
         assertThat(grupo.getPermissoes().stream()
                 .anyMatch(Permissao::hasAdmin)).isTrue();
     }
