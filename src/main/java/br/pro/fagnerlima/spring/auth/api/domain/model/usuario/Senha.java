@@ -7,13 +7,17 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.validation.constraints.Size;
 
+import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.bean.Nullable;
+
 @Embeddable
 public class Senha {
 
+    @Nullable
     @Size(min = 6, max = 64)
     @Column(name = "valor_senha")
     private String valor;
 
+    @Nullable
     @Column(name = "reset_token_senha")
     private String resetToken;
 
@@ -29,18 +33,17 @@ public class Senha {
         dataAtualizacao = LocalDateTime.now();
     }
 
-    public Senha(@Size(min = 6, max = 64) String valor, String resetToken) {
+    public Senha(String valor, String resetToken) {
         this();
         this.valor = valor;
         this.resetToken = resetToken;
     }
 
-    public Senha(String valor, String resetToken, Integer tentativasErro, LocalDateTime dataAtualizacao) {
+    public Senha(String valor, String resetToken, Integer tentativasErro) {
         this();
         this.valor = valor;
         this.resetToken = resetToken;
         this.tentativasErro = tentativasErro;
-        this.dataAtualizacao = dataAtualizacao;
     }
 
     public void clearResetToken() {
@@ -69,6 +72,10 @@ public class Senha {
 
     public String getResetToken() {
         return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
     }
 
     public Integer getTentativasErro() {

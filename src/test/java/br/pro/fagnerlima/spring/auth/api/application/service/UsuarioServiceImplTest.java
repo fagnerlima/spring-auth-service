@@ -381,8 +381,7 @@ public class UsuarioServiceImplTest {
         Usuario usuarioAtualizado = usuarioService.updateSenhaByResetToken(usuario.getSenha().getResetToken(), valorSenha);
 
         assertThat(PasswordGeneratorUtils.validate(valorSenha, usuarioAtualizado.getSenha().getValor())).isTrue();
-        // TODO fix bug
-//        assertThat(usuarioAtualizado.getSenha().getResetToken()).isNull();
+        assertThat(usuarioAtualizado.getSenha().getResetToken()).isNull();
     }
 
     @Test

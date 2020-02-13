@@ -4,9 +4,10 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import javax.persistence.Embedded;
-import javax.validation.constraints.Null;
 
 import org.apache.commons.lang3.ArrayUtils;
+
+import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.bean.Nullable;
 
 public class BeanUtils {
 
@@ -43,9 +44,9 @@ public class BeanUtils {
 
     private static String[] getNullProperties(Object source) {
         return FieldUtils.getAllFields(source.getClass()).stream().filter(field -> StreamUtils.propagate(() -> {
-            Null nullConstraint = field.getAnnotation(Null.class);
+            Nullable nullable = field.getAnnotation(Nullable.class);
 
-            if (nullConstraint != null) {
+            if (nullable != null) {
                 return false;
             }
 
