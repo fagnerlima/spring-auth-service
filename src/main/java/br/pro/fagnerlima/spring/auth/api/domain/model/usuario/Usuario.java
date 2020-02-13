@@ -6,7 +6,6 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EntityListeners;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -23,9 +22,7 @@ import org.hibernate.envers.Audited;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.AuditedBaseEntity;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.listener.UsuarioListener;
 
-@EntityListeners(UsuarioListener.class)
 @Audited
 @Entity
 @Table(name = "usuario", schema = "auth")

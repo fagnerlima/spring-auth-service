@@ -59,6 +59,8 @@ public class UsuarioServiceImplTest {
                 .withEmail("jose.souza@email.com")
                 .withLogin("jose.souza")
                 .withAtivo(true)
+                .withPendente(true)
+                .withBloqueado(false)
                 .withSenha(new Senha(null, "token#jose.souza"))
                 .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
                 .build());
@@ -67,43 +69,41 @@ public class UsuarioServiceImplTest {
                 .withEmail("jose.paula@email.com")
                 .withLogin("jose.paula")
                 .withAtivo(true)
+                .withPendente(true)
+                .withBloqueado(false)
                 .withSenha(new Senha(null, "token#jose.paula"))
                 .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
                 .build());
-
-        Usuario usuarioInativo = usuarioRepository.save(new UsuarioBuilder()
+        usuarioRepository.save(new UsuarioBuilder()
                 .withNome("Maria da Silva")
                 .withEmail("maria.silva@email.com")
                 .withLogin("maria.silva")
                 .withAtivo(false)
+                .withPendente(false)
+                .withBloqueado(false)
                 .withSenha(new Senha("senha#maria.silva", null))
                 .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
                 .build());
-        usuarioInativo.setPendente(false);
-        usuarioRepository.save(usuarioInativo);
-
-        Usuario usuarioBloqueado = usuarioRepository.save(new UsuarioBuilder()
+        usuarioRepository.save(new UsuarioBuilder()
                 .withNome("Isabel Santos")
                 .withEmail("isabel.santos@email.com")
                 .withLogin("isabel.santos")
                 .withAtivo(true)
+                .withPendente(false)
+                .withBloqueado(true)
                 .withSenha(new Senha("senha#isabel.santos", null))
                 .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
                 .build());
-        usuarioBloqueado.setPendente(false);
-        usuarioBloqueado.setBloqueado(true);
-        usuarioRepository.save(usuarioBloqueado);
-
-        Usuario usuarioAtivo = usuarioRepository.save(new UsuarioBuilder()
+        usuarioRepository.save(new UsuarioBuilder()
                 .withNome("Fagner Lima")
                 .withEmail("fagner.lima@email.com")
                 .withLogin("fagner.lima")
                 .withAtivo(true)
+                .withPendente(false)
+                .withBloqueado(false)
                 .withSenha(new Senha("senha#fagner.lima", null))
                 .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
                 .build());
-        usuarioAtivo.setPendente(false);
-        usuarioRepository.save(usuarioAtivo);
     }
 
     @AfterEach

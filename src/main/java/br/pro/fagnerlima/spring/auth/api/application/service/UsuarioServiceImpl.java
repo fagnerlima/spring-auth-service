@@ -68,8 +68,13 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     @Override
     public Usuario save(Usuario usuario) {
         checkUniqueFields(usuario);
+
         usuario.setSenha(new Senha());
         usuario.getSenha().generateResetToken();
+        usuario.setEmail(usuario.getEmail().toLowerCase());
+        usuario.setLogin(usuario.getLogin().toLowerCase());
+        usuario.setPendente(true);
+        usuario.setBloqueado(false);
 
         Usuario usuarioSaved = super.save(usuario);
 
@@ -86,10 +91,12 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
 
         if (!usuario.getEmail().equalsIgnoreCase(usuarioSaved.getEmail())) {
             checkUniqueEmail(usuario);
+            usuario.setEmail(usuario.getEmail().toLowerCase());
         }
 
         if (!usuario.getLogin().equalsIgnoreCase(usuarioSaved.getLogin())) {
             checkUniqueLogin(usuario);
+            usuario.setLogin(usuario.getLogin().toLowerCase());
 
             if (usuarioSaved.getPendente()) {
                 resendMailPendente = true;
