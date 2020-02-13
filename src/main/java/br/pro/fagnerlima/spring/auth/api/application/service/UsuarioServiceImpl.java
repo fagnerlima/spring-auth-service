@@ -153,7 +153,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
         Usuario usuario = findByEmail(email);
         usuario.getSenha().generateResetToken();
 
-        Usuario usuarioUpdated = this.update(usuario.getId(), usuario);
+        Usuario usuarioUpdated = super.update(usuario.getId(), usuario);
 
         sendMailRecoverySenha(usuarioUpdated);
     }
