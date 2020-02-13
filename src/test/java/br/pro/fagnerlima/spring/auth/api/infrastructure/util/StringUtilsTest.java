@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.spring.auth.api;
+package br.pro.fagnerlima.spring.auth.api.infrastructure.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
