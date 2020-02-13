@@ -53,22 +53,10 @@ public class GrupoServiceImplTest {
     public void setUp() throws Exception {
         mockAuthenticationForAuditing(MOCK_LOGGED_USERNAME);
 
-        grupoRepository.save(new GrupoBuilder()
-                .withNome("Gerência")
-                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(1L))))
-                .build());
-        grupoRepository.save(new GrupoBuilder()
-                .withNome("Recepção")
-                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(2L, 3L, 4L))))
-                .build());
-        grupoRepository.save(new GrupoBuilder()
-                .withNome("Recursos Humanos")
-                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(2L, 3L, 4L, 5L))))
-                .build());
-        grupoRepository.save(new GrupoBuilder()
-                .withNome("Vendas")
-                .withAtivo(false)
-                .build());
+        grupoRepository.save(createGrupo("Gerência", true, 1L));
+        grupoRepository.save(createGrupo("Recepção", true, 2L, 3L, 4L));
+        grupoRepository.save(createGrupo("Recursos Humanos", true, 2L, 3L, 4L, 5L));
+        grupoRepository.save(createGrupo("Vendas", false));
     }
 
     @AfterEach
@@ -168,10 +156,7 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testUpdate() {
-        Long idGrupo = grupoService.save(new GrupoBuilder()
-                .withNome("Marketing")
-                .withAtivo(false)
-                .build()).getId();
+        Long idGrupo = grupoRepository.save(createGrupo("Marketing", false)).getId();
 
         Grupo grupo = grupoService.update(idGrupo, new GrupoBuilder()
                 .withNome("Marketing")
@@ -188,20 +173,14 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testUpdate_whenNotFound() {
-        Grupo grupo = grupoService.save(new GrupoBuilder()
-                .withNome("Marketing")
-                .build());
+        Grupo grupo = createGrupo("Marketing", true, 4L);
 
         assertThrows(InformationNotFoundException.class, () -> grupoService.update(99L, grupo));
     }
 
     @Test
     public void testSwitchActive() {
-        Long idGrupo = grupoService.save(new GrupoBuilder()
-                .withNome("Marketing")
-                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(4L, 5L, 6L))))
-                .withAtivo(false)
-                .build()).getId();
+        Long idGrupo = grupoRepository.save(createGrupo("Marketing", false, 4L, 5L, 6L)).getId();
 
         Grupo grupo = grupoService.switchActive(idGrupo);
 
@@ -221,6 +200,16 @@ public class GrupoServiceImplTest {
         assertThat(grupo.getId()).isEqualTo(Grupo.ID_ADMIN);
         assertThat(grupo.getPermissoes().stream()
                 .anyMatch(Permissao::hasAdmin)).isTrue();
+    }
+
+    private Grupo createGrupo(String nome, Boolean ativo, Long... idsPermissoes) {
+        return new GrupoBuilder()
+                .withNome(nome)
+                .withAtivo(ativo)
+                .withPermissoes(idsPermissoes != null && idsPermissoes.length > 0
+                        ? new HashSet<>(permissaoRepository.findAllById(Arrays.asList(idsPermissoes)))
+                        : null)
+                .build();
     }
 
 }
