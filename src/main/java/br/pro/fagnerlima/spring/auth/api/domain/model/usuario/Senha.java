@@ -55,6 +55,10 @@ public class Senha {
     }
 
     public void addTentativaErro() {
+        if (tentativasErro == null) {
+            tentativasErro = 0;
+        }
+
         tentativasErro++;
     }
 

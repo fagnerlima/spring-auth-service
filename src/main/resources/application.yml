@@ -56,5 +56,6 @@ auth-service:
         validity-seconds: ${OAUTH2_REFRESH_TOKEN_VALIDITY_SECONDS:86400}
     jwt:
       signing-key: ${JWT_SIGNING_KEY:5pr1ng-@uth-53rv1c3}
+    maximum-attempts-login: ${MAXIMUM_ATTEMPTS_LOGIN:5}
   mail:
     sender: ${MAIL_SENDER:sender@email.com}

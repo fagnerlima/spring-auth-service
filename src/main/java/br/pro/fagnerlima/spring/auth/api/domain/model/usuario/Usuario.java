@@ -32,6 +32,9 @@ public class Usuario extends AuditedBaseEntity {
 
     public static final Long ID_ADMIN = 1L;
 
+    public static final String LOGIN_ADMIN = "admin";
+    public static final String LOGIN_SYSTEM = "system";
+
     @NotNull
     @Size(min = 5, max = 128)
     @Column(name = "nome", nullable = false)
@@ -81,6 +84,10 @@ public class Usuario extends AuditedBaseEntity {
 
     public void bloquear() {
         setBloqueado(true);
+    }
+
+    public void switchBloqueado() {
+        bloqueado = !bloqueado;
     }
 
     public void updateSenha(String senha) {

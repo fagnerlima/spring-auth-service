@@ -6,6 +6,8 @@ public interface UsuarioService extends BaseService<Usuario> {
 
     Usuario findByEmail(String email);
 
+    Usuario findByLogin(String login);
+
     Usuario findBySenhaResetToken(String resetToken);
 
     Usuario updateSenhaByResetToken(String resetToken, String senha);
@@ -19,5 +21,11 @@ public interface UsuarioService extends BaseService<Usuario> {
     Usuario updateAutenticado(Usuario usuario);
 
     Usuario updateSenhaAutenticado(String senhaAtual, String senhaNova);
+
+    void loginFailed(String login);
+
+    void loginSucceded(String login);
+
+    void switchBloqueado(Long id);
 
 }

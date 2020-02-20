@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.SecurityProperties;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.DuplicateKeyException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidActualPasswordException;
@@ -36,10 +37,20 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     @Autowired
     private MessageService messageService;
 
+    @Autowired
+    private SecurityProperties securityProperties;
+
     @Transactional(readOnly = true)
     @Override
     public Usuario findByEmail(String email) {
-        return usuarioRepository.findByEmailContainingIgnoreCase(email)
+        return usuarioRepository.findByEmailIgnoreCase(email)
+                .orElseThrow(() -> new InformationNotFoundException(messageService.getMessage("resource.information-not-found")));
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Usuario findByLogin(String login) {
+        return usuarioRepository.findByLoginIgnoreCase(login)
                 .orElseThrow(() -> new InformationNotFoundException(messageService.getMessage("resource.information-not-found")));
     }
 
@@ -80,7 +91,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
 
         sendMailRegistration(usuarioSaved);
 
-        return super.save(usuarioSaved);
+        return usuarioSaved;
     }
 
     @Override
@@ -159,6 +170,42 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     }
 
     @Override
+    public void loginFailed(String login) {
+        try {
+            Usuario usuario = findByLogin(login);
+            usuario.getSenha().addTentativaErro();
+
+            if (usuario.getSenha().getTentativasErro() >= securityProperties.getMaximumAttemptsLogin()) {
+                usuario.bloquear();
+            }
+
+            super.update(usuario.getId(), usuario);
+        } catch (InformationNotFoundException informationNotFoundException) {
+        }
+    }
+
+    @Override
+    public void loginSucceded(String login) {
+        Usuario usuario = findByLogin(login);
+
+        if (usuario.getSenha().getTentativasErro() == 0) {
+            return;
+        }
+
+        usuario.getSenha().resetTentativasErro();
+
+        super.update(usuario.getId(), usuario);
+    }
+
+    @Override
+    public void switchBloqueado(Long id) {
+        Usuario usuario = findById(id);
+        usuario.switchBloqueado();
+
+        super.update(usuario.getId(), usuario);
+    }
+
+    @Override
     protected BaseRepository<Usuario> getRepository() {
         return usuarioRepository;
     }
@@ -170,14 +217,14 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
 
     @Transactional(readOnly = true)
     private void checkUniqueEmail(Usuario usuario) {
-        usuarioRepository.findByEmailContainingIgnoreCase(usuario.getEmail()).ifPresent(u -> {
+        usuarioRepository.findByEmailIgnoreCase(usuario.getEmail()).ifPresent(u -> {
             throw new DuplicateKeyException("usuario.duplicate-key.email");
         });
     }
 
     @Transactional(readOnly = true)
     private void checkUniqueLogin(Usuario usuario) {
-        usuarioRepository.findByLoginContainingIgnoreCase(usuario.getLogin()).ifPresent(u -> {
+        usuarioRepository.findByLoginIgnoreCase(usuario.getLogin()).ifPresent(u -> {
             throw new DuplicateKeyException("usuario.duplicate-key.login");
         });
     }

@@ -389,7 +389,7 @@ public class UsuarioServiceImplTest {
 
         String email = "alice.lima@email.com";
         usuarioService.recoverSenha(email);
-        Usuario usuario = usuarioRepository.findByEmailContainingIgnoreCase(email).get();
+        Usuario usuario = usuarioRepository.findByEmailIgnoreCase(email).get();
 
         verifySendMail(1);
         assertThat(usuario.getSenha().getResetToken()).isNotNull();

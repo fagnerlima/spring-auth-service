@@ -2,10 +2,10 @@ package br.pro.fagnerlima.spring.auth.api.infrastructure.security.service;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,35 +14,49 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
 
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioBloqueadoException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioInativoException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioPendenteException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioSemGrupoAtivoException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
+import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.auth.UsuarioAuth;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.UnauthenticatedException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
 
 @Service
 public class OAuth2UserDetailsService implements UserDetailsService {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioService usuarioService;
 
     @Autowired
     private MessageService messageService;
 
     @Override
     public UsuarioAuth loadUserByUsername(String login) throws UsernameNotFoundException {
-        Optional<Usuario> usuarioOpt = usuarioRepository.findByLoginContainingIgnoreCase(login);
-        Usuario usuario = usuarioOpt.orElseThrow(() -> new UsernameNotFoundException("Usuário e/ou senha incorretos")); // TODO externalizar
+        try {
+            Usuario usuario = usuarioService.findByLogin(login);
+            validateUsuario(usuario);
 
-        validateUsuario(usuario);
+            return new UsuarioAuth(usuario, getAuthorities(usuario));
+        } catch (InformationNotFoundException informationNotFoundException) {
+            throw new UsernameNotFoundException("Usuário e/ou senha incorretos"); // TODO externalizar
+        }
+    }
 
-        return new UsuarioAuth(usuario, getAuthorities(usuario));
+    public Boolean isAuthenticated() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return authentication != null && authentication.getPrincipal() instanceof String;
     }
 
     public String getUsernameAuth() {
+        if (!isAuthenticated()) {
+            throw new UnauthenticatedException();
+        }
+
         return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
