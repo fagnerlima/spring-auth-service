@@ -6,7 +6,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationOperation;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
 
 @Retention(RUNTIME)
 @Target({ FIELD })
@@ -14,6 +14,6 @@ public @interface SpecificationField {
 
     public String property() default "";
 
-    public SpecificationOperation operation() default SpecificationOperation.EQUAL;
+    public Operation operation() default Operation.EQUAL;
 
 }

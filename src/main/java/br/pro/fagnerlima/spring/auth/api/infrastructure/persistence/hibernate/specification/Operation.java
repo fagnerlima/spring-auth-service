@@ -1,6 +1,6 @@
 package br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification;
 
-public enum SpecificationOperation {
+public enum Operation {
 
     EQUAL, EQUAL_IGNORE_CASE,
     LIKE, LIKE_IGNORE_CASE,

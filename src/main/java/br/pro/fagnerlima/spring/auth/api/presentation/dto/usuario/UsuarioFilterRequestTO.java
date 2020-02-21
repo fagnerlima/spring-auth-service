@@ -6,7 +6,7 @@ import java.util.Set;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationEntity;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationField;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationOperation;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
 
 @SpecificationEntity(Usuario.class)
 public class UsuarioFilterRequestTO implements Serializable {
@@ -19,13 +19,13 @@ public class UsuarioFilterRequestTO implements Serializable {
     @SpecificationField(property = "id")
     private Set<Long> ids;
 
-    @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE_UNACCENT)
+    @SpecificationField(operation = Operation.LIKE_IGNORE_CASE_UNACCENT)
     private String nome;
 
-    @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE)
+    @SpecificationField(operation = Operation.LIKE_IGNORE_CASE)
     private String email;
 
-    @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE)
+    @SpecificationField(operation = Operation.LIKE_IGNORE_CASE)
     private String login;
 
     @SpecificationField

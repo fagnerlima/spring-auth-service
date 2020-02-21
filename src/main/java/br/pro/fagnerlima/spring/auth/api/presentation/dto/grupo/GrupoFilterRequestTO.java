@@ -6,7 +6,7 @@ import java.util.Set;
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationEntity;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationField;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationOperation;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
 
 @SpecificationEntity(Grupo.class)
 public class GrupoFilterRequestTO implements Serializable {
@@ -19,7 +19,7 @@ public class GrupoFilterRequestTO implements Serializable {
     @SpecificationField(property = "id")
     private Set<Long> ids;
 
-    @SpecificationField(operation = SpecificationOperation.LIKE_IGNORE_CASE_UNACCENT)
+    @SpecificationField(operation = Operation.LIKE_IGNORE_CASE_UNACCENT)
     private String nome;
 
     @SpecificationField
