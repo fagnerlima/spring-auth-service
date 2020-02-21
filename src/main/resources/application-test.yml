@@ -3,5 +3,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/auth-test
     username: postgres
     password: postgres
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
   cache:
     type: NONE
