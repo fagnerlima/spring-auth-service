@@ -18,7 +18,7 @@ public class PasswordGeneratorUtils {
     private static PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public static void main(String[] args) {
-        System.out.println(PasswordGeneratorUtils.encode("admin"));
+        System.out.println(PasswordGeneratorUtils.encode("Admin@123"));
     }
 
     public static String encode(String password) {

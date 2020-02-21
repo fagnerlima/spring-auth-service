@@ -3,6 +3,7 @@ package br.pro.fagnerlima.spring.auth.api.application.service;
 import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertAuditingFields;
 import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertPage;
 import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertPageNoContent;
+import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.createSpecification;
 import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.mockAuthenticationForAuditing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,6 +25,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
 
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.DuplicateKeyException;
@@ -36,9 +38,11 @@ import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Senha;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
+import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity_;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.GrupoRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.PasswordGeneratorUtils;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MailService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.email.MailRequestTO;
@@ -50,7 +54,7 @@ import br.pro.fagnerlima.spring.auth.api.testcase.builder.UsuarioFilterRequestTO
 @SpringBootTest
 public class UsuarioServiceImplTest {
 
-    private static final String MOCK_LOGGED_USERNAME = "admin";
+    private static final String MOCK_LOGGED_ADMIN = Usuario.LOGIN_ADMIN;
     private static final String MOCK_SENHA_PREFIX = "Senha123#";
     private static final String MOCK_RESET_TOKEN_PREFIX = "Token123#";
 
@@ -62,9 +66,6 @@ public class UsuarioServiceImplTest {
 
     @Autowired
     private GrupoRepository grupoRepository;
-
-    @Autowired
-    private SpecificationFactory<Usuario> specificationFactory;
 
     @MockBean
     private MailService mailService;
@@ -83,8 +84,10 @@ public class UsuarioServiceImplTest {
 
     @AfterEach
     public void tearDown() throws Exception {
-        usuarioRepository.findAll().stream()
-                .filter(u -> !u.isAdmin())
+        Specification<Usuario> specification = new SpecificationBuilder<Usuario>()
+                .and(BaseEntity_.ID, Usuario.ID_ADMIN, Operation.GREATER_THAN)
+                .build();
+        usuarioRepository.findAll(specification).stream()
                 .forEach(u -> usuarioRepository.delete(u));
     }
 
@@ -133,11 +136,11 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterById() {
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+        UsuarioFilterRequestTO filter = new UsuarioFilterRequestTOBuilder()
                 .withId(Usuario.ID_ADMIN)
                 .build();
 
-        Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
+        Page<Usuario> usuariosPage = usuarioService.findAll(createSpecification(filter), PageRequest.of(0, 10));
 
         assertPage(usuariosPage, 10, 0, 1, 1, 1);
         assertIsAdmin(usuariosPage.getContent().get(0));
@@ -145,62 +148,62 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByNome() {
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+        UsuarioFilterRequestTO filter = new UsuarioFilterRequestTOBuilder()
                 .withNome("jose")
                 .build();
 
-        Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
+        Page<Usuario> usuariosPage = usuarioService.findAll(createSpecification(filter), PageRequest.of(0, 10));
 
         assertPage(usuariosPage, 10, 0, 2, 1, 2);
     }
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByEmail() {
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+        UsuarioFilterRequestTO filter = new UsuarioFilterRequestTOBuilder()
                 .withEmail("jose")
                 .build();
 
-        Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
+        Page<Usuario> usuariosPage = usuarioService.findAll(createSpecification(filter), PageRequest.of(0, 10));
 
         assertPage(usuariosPage, 10, 0, 2, 1, 2);
     }
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByLogin() {
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+        UsuarioFilterRequestTO filter = new UsuarioFilterRequestTOBuilder()
                 .withNome("jose")
                 .build();
 
-        Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
+        Page<Usuario> usuariosPage = usuarioService.findAll(createSpecification(filter), PageRequest.of(0, 10));
 
         assertPage(usuariosPage, 10, 0, 2, 1, 2);
     }
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByAtivo() {
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+        UsuarioFilterRequestTO filter = new UsuarioFilterRequestTOBuilder()
                 .withAtivo(true)
                 .build();
 
-        Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
+        Page<Usuario> usuariosPage = usuarioService.findAll(createSpecification(filter), PageRequest.of(0, 10));
 
         assertPage(usuariosPage, 10, 0, 5, 1, 5);
     }
 
     @Test
     public void testFindAllBySpecificationAndPageable_notFound() {
-        UsuarioFilterRequestTO usuarioFilterRequestTO = new UsuarioFilterRequestTOBuilder()
+        UsuarioFilterRequestTO filter = new UsuarioFilterRequestTOBuilder()
                 .withNome("alberto")
                 .build();
 
-        Page<Usuario> usuariosPage = usuarioService.findAll(specificationFactory.create(usuarioFilterRequestTO), PageRequest.of(0, 10));
+        Page<Usuario> usuariosPage = usuarioService.findAll(createSpecification(filter), PageRequest.of(0, 10));
 
         assertPageNoContent(usuariosPage, 10, 0);
     }
 
     @Test
-    public void findAllActives() {
-        List<Usuario> usuarios = usuarioService.findAllActives();
+    public void findAllActive() {
+        List<Usuario> usuarios = usuarioService.findAllActive();
 
         assertThat(usuarios).hasSize(2);
     }
@@ -238,7 +241,7 @@ public class UsuarioServiceImplTest {
         assertThat(usuario.getBloqueado()).isFalse();
         assertThat(usuario.getSenha().getResetToken()).isNotBlank();
         assertThat(usuario.getSenha().getValor()).isNull();
-        assertAuditingFields(usuario, MOCK_LOGGED_USERNAME);
+        assertAuditingFields(usuario, MOCK_LOGGED_ADMIN);
     }
 
     @Test

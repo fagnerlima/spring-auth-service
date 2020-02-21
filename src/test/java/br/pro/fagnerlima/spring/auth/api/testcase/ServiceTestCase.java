@@ -7,11 +7,13 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import br.pro.fagnerlima.spring.auth.api.domain.shared.AuditedBaseEntity;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
 
 public class ServiceTestCase {
 
@@ -23,6 +25,12 @@ public class ServiceTestCase {
         when(securityContext.getAuthentication()).thenReturn(authentication);
 
         SecurityContextHolder.setContext(securityContext);
+    }
+
+    public static <T> Specification<T> createSpecification(Object filter) {
+        return new SpecificationBuilder<T>()
+                .and(filter)
+                .build();
     }
 
     public static void assertPage(Page<?> page, int pageSize, int pageNumber, int numberOfElements, int totalPages, int totalElements) {

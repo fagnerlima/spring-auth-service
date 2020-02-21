@@ -14,10 +14,13 @@ import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidTo
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.NotAuthenticatedUserException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Senha;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
+import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario_;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.factory.MailFactory;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.BaseRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.PasswordGeneratorUtils;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MailService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
@@ -72,8 +75,13 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
 
     @Transactional(readOnly = true)
     @Override
-    public List<Usuario> findAllActives() {
-        return usuarioRepository.findByAtivoAndPendenteAndBloqueado(true, false, false);
+    public List<Usuario> findAllActive() {
+        return usuarioRepository.findAll(new SpecificationBuilder<Usuario>()
+                .and(Usuario_.ID, 0L, Operation.GREATER_THAN)
+                .and(Usuario_.ATIVO, true)
+                .and(Usuario_.PENDENTE, false)
+                .and(Usuario_.BLOQUEADO, false)
+                .build());
     }
 
     @Override

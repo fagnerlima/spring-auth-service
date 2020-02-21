@@ -14,7 +14,7 @@ public interface BaseService<T> {
 
     public Page<T> findAll(Specification<T> specification, Pageable pageable);
 
-    public List<T> findAllActives();
+    public List<T> findAllActive();
 
     public T save(T entity);
 

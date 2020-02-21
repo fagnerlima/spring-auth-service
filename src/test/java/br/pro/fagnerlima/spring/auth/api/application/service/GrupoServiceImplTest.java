@@ -3,6 +3,7 @@ package br.pro.fagnerlima.spring.auth.api.application.service;
 import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertAuditingFields;
 import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertPage;
 import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.assertPageNoContent;
+import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.createSpecification;
 import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.mockAuthenticationForAuditing;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -18,15 +19,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
 
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
+import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
+import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity_;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.GrupoRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.PermissaoRepository;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoFilterRequestTO;
 import br.pro.fagnerlima.spring.auth.api.testcase.builder.GrupoBuilder;
 import br.pro.fagnerlima.spring.auth.api.testcase.builder.GrupoFilterRequestTOBuilder;
@@ -35,7 +40,7 @@ import br.pro.fagnerlima.spring.auth.api.testcase.builder.GrupoFilterRequestTOBu
 @SpringBootTest
 public class GrupoServiceImplTest {
 
-    private static final String MOCK_LOGGED_USERNAME = "admin";
+    private static final String MOCK_LOGGED_ADMIN = Usuario.LOGIN_ADMIN;
 
     @Autowired
     private GrupoService grupoService;
@@ -46,12 +51,9 @@ public class GrupoServiceImplTest {
     @Autowired
     private PermissaoRepository permissaoRepository;
 
-    @Autowired
-    private SpecificationFactory<Grupo> specificationFactory;
-
     @BeforeEach
     public void setUp() throws Exception {
-        mockAuthenticationForAuditing(MOCK_LOGGED_USERNAME);
+        mockAuthenticationForAuditing(MOCK_LOGGED_ADMIN);
 
         grupoRepository.save(createGrupo("Gerência", true, 1L));
         grupoRepository.save(createGrupo("Recepção", true, 2L, 3L, 4L));
@@ -61,8 +63,10 @@ public class GrupoServiceImplTest {
 
     @AfterEach
     public void tearDown() throws Exception {
-        grupoRepository.findAll().stream()
-                .filter(g -> !g.isAdmin())
+        Specification<Grupo> specification = new SpecificationBuilder<Grupo>()
+                .and(BaseEntity_.ID, Grupo.ID_ADMIN, Operation.GREATER_THAN)
+                .build();
+        grupoRepository.findAll(specification).stream()
                 .forEach(g -> grupoRepository.delete(g));
     }
 
@@ -87,11 +91,11 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterById() {
-        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTOBuilder()
-                .withId(1L)
+        GrupoFilterRequestTO filter = new GrupoFilterRequestTOBuilder()
+                .withId(Grupo.ID_ADMIN)
                 .build();
 
-        Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
+        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter), PageRequest.of(0, 10));
 
         assertPage(gruposPage, 10, 0, 1, 1, 1);
         assertIsAdmin(gruposPage.getContent().get(0));
@@ -99,11 +103,11 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByNome() {
-        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTOBuilder()
+        GrupoFilterRequestTO filter = new GrupoFilterRequestTOBuilder()
                 .withNome("recepcao")
                 .build();
 
-        Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
+        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter), PageRequest.of(0, 10));
 
         assertPage(gruposPage, 10, 0, 1, 1, 1);
         assertThat(gruposPage.getContent().get(0).getNome()).isEqualTo("Recepção");
@@ -111,11 +115,11 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_filterByAtivo() {
-        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTOBuilder()
+        GrupoFilterRequestTO filter = new GrupoFilterRequestTOBuilder()
                 .withAtivo(true)
                 .build();
 
-        Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
+        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter), PageRequest.of(0, 10));
 
         assertPage(gruposPage, 10, 0, 4, 1, 4);
         assertThat(gruposPage.getContent().stream()
@@ -124,18 +128,18 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testFindAllBySpecificationAndPageable_notFound() {
-        GrupoFilterRequestTO grupoFilterRequestTO = new GrupoFilterRequestTOBuilder()
+        GrupoFilterRequestTO filter = new GrupoFilterRequestTOBuilder()
                 .withNome("tecnologia da informacao")
                 .build();
 
-        Page<Grupo> gruposPage = grupoService.findAll(specificationFactory.create(grupoFilterRequestTO), PageRequest.of(0, 10));
+        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter), PageRequest.of(0, 10));
 
         assertPageNoContent(gruposPage, 10, 0);
     }
 
     @Test
-    public void testFindAllActives() {
-        List<Grupo> grupos = grupoService.findAllActives();
+    public void testFindAllActive() {
+        List<Grupo> grupos = grupoService.findAllActive();
 
         assertThat(grupos).hasSize(4);
     }
@@ -151,7 +155,7 @@ public class GrupoServiceImplTest {
         assertThat(grupo.getNome()).isEqualTo("Marketing");
         assertThat(grupo.getPermissoes()).hasSize(3);
         assertThat(grupo.getAtivo()).isTrue();
-        assertAuditingFields(grupo, MOCK_LOGGED_USERNAME);
+        assertAuditingFields(grupo, MOCK_LOGGED_ADMIN);
     }
 
     @Test
@@ -168,7 +172,7 @@ public class GrupoServiceImplTest {
         assertThat(grupo.getNome()).isEqualTo("Marketing");
         assertThat(grupo.getPermissoes()).hasSize(3);
         assertThat(grupo.getAtivo()).isTrue();
-        assertAuditingFields(grupo, MOCK_LOGGED_USERNAME);
+        assertAuditingFields(grupo, MOCK_LOGGED_ADMIN);
     }
 
     @Test
@@ -188,7 +192,7 @@ public class GrupoServiceImplTest {
         assertThat(grupo.getNome()).isEqualTo("Marketing");
         assertThat(grupo.getPermissoes()).hasSize(3);
         assertThat(grupo.getAtivo()).isTrue();
-        assertAuditingFields(grupo, MOCK_LOGGED_USERNAME);
+        assertAuditingFields(grupo, MOCK_LOGGED_ADMIN);
     }
 
     @Test

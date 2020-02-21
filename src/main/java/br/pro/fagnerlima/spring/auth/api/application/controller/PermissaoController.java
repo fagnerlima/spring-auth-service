@@ -30,9 +30,9 @@ public class PermissaoController {
     private ResponseService responseService;
 
     @GetMapping("/ativos")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_PERMISSAO_LISTAR') and #oauth2.hasScope('read')")
-    public ResponseEntity<ResponseTO<List<PermissaoResponseTO>>> findAllActives() {
-        List<Permissao> permissoes = permissaoService.findAllActives();
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_PERMISSAO_LISTAR') and #oauth2.hasScope('read')")
+    public ResponseEntity<ResponseTO<List<PermissaoResponseTO>>> findAllActive() {
+        List<Permissao> permissoes = permissaoService.findAllActive();
         List<PermissaoResponseTO> responseTOList = converterService.convert(permissoes, PermissaoResponseTO.class);
 
         return responseService.ok(responseTOList);

@@ -20,9 +20,9 @@ public class PermissaoServiceImpl extends BaseServiceImpl<Permissao> implements 
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable("PermissaoServiceImpl_findAllActives")
-    public List<Permissao> findAllActives() {
-        return permissaoRepository.findAllActives();
+    @Cacheable("PermissaoServiceImpl_findAllActive")
+    public List<Permissao> findAllActive() {
+        return super.findAllActive();
     }
 
     @Override

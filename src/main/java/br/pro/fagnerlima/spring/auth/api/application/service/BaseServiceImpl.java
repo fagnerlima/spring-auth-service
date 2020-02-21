@@ -13,7 +13,10 @@ import br.pro.fagnerlima.spring.auth.api.application.service.exception.Informati
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.BaseService;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
+import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity_;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.BaseRepository;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2UserDetailsService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.util.BeanUtils;
 
@@ -33,19 +36,35 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     @Transactional(readOnly = true)
     @Override
     public Page<T> findAll(Pageable pageable) {
-        return getRepository().findAll(pageable);
+        if (getUsuarioAutenticado().isRoot()) {
+            return getRepository().findAll(pageable);
+        }
+
+        return getRepository().findAll(new SpecificationBuilder<T>()
+                .and(BaseEntity_.ID, 0, Operation.GREATER_THAN)
+                .build(), pageable);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<T> findAll(Specification<T> specification, Pageable pageable) {
+        if (!getUsuarioAutenticado().isRoot()) {
+            return getRepository().findAll(new SpecificationBuilder<T>()
+                    .and(BaseEntity_.ID, 0, Operation.GREATER_THAN)
+                    .and(specification)
+                    .build(), pageable);
+        }
+
         return getRepository().findAll(specification, pageable);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<T> findAllActives() {
-        return getRepository().findByAtivo(true);
+    public List<T> findAllActive() {
+        return getRepository().findAll(new SpecificationBuilder<T>()
+                .and(BaseEntity_.ID, 0, Operation.GREATER_THAN)
+                .and(BaseEntity_.ATIVO, true)
+                .build());
     }
 
     @Transactional

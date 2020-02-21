@@ -1,7 +1,7 @@
 <ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="ehcache.xsd">
 
-  <cache name="PermissaoServiceImpl_findAllActives"
+  <cache name="PermissaoServiceImpl_findAllActive"
          maxEntriesLocalHeap="1"
          timeToLiveSeconds="604800">
   </cache>

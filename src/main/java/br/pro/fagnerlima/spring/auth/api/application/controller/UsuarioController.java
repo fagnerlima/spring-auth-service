@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ConverterService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ResponseService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
@@ -43,25 +43,24 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private SpecificationFactory<Usuario> specificationFactory;
-
-    @Autowired
     private ConverterService converterService;
 
     @Autowired
     private ResponseService responseService;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping
     public ResponseEntity<ResponseTO<Page<UsuarioReducedResponseTO>>> findAll(UsuarioFilterRequestTO filterRequestTO, Pageable pageable) {
-        Specification<Usuario> specification = specificationFactory.create(filterRequestTO);
+        Specification<Usuario> specification = new SpecificationBuilder<Usuario>()
+                .and(filterRequestTO)
+                .build();
         Page<Usuario> page = usuarioService.findAll(specification, pageable);
         Page<UsuarioReducedResponseTO> responseTOPage = converterService.convert(page, UsuarioReducedResponseTO.class);
 
         return responseService.ok(responseTOPage);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USUARIO_BUSCAR') and #oauth2.hasScope('read')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_BUSCAR') and #oauth2.hasScope('read')")
     @GetMapping("/{id}")
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> find(@PathVariable Long id) {
         Usuario usuario = usuarioService.findById(id);
@@ -70,16 +69,16 @@ public class UsuarioController {
         return responseService.ok(responseTO);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping("/ativos")
-    public ResponseEntity<ResponseTO<List<UsuarioMinResponseTO>>> findAllActives() {
-        List<Usuario> usuarios = usuarioService.findAllActives();
+    public ResponseEntity<ResponseTO<List<UsuarioMinResponseTO>>> findAllActive() {
+        List<Usuario> usuarios = usuarioService.findAllActive();
         List<UsuarioMinResponseTO> responseTOList = converterService.convert(usuarios, UsuarioMinResponseTO.class);
 
         return responseService.ok(responseTOList);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USUARIO_SALVAR') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_SALVAR') and #oauth2.hasScope('write')")
     @PostMapping
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> save(@RequestBody UsuarioRequestTO requestTO) {
         Usuario usuario = converterService.convert(requestTO, Usuario.class);
@@ -89,7 +88,7 @@ public class UsuarioController {
         return responseService.created(responseTO);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USUARIO_EDITAR') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_EDITAR') and #oauth2.hasScope('write')")
     @PutMapping("/{id}")
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> update(@PathVariable Long id, @RequestBody UsuarioRequestTO requestTO) {
         Usuario usuario = converterService.convert(requestTO, Usuario.class);
@@ -107,7 +106,7 @@ public class UsuarioController {
         return responseService.ok(responseTO);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_USUARIO_ALTERAR_STATUS') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_ALTERAR_STATUS') and #oauth2.hasScope('write')")
     @PatchMapping("/{id}/ativo")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void switchActive(@PathVariable Long id) {

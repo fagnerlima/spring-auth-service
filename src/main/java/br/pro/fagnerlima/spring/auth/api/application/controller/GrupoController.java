@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ConverterService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ResponseService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
@@ -39,25 +39,24 @@ public class GrupoController {
     private GrupoService grupoService;
 
     @Autowired
-    private SpecificationFactory<Grupo> specificationFactory;
-
-    @Autowired
     private ConverterService converterService;
 
     @Autowired
     private ResponseService responseService;
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_GRUPO_LISTAR') and #oauth2.hasScope('read')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping
     public ResponseEntity<ResponseTO<Page<GrupoReducedResponseTO>>> findAll(GrupoFilterRequestTO filterRequestTO, Pageable pageable) {
-        Specification<Grupo> specification = specificationFactory.create(filterRequestTO);
+        Specification<Grupo> specification = new SpecificationBuilder<Grupo>()
+                .and(filterRequestTO)
+                .build();
         Page<Grupo> page = grupoService.findAll(specification, pageable);
         Page<GrupoReducedResponseTO> responseTOPage = converterService.convert(page, GrupoReducedResponseTO.class);
 
         return responseService.ok(responseTOPage);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_GRUPO_BUSCAR') and #oauth2.hasScope('read')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_BUSCAR') and #oauth2.hasScope('read')")
     @GetMapping("/{id}")
     public ResponseEntity<ResponseTO<GrupoResponseTO>> find(@PathVariable Long id) {
         Grupo grupo = grupoService.findById(id);
@@ -66,16 +65,16 @@ public class GrupoController {
         return responseService.ok(responseTO);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_GRUPO_LISTAR') and #oauth2.hasScope('read')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping("/ativos")
-    public ResponseEntity<ResponseTO<List<GrupoMinResponseTO>>> findAllActives() {
-        List<Grupo> grupos = grupoService.findAllActives();
+    public ResponseEntity<ResponseTO<List<GrupoMinResponseTO>>> findAllActive() {
+        List<Grupo> grupos = grupoService.findAllActive();
         List<GrupoMinResponseTO> responseTOList = converterService.convert(grupos, GrupoMinResponseTO.class);
 
         return responseService.ok(responseTOList);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_GRUPO_SALVAR') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_SALVAR') and #oauth2.hasScope('write')")
     @PostMapping
     public ResponseEntity<ResponseTO<GrupoResponseTO>> save(@RequestBody GrupoRequestTO requestTO) {
         Grupo grupo = converterService.convert(requestTO, Grupo.class);
@@ -85,7 +84,7 @@ public class GrupoController {
         return responseService.created(responseTO);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_GRUPO_EDITAR') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_EDITAR') and #oauth2.hasScope('write')")
     @PutMapping("/{id}")
     public ResponseEntity<ResponseTO<GrupoResponseTO>> update(@PathVariable Long id, @RequestBody GrupoRequestTO requestTO) {
         Grupo grupo = converterService.convert(requestTO, Grupo.class);
@@ -95,7 +94,7 @@ public class GrupoController {
         return responseService.ok(responseTO);
     }
 
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_GRUPO_ALTERAR_STATUS') and #oauth2.hasScope('write')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_ALTERAR_STATUS') and #oauth2.hasScope('write')")
     @PatchMapping("/{id}/ativo")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void switchActive(@PathVariable Long id) {
