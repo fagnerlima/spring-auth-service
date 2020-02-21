@@ -30,10 +30,13 @@ public class Usuario extends AuditedBaseEntity {
 
     private static final long serialVersionUID = 4992180182377301896L;
 
+    public static final Long ID_ROOT = -1L;
+    public static final Long ID_SYSTEM = -2L;
     public static final Long ID_ADMIN = 1L;
 
-    public static final String LOGIN_ADMIN = "admin";
+    public static final String LOGIN_ROOT = "root";
     public static final String LOGIN_SYSTEM = "system";
+    public static final String LOGIN_ADMIN = "admin";
 
     @NotNull
     @Size(min = 5, max = 128)
@@ -76,6 +79,10 @@ public class Usuario extends AuditedBaseEntity {
 
     public Usuario() {
         super();
+    }
+
+    public Boolean isRoot() {
+        return id != null && id.equals(ID_ROOT);
     }
 
     public Boolean isAdmin() {

@@ -25,6 +25,8 @@ public class Grupo extends AuditedBaseEntity {
 
     private static final long serialVersionUID = -7881272704210120357L;
 
+    public static final Long ID_ROOT = -1L;
+    public static final Long ID_SYSTEM = -2L;
     public static final Long ID_ADMIN = 1L;
 
     @NotNull
