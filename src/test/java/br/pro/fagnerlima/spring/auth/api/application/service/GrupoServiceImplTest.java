@@ -27,11 +27,9 @@ import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
-import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity_;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.GrupoRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.PermissaoRepository;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.BaseEntitySpecification;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoFilterRequestTO;
 import br.pro.fagnerlima.spring.auth.api.testcase.builder.GrupoBuilder;
 import br.pro.fagnerlima.spring.auth.api.testcase.builder.GrupoFilterRequestTOBuilder;
@@ -63,9 +61,7 @@ public class GrupoServiceImplTest {
 
     @AfterEach
     public void tearDown() throws Exception {
-        Specification<Grupo> specification = new SpecificationBuilder<Grupo>()
-                .and(BaseEntity_.ID, Grupo.ID_ADMIN, Operation.GREATER_THAN)
-                .build();
+        Specification<Grupo> specification = BaseEntitySpecification.idGreaterThan(Grupo.ID_ADMIN);
         grupoRepository.findAll(specification).stream()
                 .forEach(g -> grupoRepository.delete(g));
     }

@@ -38,11 +38,9 @@ import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Senha;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
-import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity_;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.GrupoRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.BaseEntitySpecification;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.PasswordGeneratorUtils;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MailService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.email.MailRequestTO;
@@ -84,9 +82,7 @@ public class UsuarioServiceImplTest {
 
     @AfterEach
     public void tearDown() throws Exception {
-        Specification<Usuario> specification = new SpecificationBuilder<Usuario>()
-                .and(BaseEntity_.ID, Usuario.ID_ADMIN, Operation.GREATER_THAN)
-                .build();
+        Specification<Usuario> specification = BaseEntitySpecification.idGreaterThan(Usuario.ID_ADMIN);
         usuarioRepository.findAll(specification).stream()
                 .forEach(u -> usuarioRepository.delete(u));
     }

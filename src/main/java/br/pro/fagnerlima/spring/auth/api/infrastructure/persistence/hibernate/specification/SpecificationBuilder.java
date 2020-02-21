@@ -100,10 +100,10 @@ public class SpecificationBuilder<T> {
         return this;
     }
 
-    public SpecificationBuilder<T> and(String property, Collection<?> value) {
+    public SpecificationBuilder<T> and(String property, Collection<?> values) {
         return and((root, query, criteriaBuilder) -> {
             In<Object> predicate = criteriaBuilder.in(root.get(property));
-            value.stream().forEach(v -> predicate.value(v));
+            values.stream().forEach(value -> predicate.value(value));
 
             return predicate;
         });

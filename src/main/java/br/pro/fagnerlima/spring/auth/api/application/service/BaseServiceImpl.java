@@ -13,10 +13,9 @@ import br.pro.fagnerlima.spring.auth.api.application.service.exception.Informati
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.BaseService;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
-import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity_;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.BaseRepository;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.BaseEntitySpecification;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2UserDetailsService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.util.BeanUtils;
 
@@ -40,9 +39,7 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
             return getRepository().findAll(pageable);
         }
 
-        return getRepository().findAll(new SpecificationBuilder<T>()
-                .and(BaseEntity_.ID, 0, Operation.GREATER_THAN)
-                .build(), pageable);
+        return getRepository().findAll(BaseEntitySpecification.positiveId(), pageable);
     }
 
     @Transactional(readOnly = true)
@@ -50,7 +47,7 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     public Page<T> findAll(Specification<T> specification, Pageable pageable) {
         if (!getUsuarioAutenticado().isRoot()) {
             return getRepository().findAll(new SpecificationBuilder<T>()
-                    .and(BaseEntity_.ID, 0, Operation.GREATER_THAN)
+                    .and(BaseEntitySpecification.positiveId())
                     .and(specification)
                     .build(), pageable);
         }
@@ -61,10 +58,7 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     @Transactional(readOnly = true)
     @Override
     public List<T> findAllActive() {
-        return getRepository().findAll(new SpecificationBuilder<T>()
-                .and(BaseEntity_.ID, 0, Operation.GREATER_THAN)
-                .and(BaseEntity_.ATIVO, true)
-                .build());
+        return getRepository().findAll(BaseEntitySpecification.positiveIdAndActive());
     }
 
     @Transactional
