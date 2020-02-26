@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ConverterService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ResponseService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
@@ -47,9 +47,7 @@ public class GrupoController {
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping
     public ResponseEntity<ResponseTO<Page<GrupoReducedResponseTO>>> findAll(GrupoFilterRequestTO filterRequestTO, Pageable pageable) {
-        Specification<Grupo> specification = new SpecificationBuilder<Grupo>()
-                .and(filterRequestTO)
-                .build();
+        Specification<Grupo> specification = new SpecificationFactory<Grupo>().create(filterRequestTO);
         Page<Grupo> page = grupoService.findAll(specification, pageable);
         Page<GrupoReducedResponseTO> responseTOPage = converterService.convert(page, GrupoReducedResponseTO.class);
 

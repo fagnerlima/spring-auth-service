@@ -9,43 +9,18 @@ import java.util.List;
 import javax.persistence.criteria.CriteriaBuilder.In;
 import javax.persistence.criteria.Expression;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.jpa.domain.Specification;
 
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationEntity;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationField;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.exception.SpecificationFilterException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.util.FieldUtils;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.util.StringUtils;
 
-public class SpecificationBuilder<T> {
+public class SpecificationFactory<T> {
 
-    private List<Specification<T>> specs = new ArrayList<>();
-
-    public Specification<T> build() {
-        if (specs.isEmpty()) {
-            return null;
-        }
-
-        Specification<T> result = specs.get(0);
-
-        if (specs.size() > 1) {
-            for (int i = 1; i < specs.size(); i++) {
-                result = Specification
-                        .where(result)
-                        .and(specs.get(i));
-            }
-        }
-
-        return result;
-    }
-
-    public SpecificationBuilder<T> and(Specification<T> spec) {
-        specs.add(spec);
-
-        return this;
-    }
-
-    public SpecificationBuilder<T> and(String property, Long value, Operation operation) {
-        and((root, query, criteriaBuilder) -> {
+    public Specification<T> create(String property, Long value, Operation operation) {
+        return (root, query, criteriaBuilder) -> {
             Expression<Long> x = root.get(property);
             Long y = value;
 
@@ -61,25 +36,23 @@ public class SpecificationBuilder<T> {
                 default:
                     return criteriaBuilder.equal(x, y);
             }
-        });
-
-        return this;
+        };
     }
 
-    public SpecificationBuilder<T> and(String property, Integer value, Operation operation) {
-        return and(property, Long.valueOf(value), operation);
+    public Specification<T> create(String property, Integer value, Operation operation) {
+        return create(property, Long.valueOf(value), operation);
     }
 
-    public SpecificationBuilder<T> and(String property, Boolean value) {
-        return and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(property), value));
+    public Specification<T> create(String property, Boolean value) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(property), value);
     }
 
-    public SpecificationBuilder<T> and(String property, Enum<?> value) {
-        return and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(property), value));
+    public Specification<T> create(String property, Enum<?> value) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(property), value);
     }
 
-    public SpecificationBuilder<T> and(String property, LocalDate value, Operation operation) {
-        and((root, query, criteriaBuilder) -> {
+    public Specification<T> create(String property, LocalDate value, Operation operation) {
+        return (root, query, criteriaBuilder) -> {
             Expression<LocalDate> x = root.get(property);
             LocalDate y = value;
 
@@ -95,22 +68,20 @@ public class SpecificationBuilder<T> {
                 default:
                     return criteriaBuilder.equal(x, y);
             }
-        });
-
-        return this;
+        };
     }
 
-    public SpecificationBuilder<T> and(String property, Collection<?> values) {
-        return and((root, query, criteriaBuilder) -> {
+    public Specification<T> create(String property, Collection<?> values) {
+        return (root, query, criteriaBuilder) -> {
             In<Object> predicate = criteriaBuilder.in(root.get(property));
             values.stream().forEach(value -> predicate.value(value));
 
             return predicate;
-        });
+        };
     }
 
-    public SpecificationBuilder<T> and(String property, String value, Operation operation) {
-        and((root, query, criteriaBuilder) -> {
+    public Specification<T> create(String property, String value, Operation operation) {
+        return (root, query, criteriaBuilder) -> {
             Expression<String> x;
             String y;
 
@@ -140,37 +111,55 @@ public class SpecificationBuilder<T> {
                     y = value;
                     return criteriaBuilder.equal(x, y);
             }
-        });
-
-        return this;
+        };
     }
 
-    public SpecificationBuilder<T> and(Object data) {
+    public Specification<T> create(Object filter) {
         try {
-            SpecificationEntity specificationEntity = data.getClass().getAnnotation(SpecificationEntity.class);
-            List<Field> dataFields = FieldUtils.getAllFields(data.getClass(), SpecificationField.class);
+            SpecificationEntity specificationEntity = filter.getClass().getAnnotation(SpecificationEntity.class);
+            List<Field> dataFields = FieldUtils.getAllFields(filter.getClass(), SpecificationField.class);
             List<Field> entityFields = FieldUtils.getAllFields(specificationEntity.value());
+            List<Specification<T>> specs = new ArrayList<>();
 
             for (Field dataField : dataFields) {
                 dataField.setAccessible(true);
-                Object value = dataField.get(data);
+                Object value = dataField.get(filter);
 
                 if (value != null && hasProperty(entityFields, dataField)) {
-                    and(dataField, dataField.get(data));
+                    specs.add(create(dataField, dataField.get(filter)));
                 }
             }
+
+            if (specs.isEmpty()) {
+                return null;
+            }
+
+            Specification<T> result = specs.get(0);
+
+            if (specs.size() > 1) {
+                for (int i = 1; i < specs.size(); i++) {
+                    result = Specification
+                            .where(result)
+                            .and(specs.get(i));
+                }
+            }
+
+            return result;
         } catch (IllegalArgumentException | IllegalAccessException exception) {
             exception.printStackTrace();
+            throw new SpecificationFilterException();
         }
-
-        return this;
     }
 
     private Boolean hasProperty(List<Field> entityFields, Field dataField) {
         return entityFields.stream().filter(ef -> {
                 SpecificationField specificationField = dataField.getAnnotation(SpecificationField.class);
 
-                if (StringUtils.isNotEmpty(specificationField.property())) {
+                if (specificationField == null) {
+                    return false;
+                }
+
+                if (!StringUtils.isEmpty(specificationField.property())) {
                     return ef.getName().equals(specificationField.property());
                 }
 
@@ -178,28 +167,36 @@ public class SpecificationBuilder<T> {
             }).findFirst().isPresent();
     }
 
-    private SpecificationBuilder<T> and(Field field, Object value) {
-        if (field.isAnnotationPresent(SpecificationField.class)) {
-            SpecificationField specificationField = field.getAnnotation(SpecificationField.class);
-            String property = StringUtils.isEmpty(specificationField.property()) ? field.getName() : specificationField.property();
-            Operation operation = specificationField.operation();
-
-            if (value instanceof Number) {
-                and(property, Long.valueOf(value.toString()), operation);
-            } else if (value instanceof Boolean) {
-                and(property, (Boolean) value);
-            } else if (value instanceof LocalDate) {
-                and(property, LocalDate.parse(value.toString()), operation);
-            } else if (value instanceof Enum<?>) {
-                and(property, (Enum<?>) value);
-            } else if (value instanceof Collection) {
-                and(property, (Collection<?>) value);
-            } else {
-                and(property, value.toString(), operation);
-            }
+    private Specification<T> create(Field field, Object value) {
+        if (!field.isAnnotationPresent(SpecificationField.class)) {
+            return null;
         }
 
-        return this;
+        SpecificationField specificationField = field.getAnnotation(SpecificationField.class);
+        String property = StringUtils.isEmpty(specificationField.property()) ? field.getName() : specificationField.property();
+        Operation operation = specificationField.operation();
+
+        if (value instanceof Number) {
+            return create(property, Long.valueOf(value.toString()), operation);
+        }
+
+        if (value instanceof Boolean) {
+            return create(property, (Boolean) value);
+        }
+
+        if (value instanceof LocalDate) {
+            return create(property, LocalDate.parse(value.toString()), operation);
+        }
+
+        if (value instanceof Enum<?>) {
+            return create(property, (Enum<?>) value);
+        }
+
+        if (value instanceof Collection) {
+            return create(property, (Collection<?>) value);
+        }
+
+        return create(property, value.toString(), operation);
     }
 
 }

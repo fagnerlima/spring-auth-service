@@ -13,7 +13,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import br.pro.fagnerlima.spring.auth.api.domain.shared.AuditedBaseEntity;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
 
 public class ServiceTestCase {
 
@@ -28,9 +28,7 @@ public class ServiceTestCase {
     }
 
     public static <T> Specification<T> createSpecification(Object filter) {
-        return new SpecificationBuilder<T>()
-                .and(filter)
-                .build();
+        return new SpecificationFactory<T>().create(filter);
     }
 
     public static void assertPage(Page<?> page, int pageSize, int pageNumber, int numberOfElements, int totalPages, int totalElements) {

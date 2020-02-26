@@ -8,9 +8,7 @@ import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity_;
 public class BaseEntitySpecification {
 
     public static <T extends BaseEntity> Specification<T> idGreaterThan(Long id) {
-        return new SpecificationBuilder<T>()
-                .and(BaseEntity_.ID, id, Operation.GREATER_THAN)
-                .build();
+        return new SpecificationFactory<T>().create(BaseEntity_.ID, id, Operation.GREATER_THAN);
     }
 
     public static <T extends BaseEntity> Specification<T> positiveId() {
@@ -18,16 +16,14 @@ public class BaseEntitySpecification {
     }
 
     public static <T extends BaseEntity> Specification<T> active() {
-        return new SpecificationBuilder<T>()
-                .and(BaseEntity_.ATIVO, true)
-                .build();
+        return new SpecificationFactory<T>().create(BaseEntity_.ATIVO, true);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends BaseEntity> Specification<T> positiveIdAndActive() {
-        return new SpecificationBuilder<T>()
-                .and(positiveId())
-                .and(active())
-                .build();
+        return (Specification<T>) Specification
+                .where(positiveId())
+                .and(active());
     }
 
 }

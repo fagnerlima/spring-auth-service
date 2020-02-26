@@ -83,8 +83,7 @@ public class UsuarioServiceImplTest {
     @AfterEach
     public void tearDown() throws Exception {
         Specification<Usuario> specification = BaseEntitySpecification.idGreaterThan(Usuario.ID_ADMIN);
-        usuarioRepository.findAll(specification).stream()
-                .forEach(u -> usuarioRepository.delete(u));
+        usuarioRepository.deleteAll(usuarioRepository.findAll(specification));
     }
 
     @Test

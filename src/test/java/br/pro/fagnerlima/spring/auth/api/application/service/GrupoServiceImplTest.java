@@ -62,8 +62,7 @@ public class GrupoServiceImplTest {
     @AfterEach
     public void tearDown() throws Exception {
         Specification<Grupo> specification = BaseEntitySpecification.idGreaterThan(Grupo.ID_ADMIN);
-        grupoRepository.findAll(specification).stream()
-                .forEach(g -> grupoRepository.delete(g));
+        grupoRepository.deleteAll(grupoRepository.findAll(specification));
     }
 
     @Test

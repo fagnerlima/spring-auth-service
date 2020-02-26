@@ -15,7 +15,6 @@ import br.pro.fagnerlima.spring.auth.api.domain.service.BaseService;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.BaseEntity;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.BaseRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.BaseEntitySpecification;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2UserDetailsService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.util.BeanUtils;
 
@@ -46,10 +45,9 @@ public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseServi
     @Override
     public Page<T> findAll(Specification<T> specification, Pageable pageable) {
         if (!getUsuarioAutenticado().isRoot()) {
-            return getRepository().findAll(new SpecificationBuilder<T>()
-                    .and(BaseEntitySpecification.positiveId())
-                    .and(specification)
-                    .build(), pageable);
+            return getRepository().findAll(Specification
+                    .where(specification)
+                    .and(BaseEntitySpecification.positiveId()), pageable);
         }
 
         return getRepository().findAll(specification, pageable);

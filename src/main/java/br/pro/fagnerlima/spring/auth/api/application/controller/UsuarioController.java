@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationBuilder;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ConverterService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ResponseService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
@@ -51,9 +51,7 @@ public class UsuarioController {
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping
     public ResponseEntity<ResponseTO<Page<UsuarioReducedResponseTO>>> findAll(UsuarioFilterRequestTO filterRequestTO, Pageable pageable) {
-        Specification<Usuario> specification = new SpecificationBuilder<Usuario>()
-                .and(filterRequestTO)
-                .build();
+        Specification<Usuario> specification = new SpecificationFactory<Usuario>().create(filterRequestTO);
         Page<Usuario> page = usuarioService.findAll(specification, pageable);
         Page<UsuarioReducedResponseTO> responseTOPage = converterService.convert(page, UsuarioReducedResponseTO.class);
 
