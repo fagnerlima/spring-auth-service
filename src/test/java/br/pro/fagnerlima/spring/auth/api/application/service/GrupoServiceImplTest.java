@@ -22,8 +22,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
 
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.BusinessException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
+import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.GrupoRepository;
@@ -158,6 +160,52 @@ public class GrupoServiceImplTest {
         assertThat(grupo.getPermissoes()).hasSize(3);
         assertThat(grupo.getAtivo()).isTrue();
         assertAuditingFields(grupo, MOCK_LOGGED_ADMIN);
+    }
+
+    @Test
+    public void testSave_whenHasPermissaoRoot() {
+        Grupo grupo = new GrupoBuilder()
+                .withNome("Marketing")
+                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(Permissao.ID_ROOT))))
+                .build();
+
+        assertThrows(BusinessException.class, () -> grupoService.save(grupo), "grupo.save.permissoes.root");
+    }
+
+    @Test
+    public void testSave_whenHasPermissaoSystem() {
+        Grupo grupo = new GrupoBuilder()
+                .withNome("Marketing")
+                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(Permissao.ID_SYSTEM))))
+                .build();
+
+        assertThrows(BusinessException.class, () -> grupoService.save(grupo), "grupo.save.permissoes.system");
+    }
+
+    @Test
+    public void testSave_whenHasPermissaoAdmin() {
+        Grupo grupo = grupoService.save(new GrupoBuilder()
+                .withNome("Marketing")
+                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(4L, 5L, 6L))))
+                .build());
+
+        assertThat(grupo.getId()).isGreaterThan(1L);
+        assertThat(grupo.getNome()).isEqualTo("Marketing");
+        assertThat(grupo.getPermissoes()).hasSize(3);
+        assertThat(grupo.getAtivo()).isTrue();
+        assertAuditingFields(grupo, MOCK_LOGGED_ADMIN);
+    }
+
+    @Test
+    public void testSave_whenHasPermissaoAdminAndAdminOrRootNotAuthenticated() {
+        mockAuthenticationForAuditing("system");
+
+        Grupo grupo = new GrupoBuilder()
+                .withNome("Marketing")
+                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(Permissao.ID_SYSTEM))))
+                .build();
+
+        assertThrows(BusinessException.class, () -> grupoService.save(grupo), "grupo.save.permissoes.admin");
     }
 
     @Test

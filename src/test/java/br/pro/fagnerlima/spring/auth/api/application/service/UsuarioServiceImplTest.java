@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.context.ActiveProfiles;
 
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.BusinessException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.DuplicateKeyException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidActualPasswordException;
@@ -70,14 +71,14 @@ public class UsuarioServiceImplTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        mockAuthenticationForAuditing("admin");
+        mockAuthenticationForAuditing(MOCK_LOGGED_ADMIN);
         doNothing().when(mailService).send(any(MailRequestTO.class));
 
-        usuarioRepository.save(createUsuarioPendente("José de Souza", "jose.souza"));
-        usuarioRepository.save(createUsuarioPendente("José de Paula", "jose.paula"));
-        usuarioRepository.save(createUsuarioInativo("Maria da Silva", "maria.silva"));
-        usuarioRepository.save(createUsuarioBloqueado("Isabel dos Santos", "isabel.santos"));
-        usuarioRepository.save(createUsuarioAtivo("Fagner Silva de Lima", "fagner.lima"));
+        usuarioRepository.save(createUsuarioPendente("José de Souza", "jose.souza", Grupo.ID_ADMIN));
+        usuarioRepository.save(createUsuarioPendente("José de Paula", "jose.paula", Grupo.ID_ADMIN));
+        usuarioRepository.save(createUsuarioInativo("Maria da Silva", "maria.silva", Grupo.ID_ADMIN));
+        usuarioRepository.save(createUsuarioBloqueado("Isabel dos Santos", "isabel.santos", Grupo.ID_ADMIN));
+        usuarioRepository.save(createUsuarioAtivo("Fagner Silva de Lima", "fagner.lima", Grupo.ID_ADMIN));
     }
 
     @AfterEach
@@ -248,14 +249,40 @@ public class UsuarioServiceImplTest {
     }
 
     @Test
+    public void testSave_whenHasGrupoRoot() {
+        Usuario usuario = createUsuarioAtivo("Miguel Lima", "miguel.lima", Grupo.ID_ROOT);
+
+        assertThrows(BusinessException.class, () -> usuarioService.save(usuario), "usuario.save.grupos.root");
+    }
+
+    @Test
+    public void testSave_whenHasGrupoSystem() {
+        Usuario usuario = createUsuarioAtivo("Miguel Lima", "miguel.lima", Grupo.ID_SYSTEM);
+
+        assertThrows(BusinessException.class, () -> usuarioService.save(usuario), "usuario.save.grupos.system");
+    }
+
+    @Test
+    public void testSave_whenHasGrupoAdmin() {
+        Usuario usuario = createUsuarioAtivo("Miguel Lima", "miguel.lima", Grupo.ID_ADMIN);
+        usuarioService.save(usuario);
+
+        verifySendMail(1);
+        assertThat(usuario.getId()).isNotNull();
+    }
+
+    @Test
+    public void testSave_whenHasGrupoAdminAndAdminOrRootNotAuthenticated() {
+        mockAuthenticationForAuditing("system");
+
+        Usuario usuario = createUsuarioAtivo("Miguel Lima", "miguel.lima", Grupo.ID_ADMIN);
+
+        assertThrows(BusinessException.class, () -> usuarioService.save(usuario), "usuario.save.grupos.admin");
+    }
+
+    @Test
     public void testSave_whenEmailNotUnique() {
-        Usuario usuario1 = new UsuarioBuilder()
-                .withNome("Miguel Lima")
-                .withEmail("miguel.lima@email.com")
-                .withLogin("miguel.lima")
-                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
-                .withAtivo(true)
-                .build();
+        Usuario usuario1 = createUsuarioAtivo("Miguel Lima", "miguel.lima", Grupo.ID_ADMIN);
         usuarioService.save(usuario1);
 
         Usuario usuario2 = new UsuarioBuilder()
@@ -271,13 +298,7 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testSave_whenLoginNotUnique() {
-        Usuario usuario1 = new UsuarioBuilder()
-                .withNome("Miguel Lima")
-                .withEmail("miguel.lima@email.com")
-                .withLogin("miguel.lima")
-                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
-                .withAtivo(true)
-                .build();
+        Usuario usuario1 = createUsuarioAtivo("Miguel Lima", "miguel.lima", Grupo.ID_ADMIN);
         usuarioService.save(usuario1);
 
         Usuario usuario2 = new UsuarioBuilder()
@@ -293,13 +314,7 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testUpdate() {
-        Usuario usuario = new UsuarioBuilder()
-                .withNome("Miguel Lima")
-                .withEmail("miguel.lima@email.com")
-                .withLogin("miguel.lima")
-                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
-                .withAtivo(true)
-                .build();
+        Usuario usuario = createUsuarioAtivo("Miguel Lima", "miguel.lima", Grupo.ID_ADMIN);
         usuarioService.save(usuario);
 
         Usuario usuarioModificado = new UsuarioBuilder()
@@ -318,7 +333,8 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testUpdateAutenticado() {
-        Usuario usuario = usuarioRepository.save(createUsuarioAtivo("Miguel Lima", "miguel.lima"));
+        Usuario usuario = usuarioRepository.save(createUsuarioAtivo("Miguel Lima", "miguel.lima", Grupo.ID_ADMIN));
+
         mockAuthenticationForAuditing("miguel.lima");
 
         Usuario usuarioAtualizado = usuarioService.updateAutenticado(new UsuarioBuilder()
@@ -335,7 +351,7 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testUpdateSenhaByResetToken() {
-        Usuario usuario = usuarioRepository.save(createUsuarioPendente("Manoel Alves", "manoel.alves"));
+        Usuario usuario = usuarioRepository.save(createUsuarioPendente("Manoel Alves", "manoel.alves", Grupo.ID_ADMIN));
 
         String valorSenha = MOCK_SENHA_PREFIX + "manoel.alves";
         Usuario usuarioAtualizado = usuarioService.updateSenhaByResetToken(usuario.getSenha().getResetToken(), valorSenha);
@@ -346,7 +362,7 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testUpdateSenhaByResetToken_whenSenhaIsNotValid() {
-        Usuario usuario = usuarioRepository.save(createUsuarioPendente("Manoel Alves", "manoel.alves"));
+        Usuario usuario = usuarioRepository.save(createUsuarioPendente("Manoel Alves", "manoel.alves", Grupo.ID_ADMIN));
         
         assertThrows(InvalidPasswordException.class,
                 () -> usuarioService.updateSenhaByResetToken(usuario.getSenha().getResetToken(), "manoel.alves"));
@@ -354,7 +370,7 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testUpdateSenhaAutenticado() {
-        usuarioRepository.save(createUsuarioAtivo("Alice Lima", "alice.lima"));
+        usuarioRepository.save(createUsuarioAtivo("Alice Lima", "alice.lima", Grupo.ID_ADMIN));
         mockAuthenticationForAuditing("alice.lima");
 
         Usuario usuarioAtualizado = usuarioService.updateSenhaAutenticado(MOCK_SENHA_PREFIX + "alice.lima", "Alice.Lima@987");
@@ -364,7 +380,7 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testUpdateSenhaAutenticado_whenInvalidActualPassword() {
-        usuarioRepository.save(createUsuarioAtivo("Alice Lima", "alice.lima"));
+        usuarioRepository.save(createUsuarioAtivo("Alice Lima", "alice.lima", Grupo.ID_ADMIN));
         mockAuthenticationForAuditing("alice.lima");
 
         assertThrows(InvalidActualPasswordException.class,
@@ -373,7 +389,7 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testUpdateSenhaAutenticado_whenInvalidPassword() {
-        usuarioRepository.save(createUsuarioAtivo("Alice Lima", "alice.lima"));
+        usuarioRepository.save(createUsuarioAtivo("Alice Lima", "alice.lima", Grupo.ID_ADMIN));
         mockAuthenticationForAuditing("alice.lima");
         
         assertThrows(InvalidPasswordException.class,
@@ -382,7 +398,7 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testRecoverLogin() {
-        usuarioRepository.save(createUsuarioAtivo("Alice Lima", "alice.lima"));
+        usuarioRepository.save(createUsuarioAtivo("Alice Lima", "alice.lima", Grupo.ID_ADMIN));
 
         usuarioService.recoverLogin("alice.lima@email.com");
 
@@ -391,7 +407,7 @@ public class UsuarioServiceImplTest {
 
     @Test
     public void testRecoverSenha() {
-        usuarioRepository.save(createUsuarioAtivo("Alice Lima", "alice.lima"));
+        usuarioRepository.save(createUsuarioAtivo("Alice Lima", "alice.lima", Grupo.ID_ADMIN));
 
         String email = "alice.lima@email.com";
         usuarioService.recoverSenha(email);
@@ -413,23 +429,23 @@ public class UsuarioServiceImplTest {
         return new HashSet<>(grupoRepository.findAllById(Arrays.asList(ids)));
     }
 
-    private Usuario createUsuarioPendente(String nome, String login) {
-        return createUsuario(nome, login, true, true, false);
+    private Usuario createUsuarioPendente(String nome, String login, Long... idsGrupos) {
+        return createUsuario(nome, login, true, true, false, idsGrupos);
     }
 
-    private Usuario createUsuarioAtivo(String nome, String login) {
-        return createUsuario(nome, login, true, false, false);
+    private Usuario createUsuarioAtivo(String nome, String login, Long... idsGrupos) {
+        return createUsuario(nome, login, true, false, false, idsGrupos);
     }
 
-    private Usuario createUsuarioInativo(String nome, String login) {
-        return createUsuario(nome, login, false, false, false);
+    private Usuario createUsuarioInativo(String nome, String login, Long... idsGrupos) {
+        return createUsuario(nome, login, false, false, false, idsGrupos);
     }
 
-    private Usuario createUsuarioBloqueado(String nome, String login) {
-        return createUsuario(nome, login, true, false, true);
+    private Usuario createUsuarioBloqueado(String nome, String login, Long... idsGrupos) {
+        return createUsuario(nome, login, true, false, true, idsGrupos);
     }
 
-    private Usuario createUsuario(String nome, String login, Boolean ativo, Boolean pendente, Boolean bloqueado) {
+    private Usuario createUsuario(String nome, String login, Boolean ativo, Boolean pendente, Boolean bloqueado, Long... idsGrupos) {
         return new UsuarioBuilder()
                 .withNome(nome)
                 .withEmail(login + "@email.com")
@@ -440,7 +456,7 @@ public class UsuarioServiceImplTest {
                 .withSenha(new Senha(
                         !pendente && !bloqueado ? PasswordGeneratorUtils.encode(MOCK_SENHA_PREFIX + login) : null,
                         pendente || bloqueado ? MOCK_RESET_TOKEN_PREFIX + login : null))
-                .withGrupos(findGruposByIds(Grupo.ID_ADMIN))
+                .withGrupos(findGruposByIds(idsGrupos))
                 .build();
     }
 
