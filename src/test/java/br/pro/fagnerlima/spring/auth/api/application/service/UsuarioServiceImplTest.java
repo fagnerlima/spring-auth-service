@@ -144,12 +144,12 @@ public class UsuarioServiceImplTest {
     @Test
     public void testFindAllBySpecificationAndPageable_filterByNome() {
         UsuarioFilterRequestTO filter = new UsuarioFilterRequestTOBuilder()
-                .withNome("jose")
+                .withNome("jose souza")
                 .build();
 
         Page<Usuario> usuariosPage = usuarioService.findAll(createSpecification(filter), PageRequest.of(0, 10));
 
-        assertPage(usuariosPage, 10, 0, 2, 1, 2);
+        assertPage(usuariosPage, 10, 0, 1, 1, 1);
     }
 
     @Test

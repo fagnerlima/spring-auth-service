@@ -19,6 +19,8 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.util.StringUtils;
 
 public class SpecificationFactory<T> {
 
+    private static final String POSTGRESQL_UNACCENT_FUNCTION = "unaccent";
+
     public Specification<T> create(String property, Long value, Operation operation) {
         return (root, query, criteriaBuilder) -> {
             Expression<Long> x = root.get(property);
@@ -92,19 +94,19 @@ public class SpecificationFactory<T> {
                     return criteriaBuilder.equal(x, y);
                 case LIKE:
                     x = root.get(property);
-                    y = "%" + value + "%";
+                    y = prepareForLike(value);
                     return criteriaBuilder.like(x, y);
                 case LIKE_IGNORE_CASE:
                     x = criteriaBuilder.lower(root.get(property));
-                    y = "%" + value.toLowerCase() + "%";
+                    y = prepareForLike(value.toLowerCase());
                     return criteriaBuilder.like(x, y);
                 case EQUALS_IGNORE_CASE_UNACCENT:
-                    x = criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(property)));
-                    y = br.pro.fagnerlima.spring.auth.api.infrastructure.util.StringUtils.unaccent(value.toLowerCase());
+                    x = criteriaBuilder.function(POSTGRESQL_UNACCENT_FUNCTION, String.class, criteriaBuilder.lower(root.get(property)));
+                    y = StringUtils.unaccent(value.toLowerCase());
                     return criteriaBuilder.equal(x, y);
                 case LIKE_IGNORE_CASE_UNACCENT:
-                    x = criteriaBuilder.function("unaccent", String.class, criteriaBuilder.lower(root.get(property)));
-                    y = "%" + br.pro.fagnerlima.spring.auth.api.infrastructure.util.StringUtils.unaccent(value.toLowerCase()) + "%";
+                    x = criteriaBuilder.function(POSTGRESQL_UNACCENT_FUNCTION, String.class, criteriaBuilder.lower(root.get(property)));
+                    y = prepareForLike(StringUtils.unaccent(value.toLowerCase()));
                     return criteriaBuilder.like(x, y);
                 default:
                     x = root.get(property);
@@ -159,7 +161,7 @@ public class SpecificationFactory<T> {
                     return false;
                 }
 
-                if (!StringUtils.isEmpty(specificationField.property())) {
+                if (!StringUtils.isBlank(specificationField.property())) {
                     return ef.getName().equals(specificationField.property());
                 }
 
@@ -173,7 +175,7 @@ public class SpecificationFactory<T> {
         }
 
         SpecificationField specificationField = field.getAnnotation(SpecificationField.class);
-        String property = StringUtils.isEmpty(specificationField.property()) ? field.getName() : specificationField.property();
+        String property = StringUtils.isBlank(specificationField.property()) ? field.getName() : specificationField.property();
         Operation operation = specificationField.operation();
 
         if (value instanceof Number) {
@@ -197,6 +199,10 @@ public class SpecificationFactory<T> {
         }
 
         return create(property, value.toString(), operation);
+    }
+
+    private String prepareForLike(String value) {
+        return "%" + value.replaceAll("\\s+", "%") + "%";
     }
 
 }
