@@ -212,11 +212,15 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
         }
 
         if (usuario.getGrupos().stream().anyMatch(Grupo::isRoot)) {
-            throw new BusinessException("usuario.save.permissoes.root");
+            throw new BusinessException("usuario.save.grupos.root");
         }
 
         if (usuario.getGrupos().stream().anyMatch(Grupo::isSystem)) {
-            throw new BusinessException("usuario.save.permissoes.system");
+            throw new BusinessException("usuario.save.grupos.system");
+        }
+
+        if ((!getAutenticado().isAdmin() && !getAutenticado().isRoot()) && usuario.getGrupos().stream().anyMatch(Grupo::isAdmin)) {
+            throw new BusinessException("usuario.save.grupos.admin");
         }
 
         checkUniqueFields(usuario);

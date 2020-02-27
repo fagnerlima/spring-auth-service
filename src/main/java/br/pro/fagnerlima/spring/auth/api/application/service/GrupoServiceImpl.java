@@ -47,6 +47,11 @@ public class GrupoServiceImpl extends BaseServiceImpl<Grupo> implements GrupoSer
         if (grupo.getPermissoes().stream().anyMatch(Permissao::isSystem)) {
             throw new BusinessException("grupo.save.permissoes.system");
         }
+
+        if ((!getUsuarioAutenticado().isAdmin() && !getUsuarioAutenticado().isRoot())
+                && grupo.getPermissoes().stream().anyMatch(Permissao::isAdmin)) {
+            throw new BusinessException("grupo.save.permissoes.admin");
+        }
     }
 
     private void checkUpdate(Long id, Grupo grupo) {
