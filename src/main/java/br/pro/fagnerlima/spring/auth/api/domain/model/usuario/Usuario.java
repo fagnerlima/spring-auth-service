@@ -85,6 +85,10 @@ public class Usuario extends AuditedBaseEntity {
         return id != null && id.equals(ID_ROOT);
     }
 
+    public Boolean isSystem() {
+        return id != null && id.equals(ID_SYSTEM);
+    }
+
     public Boolean isAdmin() {
         return id != null && id.equals(ID_ADMIN);
     }

@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.BusinessException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.DuplicateKeyException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidActualPasswordException;
@@ -46,6 +47,11 @@ public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExc
         logger.error(exception.getMessage(), exception);
 
         return handleException(exception, HttpStatus.BAD_REQUEST, request, "resource.invalid-operation");
+    }
+
+    @ExceptionHandler({ BusinessException.class })
+    public ResponseEntity<Object> handleBusinessException(BusinessException exception, WebRequest request) {
+        return handleException(exception, HttpStatus.BAD_REQUEST, request, exception.getMessage());
     }
 
     @ExceptionHandler({ NotAuthenticatedUserException.class })

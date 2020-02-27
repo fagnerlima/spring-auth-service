@@ -7,11 +7,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.SecurityProperties;
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.BusinessException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.DuplicateKeyException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidActualPasswordException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidTokenException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.NotAuthenticatedUserException;
+import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Senha;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
@@ -65,7 +67,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     @Override
     public Usuario getAutenticado() {
         try {
-            return getUserDetailsService().getUsuarioAuth().getUsuario();
+            return getUsuarioAutenticado();
         } catch (Exception exception) {
             throw new NotAuthenticatedUserException();
         }
@@ -79,7 +81,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
 
     @Override
     public Usuario save(Usuario usuario) {
-        checkUniqueFields(usuario);
+        checkSave(usuario);
 
         usuario.setSenha(new Senha());
         usuario.getSenha().generateResetToken();
@@ -99,21 +101,14 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     public Usuario update(Long id, Usuario usuario) {
         Boolean resendMailPendente = false;
         Usuario usuarioSaved = findById(id);
+
+        checkUpdate(id, usuario, usuarioSaved);
+
+        if (!usuario.getLogin().equalsIgnoreCase(usuarioSaved.getLogin()) && usuarioSaved.getPendente()) {
+            resendMailPendente = true;
+        }
+
         usuario.setSenha(usuarioSaved.getSenha());
-
-        if (!usuario.getEmail().equalsIgnoreCase(usuarioSaved.getEmail())) {
-            checkUniqueEmail(usuario);
-            usuario.setEmail(usuario.getEmail().toLowerCase());
-        }
-
-        if (!usuario.getLogin().equalsIgnoreCase(usuarioSaved.getLogin())) {
-            checkUniqueLogin(usuario);
-            usuario.setLogin(usuario.getLogin().toLowerCase());
-
-            if (usuarioSaved.getPendente()) {
-                resendMailPendente = true;
-            }
-        }
 
         Usuario usuarioUpdated = super.update(id, usuario);
 
@@ -142,7 +137,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
 
     @Override
     public Usuario updateSenhaAutenticado(String senhaAtual, String senhaNova) {
-        Usuario usuario = getUsuarioAutenticado();
+        Usuario usuario = getAutenticado();
 
         if (!PasswordGeneratorUtils.validate(senhaAtual, usuario.getSenha().getValor())) {
             throw new InvalidActualPasswordException();
@@ -209,6 +204,67 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     @Override
     protected BaseRepository<Usuario> getRepository() {
         return usuarioRepository;
+    }
+
+    private void checkSave(Usuario usuario) {
+        if (usuario.getGrupos() == null) {
+            return;
+        }
+
+        if (usuario.getGrupos().stream().anyMatch(Grupo::isRoot)) {
+            throw new BusinessException("usuario.save.permissoes.root");
+        }
+
+        if (usuario.getGrupos().stream().anyMatch(Grupo::isSystem)) {
+            throw new BusinessException("usuario.save.permissoes.system");
+        }
+
+        checkUniqueFields(usuario);
+    }
+
+    private void checkUpdate(Long id, Usuario usuario, Usuario usuarioSaved) {
+        if (id == Usuario.ID_ROOT) {
+            checkUpdateRoot(usuario);
+        }
+
+        if (id == Usuario.ID_SYSTEM) {
+            checkUpdateSystem(usuario);
+        }
+
+        if (id == Usuario.ID_ADMIN) {
+            checkUpdateAdmin(usuario);
+        }
+
+        if (!usuario.getEmail().equalsIgnoreCase(usuarioSaved.getEmail())) {
+            checkUniqueEmail(usuario);
+            usuario.setEmail(usuario.getEmail().toLowerCase());
+        }
+
+        if (!usuario.getLogin().equalsIgnoreCase(usuarioSaved.getLogin())) {
+            checkUniqueLogin(usuario);
+            usuario.setLogin(usuario.getLogin().toLowerCase());
+        }
+    }
+
+    private void checkUpdateRoot(Usuario usuario) {
+        if (usuario.getGrupos() == null || usuario.getGrupos().size() != 1
+                || !usuario.getGrupos().stream().anyMatch(Grupo::isRoot)) {
+            throw new BusinessException("usuario.update.root.permissoes");
+        }
+    }
+
+    private void checkUpdateSystem(Usuario usuario) {
+        if (usuario.getGrupos() == null || usuario.getGrupos().size() != 1
+                || !usuario.getGrupos().stream().anyMatch(Grupo::isSystem)) {
+            throw new BusinessException("usuario.update.system.permissoes");
+        }
+    }
+
+    private void checkUpdateAdmin(Usuario usuario) {
+        if (usuario.getGrupos() == null || usuario.getGrupos().size() != 1
+                || !usuario.getGrupos().stream().anyMatch(Grupo::isAdmin)) {
+            throw new BusinessException("usuario.update.admin.permissoes");
+        }
     }
 
     private void checkUniqueFields(Usuario usuario) {

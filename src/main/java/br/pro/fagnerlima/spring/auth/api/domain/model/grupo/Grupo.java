@@ -47,6 +47,14 @@ public class Grupo extends AuditedBaseEntity {
         super();
     }
 
+    public Boolean isRoot() {
+        return id != null && id.equals(ID_ROOT);
+    }
+
+    public Boolean isSystem() {
+        return id != null && id.equals(ID_SYSTEM);
+    }
+
     public Boolean isAdmin() {
         return id != null && id.equals(ID_ADMIN);
     }

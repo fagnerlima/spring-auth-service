@@ -20,6 +20,10 @@ public class Permissao extends BaseEntity {
 
     private static final long serialVersionUID = -93989467728114655L;
 
+    public static final Long ID_ROOT = -1L;
+    public static final Long ID_SYSTEM = -2L;
+    public static final Long ID_ADMIN = 1L;
+
     @NotNull
     @Size(min = 3, max = 128)
     @Enumerated(EnumType.STRING)
@@ -30,6 +34,26 @@ public class Permissao extends BaseEntity {
     @Size(min = 3, max = 128)
     @Column(name = "descricao", length = 128, nullable = false)
     private String descricao;
+
+    public Boolean isRoot() {
+        return id != null && id.equals(ID_ROOT);
+    }
+
+    public Boolean isSystem() {
+        return id != null && id.equals(ID_SYSTEM);
+    }
+
+    public Boolean isAdmin() {
+        return id != null && id.equals(ID_ADMIN);
+    }
+
+    public Boolean hasRoot() {
+        return papel != null && papel.isRoot();
+    }
+
+    public Boolean hasSystem() {
+        return papel != null && papel.isSystem();
+    }
 
     public Boolean hasAdmin() {
         return papel != null && papel.isAdmin();

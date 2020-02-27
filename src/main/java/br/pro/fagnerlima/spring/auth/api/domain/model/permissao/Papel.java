@@ -18,6 +18,14 @@ public enum Papel {
     ROLE_PERMISSAO_LISTAR,
     ROLE_PERMISSAO_BUSCAR;
 
+    public Boolean isRoot() {
+        return this.equals(ROLE_ROOT);
+    }
+
+    public Boolean isSystem() {
+        return this.equals(ROLE_SYSTEM);
+    }
+
     public Boolean isAdmin() {
         return this.equals(ROLE_ADMIN);
     }
