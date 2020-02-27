@@ -24,7 +24,6 @@ import org.springframework.test.context.ActiveProfiles;
 
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
-import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.GrupoRepository;
@@ -68,6 +67,7 @@ public class GrupoServiceImplTest {
     @Test
     public void testFindById() {
         Grupo grupo = grupoService.findById(Grupo.ID_ADMIN);
+
         assertIsAdmin(grupo);
     }
 
@@ -81,7 +81,14 @@ public class GrupoServiceImplTest {
         Page<Grupo> gruposPage = grupoService.findAll(PageRequest.of(0, 10));
 
         assertPage(gruposPage, 10, 0, 5, 1, 5);
-        assertIsAdmin(gruposPage.getContent().get(0));
+    }
+
+    @Test
+    public void testFindAllByPageable_whenRoot() {
+        mockAuthenticationForAuditing(Usuario.LOGIN_ROOT);
+        Page<Grupo> gruposPage = grupoService.findAll(PageRequest.of(0, 10));
+        
+        assertPage(gruposPage, 10, 0, 7, 1, 7);
     }
 
     @Test
@@ -197,8 +204,6 @@ public class GrupoServiceImplTest {
 
     private void assertIsAdmin(Grupo grupo) {
         assertThat(grupo.getId()).isEqualTo(Grupo.ID_ADMIN);
-        assertThat(grupo.getPermissoes().stream()
-                .anyMatch(Permissao::hasAdmin)).isTrue();
     }
 
     private Grupo createGrupo(String nome, Boolean ativo, Long... idsPermissoes) {

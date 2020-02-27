@@ -130,6 +130,14 @@ public class UsuarioServiceImplTest {
     }
 
     @Test
+    public void testFindAllByPageable_whenRoot() {
+        mockAuthenticationForAuditing(Usuario.LOGIN_ROOT);
+        Page<Usuario> usuariosPage = usuarioService.findAll(PageRequest.of(0, 10));
+
+        assertPage(usuariosPage, 10, 0, 8, 1, 8);
+    }
+
+    @Test
     public void testFindAllBySpecificationAndPageable_filterById() {
         UsuarioFilterRequestTO filter = new UsuarioFilterRequestTOBuilder()
                 .withId(Usuario.ID_ADMIN)
@@ -395,8 +403,6 @@ public class UsuarioServiceImplTest {
 
     private void assertIsAdmin(Usuario usuario) {
         assertThat(usuario.getId()).isEqualTo(Usuario.ID_ADMIN);
-        assertThat(usuario.getGrupos().stream()
-                .anyMatch(Grupo::isAdmin)).isTrue();
     }
 
     private void verifySendMail(int times) {
