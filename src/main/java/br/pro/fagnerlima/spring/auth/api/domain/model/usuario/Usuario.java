@@ -50,7 +50,7 @@ public class Usuario extends AuditedBaseEntity {
     private String email;
 
     @NotNull
-    @Size(min = 5, max = 32)
+    @Size(min = 4, max = 32)
     @Column(name = "login", nullable = false, unique = true)
     private String login;
 
