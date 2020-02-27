@@ -332,6 +332,27 @@ public class UsuarioServiceImplTest {
     }
 
     @Test
+    public void testUpdate_whenRootGrupoAlterado() {
+        Usuario usuario = createUsuarioAtivo("Super User", "root", Grupo.ID_ADMIN);
+
+        assertThrows(BusinessException.class, () -> usuarioService.update(Usuario.ID_ROOT, usuario), "usuario.update.grupos.root");
+    }
+
+    @Test
+    public void testUpdate_whenSystemGrupoAlterado() {
+        Usuario usuario = createUsuarioAtivo("System User", "system", Grupo.ID_ADMIN);
+
+        assertThrows(BusinessException.class, () -> usuarioService.update(Usuario.ID_SYSTEM, usuario), "usuario.update.grupos.system");
+    }
+
+    @Test
+    public void testUpdate_whenAdminGrupoAlterado() {
+        Usuario usuario = createUsuarioAtivo("Super User", "root", Grupo.ID_SYSTEM);
+
+        assertThrows(BusinessException.class, () -> usuarioService.update(Usuario.ID_ADMIN, usuario), "usuario.update.grupos.admin");
+    }
+
+    @Test
     public void testUpdateAutenticado() {
         Usuario usuario = usuarioRepository.save(createUsuarioAtivo("Miguel Lima", "miguel.lima", Grupo.ID_ADMIN));
 
@@ -456,7 +477,9 @@ public class UsuarioServiceImplTest {
                 .withSenha(new Senha(
                         !pendente && !bloqueado ? PasswordGeneratorUtils.encode(MOCK_SENHA_PREFIX + login) : null,
                         pendente || bloqueado ? MOCK_RESET_TOKEN_PREFIX + login : null))
-                .withGrupos(findGruposByIds(idsGrupos))
+                .withGrupos(idsGrupos != null && idsGrupos.length > 0
+                        ? findGruposByIds(idsGrupos)
+                        : null)
                 .build();
     }
 

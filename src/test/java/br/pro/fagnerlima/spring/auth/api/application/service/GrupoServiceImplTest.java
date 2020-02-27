@@ -150,10 +150,8 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testSave() {
-        Grupo grupo = grupoService.save(new GrupoBuilder()
-                .withNome("Marketing")
-                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(4L, 5L, 6L))))
-                .build());
+        Grupo grupo = createGrupo("Marketing", true, 4L, 5L, 6L);
+        grupoService.save(grupo);
 
         assertThat(grupo.getId()).isGreaterThan(1L);
         assertThat(grupo.getNome()).isEqualTo("Marketing");
@@ -164,30 +162,21 @@ public class GrupoServiceImplTest {
 
     @Test
     public void testSave_whenHasPermissaoRoot() {
-        Grupo grupo = new GrupoBuilder()
-                .withNome("Marketing")
-                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(Permissao.ID_ROOT))))
-                .build();
+        Grupo grupo = createGrupo("Marketing", true, Permissao.ID_ROOT);
 
         assertThrows(BusinessException.class, () -> grupoService.save(grupo), "grupo.save.permissoes.root");
     }
 
     @Test
     public void testSave_whenHasPermissaoSystem() {
-        Grupo grupo = new GrupoBuilder()
-                .withNome("Marketing")
-                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(Permissao.ID_SYSTEM))))
-                .build();
+        Grupo grupo = createGrupo("Marketing", true, Permissao.ID_SYSTEM);
 
         assertThrows(BusinessException.class, () -> grupoService.save(grupo), "grupo.save.permissoes.system");
     }
 
     @Test
     public void testSave_whenHasPermissaoAdmin() {
-        Grupo grupo = grupoService.save(new GrupoBuilder()
-                .withNome("Marketing")
-                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(4L, 5L, 6L))))
-                .build());
+        Grupo grupo = grupoService.save(createGrupo("Marketing", true, 4L, 5L, 6L));
 
         assertThat(grupo.getId()).isGreaterThan(1L);
         assertThat(grupo.getNome()).isEqualTo("Marketing");
@@ -200,10 +189,7 @@ public class GrupoServiceImplTest {
     public void testSave_whenHasPermissaoAdminAndAdminOrRootNotAuthenticated() {
         mockAuthenticationForAuditing("system");
 
-        Grupo grupo = new GrupoBuilder()
-                .withNome("Marketing")
-                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(Permissao.ID_SYSTEM))))
-                .build();
+        Grupo grupo = createGrupo("Marketing", true, Permissao.ID_SYSTEM);
 
         assertThrows(BusinessException.class, () -> grupoService.save(grupo), "grupo.save.permissoes.admin");
     }
@@ -212,11 +198,7 @@ public class GrupoServiceImplTest {
     public void testUpdate() {
         Long idGrupo = grupoRepository.save(createGrupo("Marketing", false)).getId();
 
-        Grupo grupo = grupoService.update(idGrupo, new GrupoBuilder()
-                .withNome("Marketing")
-                .withPermissoes(new HashSet<>(permissaoRepository.findAllById(Arrays.asList(4L, 5L, 6L))))
-                .withAtivo(true)
-                .build());
+        Grupo grupo = grupoService.update(idGrupo, createGrupo("Marketing", true, 4L, 5L, 6L));
 
         assertThat(grupo.getId()).isEqualTo(idGrupo);
         assertThat(grupo.getNome()).isEqualTo("Marketing");
@@ -230,6 +212,27 @@ public class GrupoServiceImplTest {
         Grupo grupo = createGrupo("Marketing", true, 4L);
 
         assertThrows(InformationNotFoundException.class, () -> grupoService.update(99L, grupo));
+    }
+
+    @Test
+    public void testUpdate_whenRootPermissaoAlterada() {
+        Grupo grupo = createGrupo("Super User", true, 1L);
+
+        assertThrows(BusinessException.class, () -> grupoService.update(Grupo.ID_ROOT, grupo), "grupo.update.root.permissoes");
+    }
+
+    @Test
+    public void testUpdate_whenSystemPermissaoAlterada() {
+        Grupo grupo = createGrupo("System User", true, 1L);
+
+        assertThrows(BusinessException.class, () -> grupoService.update(Grupo.ID_SYSTEM, grupo), "grupo.update.system.permissoes");
+    }
+
+    @Test
+    public void testUpdate_whenAdminPermissaoAlterada() {
+        Grupo grupo = createGrupo("Admin User", true, 2L);
+
+        assertThrows(BusinessException.class, () -> grupoService.update(Grupo.ID_ADMIN, grupo), "grupo.update.admin.permissoes");
     }
 
     @Test

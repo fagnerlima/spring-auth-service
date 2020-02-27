@@ -253,21 +253,21 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     private void checkUpdateRoot(Usuario usuario) {
         if (usuario.getGrupos() == null || usuario.getGrupos().size() != 1
                 || !usuario.getGrupos().stream().anyMatch(Grupo::isRoot)) {
-            throw new BusinessException("usuario.update.root.permissoes");
+            throw new BusinessException("usuario.update.grupos.root");
         }
     }
 
     private void checkUpdateSystem(Usuario usuario) {
         if (usuario.getGrupos() == null || usuario.getGrupos().size() != 1
                 || !usuario.getGrupos().stream().anyMatch(Grupo::isSystem)) {
-            throw new BusinessException("usuario.update.system.permissoes");
+            throw new BusinessException("usuario.update.grupos.system");
         }
     }
 
     private void checkUpdateAdmin(Usuario usuario) {
         if (usuario.getGrupos() == null || usuario.getGrupos().size() != 1
                 || !usuario.getGrupos().stream().anyMatch(Grupo::isAdmin)) {
-            throw new BusinessException("usuario.update.admin.permissoes");
+            throw new BusinessException("usuario.update.grupos.admin");
         }
     }
 
