@@ -15,24 +15,17 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.stereotype.Service;
 
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
-import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioBloqueadoException;
-import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioInativoException;
-import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioPendenteException;
-import br.pro.fagnerlima.spring.auth.api.application.service.exception.UsuarioSemGrupoAtivoException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.auth.UsuarioAuth;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.AuthenticationException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.UnauthenticatedException;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
 
 @Service
 public class OAuth2UserDetailsService implements UserDetailsService {
 
     @Autowired
     private UsuarioService usuarioService;
-
-    @Autowired
-    private MessageService messageService;
 
     @Override
     public UsuarioAuth loadUserByUsername(String login) throws UsernameNotFoundException {
@@ -80,21 +73,21 @@ public class OAuth2UserDetailsService implements UserDetailsService {
 
     private void validateUsuario(Usuario usuario) {
         if (!usuario.getAtivo()) {
-            throw new UsuarioInativoException(messageService.getMessage("usuario.inativo"));
+            throw new AuthenticationException("usuario.inativo");
         }
 
         long countGruposAtivos = usuario.getGrupos().stream().filter(g -> g.getAtivo()).count();
 
         if (countGruposAtivos == 0) {
-            throw new UsuarioSemGrupoAtivoException(messageService.getMessage("usuario.sem-grupo-ativo"));
+            throw new AuthenticationException("usuario.sem-grupo-ativo");
         }
 
         if (usuario.getPendente()) {
-            throw new UsuarioPendenteException(messageService.getMessage("usuario.pendente"));
+            throw new AuthenticationException("usuario.pendente");
         }
 
         if (usuario.getBloqueado()) {
-            throw new UsuarioBloqueadoException(messageService.getMessage("usuario.bloqueado"));
+            throw new AuthenticationException("usuario.bloqueado");
         }
     }
 

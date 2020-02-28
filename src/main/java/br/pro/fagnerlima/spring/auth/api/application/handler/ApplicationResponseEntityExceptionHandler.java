@@ -30,6 +30,7 @@ import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidAc
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidPasswordException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidTokenException;
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.NotAuthenticatedUserException;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.AuthenticationException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.exception.MailException;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
@@ -51,6 +52,11 @@ public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExc
 
     @ExceptionHandler({ BusinessException.class })
     public ResponseEntity<Object> handleBusinessException(BusinessException exception, WebRequest request) {
+        return handleException(exception, HttpStatus.BAD_REQUEST, request, exception.getMessage());
+    }
+
+    @ExceptionHandler({ AuthenticationException.class })
+    public ResponseEntity<Object> handleAuthenticationException(AuthenticationException exception, WebRequest request) {
         return handleException(exception, HttpStatus.BAD_REQUEST, request, exception.getMessage());
     }
 
