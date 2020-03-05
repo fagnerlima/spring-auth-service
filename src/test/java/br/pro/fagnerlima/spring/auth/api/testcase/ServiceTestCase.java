@@ -27,8 +27,8 @@ public class ServiceTestCase {
         SecurityContextHolder.setContext(securityContext);
     }
 
-    public static <T> Specification<T> createSpecification(Object filter) {
-        return new SpecificationFactory<T>().create(filter);
+    public static <T> Specification<T> createSpecification(Object filter, Class<T> entityClass) {
+        return new SpecificationFactory<T>().create(filter, entityClass);
     }
 
     public static void assertPage(Page<?> page, int pageSize, int pageNumber, int numberOfElements, int totalPages, int totalElements) {

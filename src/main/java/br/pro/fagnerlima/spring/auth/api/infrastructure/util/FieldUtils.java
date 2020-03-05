@@ -1,12 +1,13 @@
 package br.pro.fagnerlima.spring.auth.api.infrastructure.util;
 
-import java.lang.annotation.Annotation;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FieldUtils {
 
@@ -16,10 +17,10 @@ public class FieldUtils {
     }
 
     /**
-     * Retorna todos os campos da classe {type}, incluindo os campos de suas superclasses.
+     * Retorna todos os campos da classe {@code type}, incluindo os campos de suas superclasses.
      *
      * @param type classe alvo
-     * @return todos os campos da classe {type}
+     * @return todos os campos da classe {@code type}
      */
     public static List<Field> getAllFields(Class<?> type) {
         List<Field> fields = new ArrayList<>();
@@ -32,26 +33,11 @@ public class FieldUtils {
     }
 
     /**
-     * Retorna todos os campos da classe {type} anotados com {annotation}, incluindo os campos de suas superclasses.
-     *
-     * @param type classe alvo
-     * @param annotationField annotation dos campos
-     * @return todos os campos da classe {type} com a annotation {annotation}
-     */
-    public static <T extends Annotation> List<Field> getAllFields(Class<?> type, Class<T> annotationField) {
-        List<Field> fields = getAllFields(type);
-
-        return fields.stream()
-                .filter(f -> f.getAnnotation(annotationField) != null)
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Retorna o campo de nome {name} da classe {type}
+     * Retorna o campo de nome {@code name} da classe {@code type}
      *
      * @param type classe alvo
      * @param name nome do campo
-     * @return o campo de nome {name}
+     * @return o campo de nome {@code name}
      * @throws NoSuchFieldException
      */
     public static Field getField(Class<?> type, String name) throws NoSuchFieldException {
@@ -59,6 +45,18 @@ public class FieldUtils {
 
         return fields.stream().filter(field -> field.getName().equals(name)).findFirst()
                 .orElseThrow(() -> new NoSuchFieldException(name));
+    }
+
+    public static Method findGetterMethod(String propertyName, Class<?> type) throws IntrospectionException {
+        PropertyDescriptor propertyDescriptor = new PropertyDescriptor(propertyName, type);
+
+        return propertyDescriptor.getReadMethod();
+    }
+
+    public static Method findSetterMethod(String propertyName, Class<?> type) throws IntrospectionException {
+        PropertyDescriptor propertyDescriptor = new PropertyDescriptor(propertyName, type);
+
+        return propertyDescriptor.getWriteMethod();
     }
 
 }

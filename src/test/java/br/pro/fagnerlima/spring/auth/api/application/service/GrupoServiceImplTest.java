@@ -99,7 +99,7 @@ public class GrupoServiceImplTest {
                 .withId(Grupo.ID_ADMIN)
                 .build();
 
-        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter), PageRequest.of(0, 10));
+        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter, Grupo.class), PageRequest.of(0, 10));
 
         assertPage(gruposPage, 10, 0, 1, 1, 1);
         assertIsAdmin(gruposPage.getContent().get(0));
@@ -111,7 +111,7 @@ public class GrupoServiceImplTest {
                 .withNome("recepcao")
                 .build();
 
-        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter), PageRequest.of(0, 10));
+        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter, Grupo.class), PageRequest.of(0, 10));
 
         assertPage(gruposPage, 10, 0, 1, 1, 1);
         assertThat(gruposPage.getContent().get(0).getNome()).isEqualTo("Recepção");
@@ -123,7 +123,7 @@ public class GrupoServiceImplTest {
                 .withAtivo(true)
                 .build();
 
-        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter), PageRequest.of(0, 10));
+        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter, Grupo.class), PageRequest.of(0, 10));
 
         assertPage(gruposPage, 10, 0, 4, 1, 4);
         assertThat(gruposPage.getContent().stream()
@@ -136,7 +136,7 @@ public class GrupoServiceImplTest {
                 .withNome("tecnologia da informacao")
                 .build();
 
-        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter), PageRequest.of(0, 10));
+        Page<Grupo> gruposPage = grupoService.findAll(createSpecification(filter, Grupo.class), PageRequest.of(0, 10));
 
         assertPageNoContent(gruposPage, 10, 0);
     }

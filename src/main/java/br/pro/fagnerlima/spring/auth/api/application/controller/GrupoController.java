@@ -47,7 +47,7 @@ public class GrupoController {
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping
     public ResponseEntity<ResponseTO<Page<GrupoReducedResponseTO>>> findAll(GrupoFilterRequestTO filterRequestTO, Pageable pageable) {
-        Specification<Grupo> specification = new SpecificationFactory<Grupo>().create(filterRequestTO);
+        Specification<Grupo> specification = new SpecificationFactory<Grupo>().create(filterRequestTO, Grupo.class);
         Page<Grupo> page = grupoService.findAll(specification, pageable);
         Page<GrupoReducedResponseTO> responseTOPage = converterService.convert(page, GrupoReducedResponseTO.class);
 
