@@ -3,17 +3,13 @@ package br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario;
 import java.io.Serializable;
 import java.util.Set;
 
-import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationEntity;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationField;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
 
-@SpecificationEntity(Usuario.class)
 public class UsuarioFilterRequestTO implements Serializable {
 
     private static final long serialVersionUID = 7902233005816840462L;
 
-    @SpecificationField
     private Long id;
 
     @SpecificationField(property = "id")
@@ -28,7 +24,6 @@ public class UsuarioFilterRequestTO implements Serializable {
     @SpecificationField(operation = Operation.LIKE_IGNORE_CASE)
     private String login;
 
-    @SpecificationField
     private Boolean ativo;
 
     public UsuarioFilterRequestTO() {

@@ -48,7 +48,7 @@ public class UsuarioController {
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping
     public ResponseEntity<ResponseTO<Page<UsuarioReducedResponseTO>>> findAll(UsuarioFilterRequestTO filterRequestTO, Pageable pageable) {
-        Specification<Usuario> specification = new SpecificationFactory<Usuario>().create(filterRequestTO);
+        Specification<Usuario> specification = new SpecificationFactory<Usuario>().create(filterRequestTO, Usuario.class);
         Page<Usuario> page = usuarioService.findAll(specification, pageable);
         Page<UsuarioReducedResponseTO> responseTOPage = converterService.map(page, UsuarioReducedResponseTO.class);
 

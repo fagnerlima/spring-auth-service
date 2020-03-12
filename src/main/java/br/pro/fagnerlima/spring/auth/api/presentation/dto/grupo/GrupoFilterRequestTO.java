@@ -3,26 +3,20 @@ package br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo;
 import java.io.Serializable;
 import java.util.Set;
 
-import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationEntity;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationField;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.Operation;
 
-@SpecificationEntity(Grupo.class)
 public class GrupoFilterRequestTO implements Serializable {
 
     private static final long serialVersionUID = 8652626915074598836L;
 
-    @SpecificationField
     private Long id;
 
-    @SpecificationField(property = "id")
     private Set<Long> ids;
 
     @SpecificationField(operation = Operation.LIKE_IGNORE_CASE_UNACCENT)
     private String nome;
 
-    @SpecificationField
     private Boolean ativo;
 
     public GrupoFilterRequestTO() {

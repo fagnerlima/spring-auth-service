@@ -1,6 +1,7 @@
 package br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,9 +12,7 @@ import javax.persistence.criteria.Expression;
 
 import org.springframework.data.jpa.domain.Specification;
 
-import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationEntity;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.specification.SpecificationField;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.exception.SpecificationFilterException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.util.FieldUtils;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.util.StringUtils;
 
@@ -116,67 +115,59 @@ public class SpecificationFactory<T> {
         };
     }
 
-    public Specification<T> create(Object filter) {
-        try {
-            SpecificationEntity specificationEntity = filter.getClass().getAnnotation(SpecificationEntity.class);
-            List<Field> dataFields = FieldUtils.getAllFields(filter.getClass(), SpecificationField.class);
-            List<Field> entityFields = FieldUtils.getAllFields(specificationEntity.value());
-            List<Specification<T>> specs = new ArrayList<>();
+    public Specification<T> create(Object filter, Class<T> entityClass) {
+        List<Field> filterFields = FieldUtils.getAllFields(filter.getClass());
+        List<Field> entityFields = FieldUtils.getAllFields(entityClass);
+        List<Specification<T>> specs = new ArrayList<>();
 
-            for (Field dataField : dataFields) {
-                dataField.setAccessible(true);
-                Object value = dataField.get(filter);
+        for (Field filterField : filterFields) {
+            try {
+                Method getterMethod = FieldUtils.findGetterMethod(filterField.getName(), filter.getClass());
+                Object value = getterMethod.invoke(filter);
 
-                if (value != null && hasProperty(entityFields, dataField)) {
-                    specs.add(create(dataField, dataField.get(filter)));
+                if (value != null && hasProperty(filterField, entityFields)) {
+                    specs.add(create(filterField, value));
                 }
+            } catch (Exception exception) {
+                exception.printStackTrace();
+                continue;
             }
-
-            if (specs.isEmpty()) {
-                return null;
-            }
-
-            Specification<T> result = specs.get(0);
-
-            if (specs.size() > 1) {
-                for (int i = 1; i < specs.size(); i++) {
-                    result = Specification
-                            .where(result)
-                            .and(specs.get(i));
-                }
-            }
-
-            return result;
-        } catch (IllegalArgumentException | IllegalAccessException exception) {
-            exception.printStackTrace();
-            throw new SpecificationFilterException();
         }
+
+        if (specs.isEmpty()) {
+            return null;
+        }
+
+        Specification<T> result = specs.get(0);
+
+        if (specs.size() > 1) {
+            for (int i = 1; i < specs.size(); i++) {
+                result = Specification
+                        .where(result)
+                        .and(specs.get(i));
+            }
+        }
+
+        return result;
     }
 
-    private Boolean hasProperty(List<Field> entityFields, Field dataField) {
+    private Boolean hasProperty(Field filterField, List<Field> entityFields) {
         return entityFields.stream().filter(ef -> {
-                SpecificationField specificationField = dataField.getAnnotation(SpecificationField.class);
+                SpecificationField specificationField = filterField.getAnnotation(SpecificationField.class);
 
-                if (specificationField == null) {
-                    return false;
-                }
-
-                if (!StringUtils.isBlank(specificationField.property())) {
+                if (specificationField != null && !StringUtils.isBlank(specificationField.property())) {
                     return ef.getName().equals(specificationField.property());
                 }
 
-                return ef.getName().equals(dataField.getName());
+                return ef.getName().equals(filterField.getName());
             }).findFirst().isPresent();
     }
 
     private Specification<T> create(Field field, Object value) {
-        if (!field.isAnnotationPresent(SpecificationField.class)) {
-            return null;
-        }
-
         SpecificationField specificationField = field.getAnnotation(SpecificationField.class);
-        String property = StringUtils.isBlank(specificationField.property()) ? field.getName() : specificationField.property();
-        Operation operation = specificationField.operation();
+        String property = specificationField != null && !StringUtils.isBlank(specificationField.property())
+                ? specificationField.property() : field.getName();
+        Operation operation = specificationField != null ? specificationField.operation() : Operation.EQUAL;
 
         if (value instanceof Number) {
             return create(property, Long.valueOf(value.toString()), operation);
