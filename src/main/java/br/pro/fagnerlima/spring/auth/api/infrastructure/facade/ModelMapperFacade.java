@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.spring.auth.api.infrastructure.service;
+package br.pro.fagnerlima.spring.auth.api.infrastructure.facade;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
@@ -8,10 +8,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.converter.IdReference;
@@ -19,27 +18,30 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.factory.RepositoryFactor
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.exception.IdReferenceException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.util.FieldUtils;
 
-@Service
-public class ConverterService {
+@Component
+public class ModelMapperFacade {
 
-    @Autowired
     private ModelMapper modelMapper;
 
-    @Autowired
     private RepositoryFactory repositoryFactory;
 
-    public <T> T convert(Object data, Class<T> destinationType) {
+    public ModelMapperFacade(ModelMapper modelMapper, RepositoryFactory repositoryFactory) {
+        this.modelMapper = modelMapper;
+        this.repositoryFactory = repositoryFactory;
+    }
+
+    public <T> T map(Object data, Class<T> destinationType) {
         T target = modelMapper.map(data, destinationType);
 
         return refreshReferences(data, target);
     }
 
-    public <T> Page<T> convert(Page<?> dataPage, Class<T> destinationType) {
-        return dataPage.map(data -> convert(data, destinationType));
+    public <T> Page<T> map(Page<?> dataPage, Class<T> destinationType) {
+        return dataPage.map(data -> map(data, destinationType));
     }
 
-    public <T> List<T> convert(List<?> dataList, Class<T> destinationType) {
-        return dataList.stream().map(data -> convert(data, destinationType)).collect(Collectors.toList());
+    public <T> List<T> map(List<?> dataList, Class<T> destinationType) {
+        return dataList.stream().map(data -> map(data, destinationType)).collect(Collectors.toList());
     }
 
     private <T> T refreshReferences(Object data, T target) {

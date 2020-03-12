@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ConverterService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ResponseService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioEmailRequestTO;
@@ -43,7 +43,7 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private ConverterService converterService;
+    private ModelMapperFacade converterService;
 
     @Autowired
     private ResponseService responseService;
@@ -53,7 +53,7 @@ public class UsuarioController {
     public ResponseEntity<ResponseTO<Page<UsuarioReducedResponseTO>>> findAll(UsuarioFilterRequestTO filterRequestTO, Pageable pageable) {
         Specification<Usuario> specification = new SpecificationFactory<Usuario>().create(filterRequestTO);
         Page<Usuario> page = usuarioService.findAll(specification, pageable);
-        Page<UsuarioReducedResponseTO> responseTOPage = converterService.convert(page, UsuarioReducedResponseTO.class);
+        Page<UsuarioReducedResponseTO> responseTOPage = converterService.map(page, UsuarioReducedResponseTO.class);
 
         return responseService.ok(responseTOPage);
     }
@@ -62,7 +62,7 @@ public class UsuarioController {
     @GetMapping("/{id}")
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> find(@PathVariable Long id) {
         Usuario usuario = usuarioService.findById(id);
-        UsuarioResponseTO responseTO = converterService.convert(usuario, UsuarioResponseTO.class);
+        UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
         return responseService.ok(responseTO);
     }
@@ -71,7 +71,7 @@ public class UsuarioController {
     @GetMapping("/ativos")
     public ResponseEntity<ResponseTO<List<UsuarioMinResponseTO>>> findAllActive() {
         List<Usuario> usuarios = usuarioService.findAllActive();
-        List<UsuarioMinResponseTO> responseTOList = converterService.convert(usuarios, UsuarioMinResponseTO.class);
+        List<UsuarioMinResponseTO> responseTOList = converterService.map(usuarios, UsuarioMinResponseTO.class);
 
         return responseService.ok(responseTOList);
     }
@@ -79,9 +79,9 @@ public class UsuarioController {
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_SALVAR') and #oauth2.hasScope('write')")
     @PostMapping
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> save(@RequestBody UsuarioRequestTO requestTO) {
-        Usuario usuario = converterService.convert(requestTO, Usuario.class);
+        Usuario usuario = converterService.map(requestTO, Usuario.class);
         Usuario savedUsuario = usuarioService.save(usuario);
-        UsuarioResponseTO responseTO = converterService.convert(savedUsuario, UsuarioResponseTO.class);
+        UsuarioResponseTO responseTO = converterService.map(savedUsuario, UsuarioResponseTO.class);
 
         return responseService.created(responseTO);
     }
@@ -89,9 +89,9 @@ public class UsuarioController {
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_EDITAR') and #oauth2.hasScope('write')")
     @PutMapping("/{id}")
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> update(@PathVariable Long id, @RequestBody UsuarioRequestTO requestTO) {
-        Usuario usuario = converterService.convert(requestTO, Usuario.class);
+        Usuario usuario = converterService.map(requestTO, Usuario.class);
         Usuario updatedUsuario = usuarioService.update(id, usuario);
-        UsuarioResponseTO responseTO = converterService.convert(updatedUsuario, UsuarioResponseTO.class);
+        UsuarioResponseTO responseTO = converterService.map(updatedUsuario, UsuarioResponseTO.class);
 
         return responseService.ok(responseTO);
     }
@@ -99,7 +99,7 @@ public class UsuarioController {
     @PatchMapping("/senha")
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> updateSenhaByResetToken(@RequestBody UsuarioSenhaResetTokenRequestTO requestTO) {
         Usuario usuario = usuarioService.updateSenhaByResetToken(requestTO.getToken(), requestTO.getSenha());
-        UsuarioResponseTO responseTO = converterService.convert(usuario, UsuarioResponseTO.class);
+        UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
         return responseService.ok(responseTO);
     }

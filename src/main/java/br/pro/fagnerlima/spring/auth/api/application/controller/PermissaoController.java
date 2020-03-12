@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.service.PermissaoService;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ConverterService;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ResponseService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.permissao.PermissaoResponseTO;
@@ -24,7 +24,7 @@ public class PermissaoController {
     private PermissaoService permissaoService;
 
     @Autowired
-    private ConverterService converterService;
+    private ModelMapperFacade converterService;
 
     @Autowired
     private ResponseService responseService;
@@ -33,7 +33,7 @@ public class PermissaoController {
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_PERMISSAO_LISTAR') and #oauth2.hasScope('read')")
     public ResponseEntity<ResponseTO<List<PermissaoResponseTO>>> findAllActive() {
         List<Permissao> permissoes = permissaoService.findAllActive();
-        List<PermissaoResponseTO> responseTOList = converterService.convert(permissoes, PermissaoResponseTO.class);
+        List<PermissaoResponseTO> responseTOList = converterService.map(permissoes, PermissaoResponseTO.class);
 
         return responseService.ok(responseTOList);
     }
