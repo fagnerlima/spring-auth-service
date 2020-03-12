@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.pro.fagnerlima.spring.auth.api.application.service.ResponseEntityFactory;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ResponseService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioEmailRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioFilterRequestTO;
@@ -45,9 +45,6 @@ public class UsuarioController {
     @Autowired
     private ModelMapperFacade converterService;
 
-    @Autowired
-    private ResponseService responseService;
-
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping
     public ResponseEntity<ResponseTO<Page<UsuarioReducedResponseTO>>> findAll(UsuarioFilterRequestTO filterRequestTO, Pageable pageable) {
@@ -55,7 +52,7 @@ public class UsuarioController {
         Page<Usuario> page = usuarioService.findAll(specification, pageable);
         Page<UsuarioReducedResponseTO> responseTOPage = converterService.map(page, UsuarioReducedResponseTO.class);
 
-        return responseService.ok(responseTOPage);
+        return ResponseEntityFactory.ok(responseTOPage);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_BUSCAR') and #oauth2.hasScope('read')")
@@ -64,7 +61,7 @@ public class UsuarioController {
         Usuario usuario = usuarioService.findById(id);
         UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
-        return responseService.ok(responseTO);
+        return ResponseEntityFactory.ok(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
@@ -73,7 +70,7 @@ public class UsuarioController {
         List<Usuario> usuarios = usuarioService.findAllActive();
         List<UsuarioMinResponseTO> responseTOList = converterService.map(usuarios, UsuarioMinResponseTO.class);
 
-        return responseService.ok(responseTOList);
+        return ResponseEntityFactory.ok(responseTOList);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_SALVAR') and #oauth2.hasScope('write')")
@@ -83,7 +80,7 @@ public class UsuarioController {
         Usuario savedUsuario = usuarioService.save(usuario);
         UsuarioResponseTO responseTO = converterService.map(savedUsuario, UsuarioResponseTO.class);
 
-        return responseService.created(responseTO);
+        return ResponseEntityFactory.created(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_EDITAR') and #oauth2.hasScope('write')")
@@ -93,7 +90,7 @@ public class UsuarioController {
         Usuario updatedUsuario = usuarioService.update(id, usuario);
         UsuarioResponseTO responseTO = converterService.map(updatedUsuario, UsuarioResponseTO.class);
 
-        return responseService.ok(responseTO);
+        return ResponseEntityFactory.ok(responseTO);
     }
 
     @PatchMapping("/senha")
@@ -101,7 +98,7 @@ public class UsuarioController {
         Usuario usuario = usuarioService.updateSenhaByResetToken(requestTO.getToken(), requestTO.getSenha());
         UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
-        return responseService.ok(responseTO);
+        return ResponseEntityFactory.ok(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_ALTERAR_STATUS') and #oauth2.hasScope('write')")
