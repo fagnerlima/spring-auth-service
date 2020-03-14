@@ -1,0 +1,36 @@
+version: '3.7'
+services:
+  auth-db:
+    container_name: auth-db
+    image: postgres:10-alpine
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_USER: user.auth
+      POSTGRES_PASSWORD: user.pass
+    volumes:
+      - ./.docker-volumes/auth-db:/var/lib/postgresql/data
+  auth-service:
+    container_name: spring-auth-service
+    image: auth-service
+    restart: always
+    ports:
+      - "9001:8080"
+    environment:
+      DB_URL: jdbc:postgresql://auth-db:5432/auth
+      DB_USER: user.auth
+      DB_PASSWORD: user.pass
+      # MAIL_HOST: ?
+      # MAIL_PASSWORD: ?
+      # MAIL_PORT: ?
+      # MAIL_SENDER: ?
+      # MAIL_USERNAME: ?
+      APP_BASE_URL: http://localhost:4200
+      CORS_ALLOWED_ORIGIN: http://localhost:4200
+      SPRING_PROFILES_ACTIVE: dev
+    links:
+      - auth-db
+    depends_on:
+      - auth-db
