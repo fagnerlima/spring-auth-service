@@ -21,11 +21,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.pro.fagnerlima.spring.auth.api.application.service.ResponseEntityFactory;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ConverterService;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.service.ResponseService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioEmailRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioFilterRequestTO;
@@ -43,65 +43,62 @@ public class UsuarioController {
     private UsuarioService usuarioService;
 
     @Autowired
-    private ConverterService converterService;
-
-    @Autowired
-    private ResponseService responseService;
+    private ModelMapperFacade converterService;
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping
     public ResponseEntity<ResponseTO<Page<UsuarioReducedResponseTO>>> findAll(UsuarioFilterRequestTO filterRequestTO, Pageable pageable) {
         Specification<Usuario> specification = new SpecificationFactory<Usuario>().create(filterRequestTO, Usuario.class);
         Page<Usuario> page = usuarioService.findAll(specification, pageable);
-        Page<UsuarioReducedResponseTO> responseTOPage = converterService.convert(page, UsuarioReducedResponseTO.class);
+        Page<UsuarioReducedResponseTO> responseTOPage = converterService.map(page, UsuarioReducedResponseTO.class);
 
-        return responseService.ok(responseTOPage);
+        return ResponseEntityFactory.ok(responseTOPage);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_BUSCAR') and #oauth2.hasScope('read')")
     @GetMapping("/{id}")
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> find(@PathVariable Long id) {
         Usuario usuario = usuarioService.findById(id);
-        UsuarioResponseTO responseTO = converterService.convert(usuario, UsuarioResponseTO.class);
+        UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
-        return responseService.ok(responseTO);
+        return ResponseEntityFactory.ok(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping("/ativos")
     public ResponseEntity<ResponseTO<List<UsuarioMinResponseTO>>> findAllActive() {
         List<Usuario> usuarios = usuarioService.findAllActive();
-        List<UsuarioMinResponseTO> responseTOList = converterService.convert(usuarios, UsuarioMinResponseTO.class);
+        List<UsuarioMinResponseTO> responseTOList = converterService.map(usuarios, UsuarioMinResponseTO.class);
 
-        return responseService.ok(responseTOList);
+        return ResponseEntityFactory.ok(responseTOList);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_SALVAR') and #oauth2.hasScope('write')")
     @PostMapping
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> save(@RequestBody UsuarioRequestTO requestTO) {
-        Usuario usuario = converterService.convert(requestTO, Usuario.class);
+        Usuario usuario = converterService.map(requestTO, Usuario.class);
         Usuario savedUsuario = usuarioService.save(usuario);
-        UsuarioResponseTO responseTO = converterService.convert(savedUsuario, UsuarioResponseTO.class);
+        UsuarioResponseTO responseTO = converterService.map(savedUsuario, UsuarioResponseTO.class);
 
-        return responseService.created(responseTO);
+        return ResponseEntityFactory.created(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_EDITAR') and #oauth2.hasScope('write')")
     @PutMapping("/{id}")
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> update(@PathVariable Long id, @RequestBody UsuarioRequestTO requestTO) {
-        Usuario usuario = converterService.convert(requestTO, Usuario.class);
+        Usuario usuario = converterService.map(requestTO, Usuario.class);
         Usuario updatedUsuario = usuarioService.update(id, usuario);
-        UsuarioResponseTO responseTO = converterService.convert(updatedUsuario, UsuarioResponseTO.class);
+        UsuarioResponseTO responseTO = converterService.map(updatedUsuario, UsuarioResponseTO.class);
 
-        return responseService.ok(responseTO);
+        return ResponseEntityFactory.ok(responseTO);
     }
 
     @PatchMapping("/senha")
     public ResponseEntity<ResponseTO<UsuarioResponseTO>> updateSenhaByResetToken(@RequestBody UsuarioSenhaResetTokenRequestTO requestTO) {
         Usuario usuario = usuarioService.updateSenhaByResetToken(requestTO.getToken(), requestTO.getSenha());
-        UsuarioResponseTO responseTO = converterService.convert(usuario, UsuarioResponseTO.class);
+        UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
-        return responseService.ok(responseTO);
+        return ResponseEntityFactory.ok(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_ALTERAR_STATUS') and #oauth2.hasScope('write')")
