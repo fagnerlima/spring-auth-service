@@ -26,6 +26,8 @@
     <modelmapper.version>2.3.5</modelmapper.version>
     <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
     <springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
+
+    <jacoco.coverage>0.45</jacoco.coverage>
   </properties>
 
   <dependencies>
@@ -224,7 +226,6 @@
               <outputDirectory>target/jacoco-report</outputDirectory>
             </configuration>
           </execution>
-          <!--
           <execution>
             <id>jacoco-check</id>
             <goals>
@@ -233,19 +234,18 @@
             <configuration>
               <rules>
                 <rule>
-                  <element>PACKAGE</element>
+                  <element>BUNDLE</element>
                   <limits>
                     <limit>
                       <counter>LINE</counter>
                       <value>COVEREDRATIO</value>
-                      <minimum>0.7</minimum>
+                      <minimum>${jacoco.coverage}</minimum>
                     </limit>
                   </limits>
                 </rule>
               </rules>
             </configuration>
           </execution>
-          -->
         </executions>
       </plugin>
     </plugins>
