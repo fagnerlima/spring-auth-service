@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
@@ -25,11 +24,14 @@ public class MailFactory {
     private final String TEMPLATE_RECOVERY_USUARIO_SENHA = "mail/usuario-recovery-senha";
     private final String SUBJECT_RECOVERY_USUARIO_SENHA = "Recuperação de Senha";
 
-    @Autowired
     private TemplateEngine templateEngine;
 
-    @Autowired
     private WebAppProperties webAppProperties;
+
+    public MailFactory(TemplateEngine templateEngine, WebAppProperties webAppProperties) {
+        this.templateEngine = templateEngine;
+        this.webAppProperties = webAppProperties;
+    }
 
     public MailRequestTO createRegistrationUsuario(Usuario usuario) {
         return createTemplateUsuario(TEMPLATE_REGISTRATION_USUARIO, SUBJECT_REGISTRATION_USUARIO, usuario);

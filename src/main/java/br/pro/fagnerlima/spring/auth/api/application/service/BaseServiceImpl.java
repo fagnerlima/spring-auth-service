@@ -3,7 +3,6 @@ package br.pro.fagnerlima.spring.auth.api.application.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,8 +19,12 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.util.BeanUtils;
 
 public abstract class BaseServiceImpl<T extends BaseEntity> implements BaseService<T> {
 
-    @Autowired
     private OAuth2UserDetailsService userDetailsService;
+
+    public BaseServiceImpl(OAuth2UserDetailsService userDetailsService) {
+        super();
+        this.userDetailsService = userDetailsService;
+    }
 
     @Transactional(readOnly = true)
     @Override

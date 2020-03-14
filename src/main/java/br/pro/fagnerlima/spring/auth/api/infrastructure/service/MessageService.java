@@ -2,7 +2,6 @@ package br.pro.fagnerlima.spring.auth.api.infrastructure.service;
 
 import javax.validation.Path;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -12,8 +11,11 @@ import org.springframework.validation.FieldError;
 @Service
 public class MessageService {
 
-    @Autowired
-    protected MessageSource messageSource;
+    private MessageSource messageSource;
+
+    public MessageService(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     public String getMessage(String key) {
         return getMessage(key, null);

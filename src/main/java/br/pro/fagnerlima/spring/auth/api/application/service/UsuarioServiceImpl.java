@@ -2,7 +2,6 @@ package br.pro.fagnerlima.spring.auth.api.application.service;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +20,7 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.factory.MailFactory;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.BaseRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.UsuarioSpecification;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2UserDetailsService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.PasswordGeneratorUtils;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MailService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
@@ -28,20 +28,25 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
 @Service
 public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements UsuarioService {
 
-    @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Autowired
     private MailService mailService;
 
-    @Autowired
     private MailFactory mailFactory;
 
-    @Autowired
     private MessageService messageService;
 
-    @Autowired
     private SecurityProperties securityProperties;
+
+    public UsuarioServiceImpl(OAuth2UserDetailsService userDetailsService, UsuarioRepository usuarioRepository, MailService mailService,
+            MailFactory mailFactory, MessageService messageService, SecurityProperties securityProperties) {
+        super(userDetailsService);
+        this.usuarioRepository = usuarioRepository;
+        this.mailService = mailService;
+        this.mailFactory = mailFactory;
+        this.messageService = messageService;
+        this.securityProperties = securityProperties;
+    }
 
     @Transactional(readOnly = true)
     @Override

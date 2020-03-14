@@ -10,7 +10,6 @@ import javax.validation.ConstraintViolationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -40,8 +39,11 @@ public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExc
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
     private MessageService messageService;
+
+    public ApplicationResponseEntityExceptionHandler(MessageService messageService) {
+        this.messageService = messageService;
+    }
 
     @ExceptionHandler({ RuntimeException.class })
     public ResponseEntity<Object> handleRuntimeException(RuntimeException exception, WebRequest request) {

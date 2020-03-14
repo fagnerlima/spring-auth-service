@@ -41,14 +41,18 @@ public class GrupoServiceImplTest {
 
     private static final String MOCK_LOGGED_ADMIN = Usuario.LOGIN_ADMIN;
 
-    @Autowired
     private GrupoService grupoService;
 
-    @Autowired
     private GrupoRepository grupoRepository;
 
-    @Autowired
     private PermissaoRepository permissaoRepository;
+
+    @Autowired
+    public GrupoServiceImplTest(GrupoService grupoService, GrupoRepository grupoRepository, PermissaoRepository permissaoRepository) {
+        this.grupoService = grupoService;
+        this.grupoRepository = grupoRepository;
+        this.permissaoRepository = permissaoRepository;
+    }
 
     @BeforeEach
     public void setUp() throws Exception {

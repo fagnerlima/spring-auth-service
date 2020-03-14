@@ -3,7 +3,6 @@ package br.pro.fagnerlima.spring.auth.api.infrastructure.service;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -16,11 +15,14 @@ import br.pro.fagnerlima.spring.auth.api.presentation.dto.email.MailRequestTO;
 @Service
 public class MailService {
 
-    @Autowired
     private JavaMailSender mailSender;
 
-    @Autowired
     private MailProperties mailProperties;
+
+    public MailService(JavaMailSender mailSender, MailProperties mailProperties) {
+        this.mailSender = mailSender;
+        this.mailProperties = mailProperties;
+    }
 
     @Async
     public void send(MailRequestTO requestTO) {

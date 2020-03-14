@@ -57,17 +57,21 @@ public class UsuarioServiceImplTest {
     private static final String MOCK_SENHA_PREFIX = "Senha123#";
     private static final String MOCK_RESET_TOKEN_PREFIX = "Token123#";
 
-    @Autowired
     private UsuarioService usuarioService;
 
-    @Autowired
     private UsuarioRepository usuarioRepository;
 
-    @Autowired
     private GrupoRepository grupoRepository;
 
     @MockBean
     private MailService mailService;
+
+    @Autowired
+    public UsuarioServiceImplTest(UsuarioService usuarioService, UsuarioRepository usuarioRepository, GrupoRepository grupoRepository) {
+        this.usuarioService = usuarioService;
+        this.usuarioRepository = usuarioRepository;
+        this.grupoRepository = grupoRepository;
+    }
 
     @BeforeEach
     public void setUp() throws Exception {

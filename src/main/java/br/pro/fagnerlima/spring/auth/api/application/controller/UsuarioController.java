@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.validation.Valid;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -39,11 +38,14 @@ import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioSenhaRe
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    @Autowired
     private UsuarioService usuarioService;
 
-    @Autowired
     private ModelMapperFacade converterService;
+
+    public UsuarioController(UsuarioService usuarioService, ModelMapperFacade converterService) {
+        this.usuarioService = usuarioService;
+        this.converterService = converterService;
+    }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping

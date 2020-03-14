@@ -1,6 +1,5 @@
 package br.pro.fagnerlima.spring.auth.api.application.listener;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.stereotype.Component;
@@ -11,8 +10,11 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.security.auth.UsuarioAut
 @Component
 public class ApplicationAuthenticationSuccessEventListener implements ApplicationListener<AuthenticationSuccessEvent> {
 
-    @Autowired
     private UsuarioService usuarioService;
+
+    public ApplicationAuthenticationSuccessEventListener(UsuarioService usuarioService) {
+        this.usuarioService = usuarioService;
+    }
 
     @Override
     public void onApplicationEvent(AuthenticationSuccessEvent event) {

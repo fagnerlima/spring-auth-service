@@ -1,6 +1,5 @@
 package br.pro.fagnerlima.spring.auth.api.application.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.BusinessException;
@@ -9,12 +8,17 @@ import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.BaseRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.GrupoRepository;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2UserDetailsService;
 
 @Service
 public class GrupoServiceImpl extends BaseServiceImpl<Grupo> implements GrupoService {
 
-    @Autowired
     private GrupoRepository grupoRepository;
+
+    public GrupoServiceImpl(OAuth2UserDetailsService userDetailsService, GrupoRepository grupoRepository) {
+        super(userDetailsService);
+        this.grupoRepository = grupoRepository;
+    }
 
     @Override
     public Grupo save(Grupo grupo) {

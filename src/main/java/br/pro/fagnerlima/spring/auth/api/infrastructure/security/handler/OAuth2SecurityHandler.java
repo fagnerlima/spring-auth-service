@@ -3,7 +3,6 @@ package br.pro.fagnerlima.spring.auth.api.infrastructure.security.handler;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -23,8 +22,11 @@ public class OAuth2SecurityHandler implements ResponseBodyAdvice<OAuth2AccessTok
 
     private static final String ACCESS_TOKEN_METHOD_NAME = "postAccessToken";
 
-    @Autowired
     private OAuth2SecurityService oauth2SecurityService;
+
+    public OAuth2SecurityHandler(OAuth2SecurityService oauth2SecurityService) {
+        this.oauth2SecurityService = oauth2SecurityService;
+    }
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {

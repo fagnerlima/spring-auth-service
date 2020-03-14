@@ -3,7 +3,6 @@ package br.pro.fagnerlima.spring.auth.api.infrastructure.security.token;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.common.DefaultOAuth2AccessToken;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
@@ -14,8 +13,11 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2U
 
 public class CustomTokenEnhancer implements TokenEnhancer {
 
-    @Autowired
     private OAuth2UserDetailsService userDetailsService;
+
+    public CustomTokenEnhancer(OAuth2UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     public OAuth2AccessToken enhance(OAuth2AccessToken accessToken, OAuth2Authentication authentication) {

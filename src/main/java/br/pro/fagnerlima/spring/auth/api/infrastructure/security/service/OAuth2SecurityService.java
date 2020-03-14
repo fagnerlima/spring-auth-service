@@ -4,7 +4,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -16,8 +15,11 @@ public class OAuth2SecurityService {
     private static final String TOKEN_RESOURCE = "/oauth/token";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 
-    @Autowired
     private OAuth2Properties oauth2Properties;
+
+    public OAuth2SecurityService(OAuth2Properties oauth2Properties) {
+        this.oauth2Properties = oauth2Properties;
+    }
 
     public void addCookieRefreshToken(HttpServletRequest request, HttpServletResponse response, String refreshToken) {
         createCookieRefreshToken(request, response, refreshToken, oauth2Properties.getRefreshToken().getValiditySeconds());

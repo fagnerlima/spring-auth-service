@@ -2,7 +2,6 @@ package br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.a
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.AuditorAware;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
@@ -10,8 +9,11 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2U
 
 public class AuditorAwareImpl implements AuditorAware<String> {
 
-    @Autowired
     private OAuth2UserDetailsService userDetailsService;
+
+    public AuditorAwareImpl(OAuth2UserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @Override
     public Optional<String> getCurrentAuditor() {

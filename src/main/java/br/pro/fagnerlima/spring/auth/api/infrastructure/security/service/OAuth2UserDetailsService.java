@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service;
 
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
-import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.auth.UsuarioAuth;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.AuthenticationException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.UnauthenticatedException;
@@ -24,13 +23,17 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.Unaut
 @Service
 public class OAuth2UserDetailsService implements UserDetailsService {
 
-    @Autowired
-    private UsuarioService usuarioService;
+    private UsuarioRepository usuarioRepository;
+
+    public OAuth2UserDetailsService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @Override
     public UsuarioAuth loadUserByUsername(String login) throws UsernameNotFoundException {
         try {
-            Usuario usuario = usuarioService.findByLogin(login);
+            Usuario usuario = usuarioRepository.findByLoginIgnoreCase(login)
+                    .orElseThrow(() -> new InformationNotFoundException());
             validateUsuario(usuario);
 
             return new UsuarioAuth(usuario, getAuthorities(usuario));

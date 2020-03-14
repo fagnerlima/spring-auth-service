@@ -2,7 +2,6 @@ package br.pro.fagnerlima.spring.auth.api.application.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,11 +34,14 @@ import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoResponseTO;
 @RequestMapping("/grupos")
 public class GrupoController {
 
-    @Autowired
     private GrupoService grupoService;
 
-    @Autowired
     private ModelMapperFacade modelMapperFacade;
+
+    public GrupoController(GrupoService grupoService, ModelMapperFacade modelMapperFacade) {
+        this.grupoService = grupoService;
+        this.modelMapperFacade = modelMapperFacade;
+    }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping
