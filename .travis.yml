@@ -1,0 +1,12 @@
+language: java
+jdk: oraclejdk11
+os:
+  - linux
+branches:
+  only:
+    - master
+deploy:
+  provider: heroku
+  api-key:
+    secure: $HEROKU_API_KEY
+    app: fl-spring-auth-service

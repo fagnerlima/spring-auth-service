@@ -1,5 +1,7 @@
 # Spring Auth Service
 
+[![Build Status](https://travis-ci.org/fagnerlima/spring-auth-service.svg?branch=master)](https://travis-ci.org/fagnerlima/spring-auth-service)
+
 Projeto Spring que serve como base para desenvolvimento de outros projetos.
 
 ## Recursos
