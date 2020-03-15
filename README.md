@@ -4,6 +4,12 @@
 
 Projeto Spring que serve como base para desenvolvimento de outros projetos.
 
+## Requisitos
+
+* JDK11
+* PostgreSQL 10
+* JUnit 5
+
 ## Recursos
 
 * Autenticação com OAuth2 e JWT
