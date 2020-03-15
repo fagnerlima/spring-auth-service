@@ -27,7 +27,7 @@ services:
       # MAIL_PORT: ?
       # MAIL_SENDER: ?
       # MAIL_USERNAME: ?
-      APP_BASE_URL: http://localhost:4200
+      WEB_APP_BASE_URL: http://localhost:4200
       CORS_ALLOWED_ORIGIN: http://localhost:4200
       SPRING_PROFILES_ACTIVE: dev
     links:
