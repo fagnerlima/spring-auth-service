@@ -10,3 +10,15 @@ deploy:
   api-key:
     secure: $HEROKU_API_KEY
     app: fl-spring-auth-service
+sudo: true
+addons:
+  postgresql: '10'
+  apt:
+    packages:
+      - postgresql-10-postgis-2.4
+      - postgresql-10-postgis-2.4-scripts
+      - postgresql-client-10
+before_install:
+  - sudo -u postgres psql -c "CREATE USER testuser WITH PASSWORD 'testuser'"
+  - sudo -u postgres psql -c "ALTER ROLE testuser SUPERUSER"
+  - sudo -u postgres psql -c "CREATE DATABASE auth-test;" -U testuser
