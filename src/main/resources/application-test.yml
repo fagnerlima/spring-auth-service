@@ -1,8 +1,8 @@
 spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/auth-test
-    username: postgres
-    password: postgres
+    username: testuser
+    password: testuser
   jpa:
     properties:
       hibernate:
