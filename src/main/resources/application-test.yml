@@ -1,11 +1,3 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/auth_test
-    username: testuser
-    password: testuser
-  jpa:
-    properties:
-      hibernate:
-        show_sql: false
   cache:
     type: NONE
