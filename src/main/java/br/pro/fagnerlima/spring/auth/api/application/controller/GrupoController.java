@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.pro.fagnerlima.spring.auth.api.application.service.ResponseEntityFactory;
+import br.pro.fagnerlima.spring.auth.api.application.facade.ResponseEntityFacade;
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
@@ -50,7 +50,7 @@ public class GrupoController {
         Page<Grupo> page = grupoService.findAll(specification, pageable);
         Page<GrupoReducedResponseTO> responseTOPage = modelMapperFacade.map(page, GrupoReducedResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTOPage);
+        return ResponseEntityFacade.ok(responseTOPage);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_BUSCAR') and #oauth2.hasScope('read')")
@@ -59,7 +59,7 @@ public class GrupoController {
         Grupo grupo = grupoService.findById(id);
         GrupoResponseTO responseTO = modelMapperFacade.map(grupo, GrupoResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTO);
+        return ResponseEntityFacade.ok(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_LISTAR') and #oauth2.hasScope('read')")
@@ -68,7 +68,7 @@ public class GrupoController {
         List<Grupo> grupos = grupoService.findAllActive();
         List<GrupoMinResponseTO> responseTOList = modelMapperFacade.map(grupos, GrupoMinResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTOList);
+        return ResponseEntityFacade.ok(responseTOList);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_SALVAR') and #oauth2.hasScope('write')")
@@ -78,7 +78,7 @@ public class GrupoController {
         Grupo savedGrupo = grupoService.save(grupo);
         GrupoResponseTO responseTO = modelMapperFacade.map(savedGrupo, GrupoResponseTO.class);
 
-        return ResponseEntityFactory.created(responseTO);
+        return ResponseEntityFacade.created(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_EDITAR') and #oauth2.hasScope('write')")
@@ -88,7 +88,7 @@ public class GrupoController {
         Grupo updatedGrupo = grupoService.update(id, grupo);
         GrupoResponseTO responseTO = modelMapperFacade.map(updatedGrupo, GrupoResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTO);
+        return ResponseEntityFacade.ok(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_GRUPO_ALTERAR_STATUS') and #oauth2.hasScope('write')")

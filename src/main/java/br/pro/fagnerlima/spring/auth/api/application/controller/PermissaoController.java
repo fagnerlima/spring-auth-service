@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.pro.fagnerlima.spring.auth.api.application.service.ResponseEntityFactory;
+import br.pro.fagnerlima.spring.auth.api.application.facade.ResponseEntityFacade;
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.service.PermissaoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
@@ -34,7 +34,7 @@ public class PermissaoController {
         List<Permissao> permissoes = permissaoService.findAllActive();
         List<PermissaoResponseTO> responseTOList = converterService.map(permissoes, PermissaoResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTOList);
+        return ResponseEntityFacade.ok(responseTOList);
     }
 
 }

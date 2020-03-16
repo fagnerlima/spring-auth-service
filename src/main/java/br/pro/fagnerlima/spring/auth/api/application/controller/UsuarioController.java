@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.pro.fagnerlima.spring.auth.api.application.service.ResponseEntityFactory;
+import br.pro.fagnerlima.spring.auth.api.application.facade.ResponseEntityFacade;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
@@ -54,7 +54,7 @@ public class UsuarioController {
         Page<Usuario> page = usuarioService.findAll(specification, pageable);
         Page<UsuarioReducedResponseTO> responseTOPage = converterService.map(page, UsuarioReducedResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTOPage);
+        return ResponseEntityFacade.ok(responseTOPage);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_BUSCAR') and #oauth2.hasScope('read')")
@@ -63,7 +63,7 @@ public class UsuarioController {
         Usuario usuario = usuarioService.findById(id);
         UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTO);
+        return ResponseEntityFacade.ok(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
@@ -72,7 +72,7 @@ public class UsuarioController {
         List<Usuario> usuarios = usuarioService.findAllActive();
         List<UsuarioMinResponseTO> responseTOList = converterService.map(usuarios, UsuarioMinResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTOList);
+        return ResponseEntityFacade.ok(responseTOList);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_SALVAR') and #oauth2.hasScope('write')")
@@ -82,7 +82,7 @@ public class UsuarioController {
         Usuario savedUsuario = usuarioService.save(usuario);
         UsuarioResponseTO responseTO = converterService.map(savedUsuario, UsuarioResponseTO.class);
 
-        return ResponseEntityFactory.created(responseTO);
+        return ResponseEntityFacade.created(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_EDITAR') and #oauth2.hasScope('write')")
@@ -92,7 +92,7 @@ public class UsuarioController {
         Usuario updatedUsuario = usuarioService.update(id, usuario);
         UsuarioResponseTO responseTO = converterService.map(updatedUsuario, UsuarioResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTO);
+        return ResponseEntityFacade.ok(responseTO);
     }
 
     @PatchMapping("/senha")
@@ -100,7 +100,7 @@ public class UsuarioController {
         Usuario usuario = usuarioService.updateSenhaByResetToken(requestTO.getToken(), requestTO.getSenha());
         UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTO);
+        return ResponseEntityFacade.ok(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_ALTERAR_STATUS') and #oauth2.hasScope('write')")

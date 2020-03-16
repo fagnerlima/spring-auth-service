@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.spring.auth.api.application.service;
+package br.pro.fagnerlima.spring.auth.api.application.facade;
 
 import java.net.URI;
 
@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
 
-public class ResponseEntityFactory {
+public class ResponseEntityFacade {
 
     public static <T> ResponseEntity<ResponseTO<T>> created(T data) {
         return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseTO<T>(data));

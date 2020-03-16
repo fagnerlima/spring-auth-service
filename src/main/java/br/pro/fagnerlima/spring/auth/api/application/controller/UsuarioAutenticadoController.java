@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.pro.fagnerlima.spring.auth.api.application.service.ResponseEntityFactory;
+import br.pro.fagnerlima.spring.auth.api.application.facade.ResponseEntityFacade;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
@@ -35,7 +35,7 @@ public class UsuarioAutenticadoController {
         Usuario usuario = usuarioService.getAutenticado();
         UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTO);
+        return ResponseEntityFacade.ok(responseTO);
     }
 
     @PutMapping
@@ -44,7 +44,7 @@ public class UsuarioAutenticadoController {
         Usuario updatedUsuario = usuarioService.updateAutenticado(usuario);
         UsuarioResponseTO responseTO = converterService.map(updatedUsuario, UsuarioResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTO);
+        return ResponseEntityFacade.ok(responseTO);
     }
 
     @PatchMapping("/senha")
@@ -52,7 +52,7 @@ public class UsuarioAutenticadoController {
         Usuario usuario = usuarioService.updateSenhaAutenticado(requestTO.getSenhaAtual(), requestTO.getSenhaNova());
         UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
-        return ResponseEntityFactory.ok(responseTO);
+        return ResponseEntityFacade.ok(responseTO);
     }
 
 }
