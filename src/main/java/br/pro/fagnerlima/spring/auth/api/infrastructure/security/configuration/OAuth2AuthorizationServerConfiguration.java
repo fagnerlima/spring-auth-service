@@ -1,6 +1,6 @@
 package br.pro.fagnerlima.spring.auth.api.infrastructure.security.configuration;
 
-import java.util.Arrays;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,7 +56,7 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
-        tokenEnhancerChain.setTokenEnhancers(Arrays.asList(tokenEnhancer(), accessTokenConverter()));
+        tokenEnhancerChain.setTokenEnhancers(List.of(tokenEnhancer(), accessTokenConverter()));
 
         endpoints.tokenStore(tokenStore())
                 .tokenEnhancer(tokenEnhancerChain)

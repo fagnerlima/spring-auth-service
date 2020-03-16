@@ -5,20 +5,18 @@ import java.net.URI;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
-
 public class ResponseEntityFacade {
 
-    public static <T> ResponseEntity<ResponseTO<T>> created(T data) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ResponseTO<T>(data));
+    public static <T> ResponseEntity<T> created(T data) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(data);
     }
 
-    public static <T> ResponseEntity<ResponseTO<T>> created(T data, String locationURI) {
-        return ResponseEntity.created(URI.create(locationURI)).body(new ResponseTO<T>(data));
+    public static <T> ResponseEntity<T> created(T data, String locationURI) {
+        return ResponseEntity.created(URI.create(locationURI)).body(data);
     }
 
-    public static <T> ResponseEntity<ResponseTO<T>> ok(T data) {
-        return ResponseEntity.ok(new ResponseTO<T>(data));
+    public static <T> ResponseEntity<T> ok(T data) {
+        return ResponseEntity.ok(data);
     }
 
     public static <T> ResponseEntity<T> notFound() {

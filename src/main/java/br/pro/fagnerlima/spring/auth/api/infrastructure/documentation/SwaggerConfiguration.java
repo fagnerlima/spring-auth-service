@@ -1,6 +1,5 @@
 package br.pro.fagnerlima.spring.auth.api.infrastructure.documentation;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -57,7 +56,7 @@ public class SwaggerConfiguration {
     }
 
     private List<ApiKey> securitySchemes() {
-        return Arrays.asList(new ApiKey(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER, HTTP_HEADER));
+        return List.of(new ApiKey(AUTHORIZATION_HEADER, AUTHORIZATION_HEADER, HTTP_HEADER));
     }
 
     private List<SecurityContext> securityContexts() {
@@ -66,13 +65,13 @@ public class SwaggerConfiguration {
                 .forPaths(PathSelectors.regex(DEFAULT_INCLUDE_PATTERN))
                 .build();
 
-        return Arrays.asList(securityContext);
+        return List.of(securityContext);
     }
 
     private List<SecurityReference> securityReferences() {
         AuthorizationScope[] authorizationScopes = new AuthorizationScope[] { new AuthorizationScope(SCOPE, SCOPE) };
 
-        return Arrays.asList((new SecurityReference(AUTHORIZATION_HEADER, authorizationScopes)));
+        return List.of((new SecurityReference(AUTHORIZATION_HEADER, authorizationScopes)));
     }
 
 }

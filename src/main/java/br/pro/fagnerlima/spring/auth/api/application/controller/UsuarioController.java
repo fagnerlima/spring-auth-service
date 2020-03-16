@@ -25,7 +25,6 @@ import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
-import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioEmailRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioFilterRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioMinResponseTO;
@@ -33,6 +32,7 @@ import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioReduced
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioSenhaResetTokenRequestTO;
+import br.pro.fagnerlima.spring.auth.api.presentation.factory.UsuarioLinkFactory;
 
 @RestController
 @RequestMapping("/usuarios")
@@ -49,56 +49,68 @@ public class UsuarioController {
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping
-    public ResponseEntity<ResponseTO<Page<UsuarioReducedResponseTO>>> findAll(UsuarioFilterRequestTO filterRequestTO, Pageable pageable) {
+    public ResponseEntity<Page<UsuarioReducedResponseTO>> findAll(UsuarioFilterRequestTO filterRequestTO, Pageable pageable) {
         Specification<Usuario> specification = new SpecificationFactory<Usuario>().create(filterRequestTO, Usuario.class);
         Page<Usuario> page = usuarioService.findAll(specification, pageable);
         Page<UsuarioReducedResponseTO> responseTOPage = converterService.map(page, UsuarioReducedResponseTO.class);
+
+        responseTOPage.getContent().stream().forEach(responseTO -> responseTO.add(UsuarioLinkFactory.create(responseTO.getId())));
 
         return ResponseEntityFacade.ok(responseTOPage);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_BUSCAR') and #oauth2.hasScope('read')")
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseTO<UsuarioResponseTO>> find(@PathVariable Long id) {
+    public ResponseEntity<UsuarioResponseTO> findById(@PathVariable Long id) {
         Usuario usuario = usuarioService.findById(id);
         UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
+
+        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
 
         return ResponseEntityFacade.ok(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_LISTAR') and #oauth2.hasScope('read')")
     @GetMapping("/ativos")
-    public ResponseEntity<ResponseTO<List<UsuarioMinResponseTO>>> findAllActive() {
+    public ResponseEntity<List<UsuarioMinResponseTO>> findAllActive() {
         List<Usuario> usuarios = usuarioService.findAllActive();
         List<UsuarioMinResponseTO> responseTOList = converterService.map(usuarios, UsuarioMinResponseTO.class);
+
+        responseTOList.stream().forEach(responseTO -> responseTO.add(UsuarioLinkFactory.create(responseTO.getId())));
 
         return ResponseEntityFacade.ok(responseTOList);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_SALVAR') and #oauth2.hasScope('write')")
     @PostMapping
-    public ResponseEntity<ResponseTO<UsuarioResponseTO>> save(@RequestBody UsuarioRequestTO requestTO) {
+    public ResponseEntity<UsuarioResponseTO> save(@RequestBody UsuarioRequestTO requestTO) {
         Usuario usuario = converterService.map(requestTO, Usuario.class);
         Usuario savedUsuario = usuarioService.save(usuario);
         UsuarioResponseTO responseTO = converterService.map(savedUsuario, UsuarioResponseTO.class);
+
+        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
 
         return ResponseEntityFacade.created(responseTO);
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_EDITAR') and #oauth2.hasScope('write')")
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseTO<UsuarioResponseTO>> update(@PathVariable Long id, @RequestBody UsuarioRequestTO requestTO) {
+    public ResponseEntity<UsuarioResponseTO> update(@PathVariable Long id, @RequestBody UsuarioRequestTO requestTO) {
         Usuario usuario = converterService.map(requestTO, Usuario.class);
         Usuario updatedUsuario = usuarioService.update(id, usuario);
         UsuarioResponseTO responseTO = converterService.map(updatedUsuario, UsuarioResponseTO.class);
+
+        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
 
         return ResponseEntityFacade.ok(responseTO);
     }
 
     @PatchMapping("/senha")
-    public ResponseEntity<ResponseTO<UsuarioResponseTO>> updateSenhaByResetToken(@RequestBody UsuarioSenhaResetTokenRequestTO requestTO) {
+    public ResponseEntity<UsuarioResponseTO> updateSenhaByResetToken(@RequestBody UsuarioSenhaResetTokenRequestTO requestTO) {
         Usuario usuario = usuarioService.updateSenhaByResetToken(requestTO.getToken(), requestTO.getSenha());
         UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
+
+        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
 
         return ResponseEntityFacade.ok(responseTO);
     }

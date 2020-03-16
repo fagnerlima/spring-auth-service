@@ -1,7 +1,6 @@
 package br.pro.fagnerlima.spring.auth.api.presentation.dto.email;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 
 public class MailRequestTO implements Serializable {
@@ -27,7 +26,7 @@ public class MailRequestTO implements Serializable {
 
     public MailRequestTO(String recipient, String subject, String text) {
         super();
-        this.recipients = Arrays.asList(recipient);
+        this.recipients = List.of(recipient);
         this.subject = subject;
         this.text = text;
     }

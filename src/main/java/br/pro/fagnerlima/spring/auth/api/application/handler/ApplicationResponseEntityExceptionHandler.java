@@ -1,8 +1,6 @@
 package br.pro.fagnerlima.spring.auth.api.application.handler;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +30,6 @@ import br.pro.fagnerlima.spring.auth.api.application.service.exception.NotAuthen
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.AuthenticationException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.exception.MailException;
-import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
 
 @ControllerAdvice
 public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
@@ -113,31 +110,28 @@ public class ApplicationResponseEntityExceptionHandler extends ResponseEntityExc
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException exception, WebRequest request) {
         List<String> errors = exception.getConstraintViolations().stream()
                 .map(e -> MessageFormat.format(e.getMessage(), e.getPropertyPath())).collect(Collectors.toList());
-        ResponseTO<String> responseTO = new ResponseTO<>(errors);
 
-        return handleExceptionInternal(exception, responseTO, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
+        return handleExceptionInternal(exception, errors, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
     }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException exception, HttpHeaders headers,
             HttpStatus status, WebRequest request) {
-        ResponseTO<List<String>> response = new ResponseTO<>();
-        response.setErrors(getErrors(exception.getBindingResult()));
+        List<String> errors = getErrors(exception.getBindingResult());
 
-        return handleExceptionInternal(exception, response, headers, HttpStatus.BAD_REQUEST, request);
+        return handleExceptionInternal(exception, errors, headers, HttpStatus.BAD_REQUEST, request);
     }
 
     protected ResponseEntity<Object> handleException(Exception exception, HttpStatus status, WebRequest request, String key) {
-        ResponseTO<List<String>> response = new ResponseTO<>(Arrays.asList((messageService.getMessage(key))));
+        List<String> errors = List.of(messageService.getMessage(key));
 
-        return handleExceptionInternal(exception, response, new HttpHeaders(), status, request);
+        return handleExceptionInternal(exception, errors, new HttpHeaders(), status, request);
     }
 
     protected List<String> getErrors(BindingResult bindingResult) {
-        List<String> errors = new ArrayList<>();
-        bindingResult.getFieldErrors().forEach(e -> errors.add(messageService.getMessage(e)));
-
-        return errors;
+        return bindingResult.getFieldErrors().stream()
+                .map(e -> messageService.getMessage(e))
+                .collect(Collectors.toList());
     }
 
 }

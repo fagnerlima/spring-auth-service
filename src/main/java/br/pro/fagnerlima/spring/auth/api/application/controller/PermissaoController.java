@@ -12,8 +12,8 @@ import br.pro.fagnerlima.spring.auth.api.application.facade.ResponseEntityFacade
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.service.PermissaoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
-import br.pro.fagnerlima.spring.auth.api.presentation.dto.ResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.permissao.PermissaoResponseTO;
+import br.pro.fagnerlima.spring.auth.api.presentation.factory.PermissaoLinkFactory;
 
 @RestController
 @RequestMapping("/permissoes")
@@ -30,9 +30,11 @@ public class PermissaoController {
 
     @GetMapping("/ativos")
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_PERMISSAO_LISTAR') and #oauth2.hasScope('read')")
-    public ResponseEntity<ResponseTO<List<PermissaoResponseTO>>> findAllActive() {
+    public ResponseEntity<List<PermissaoResponseTO>> findAllActive() {
         List<Permissao> permissoes = permissaoService.findAllActive();
         List<PermissaoResponseTO> responseTOList = converterService.map(permissoes, PermissaoResponseTO.class);
+
+        responseTOList.stream().forEach(responseTO -> responseTO.add(PermissaoLinkFactory.create(responseTO.getId())));
 
         return ResponseEntityFacade.ok(responseTOList);
     }

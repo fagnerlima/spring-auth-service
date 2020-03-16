@@ -12,7 +12,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -451,7 +450,7 @@ public class UsuarioServiceImplTest {
     }
 
     private Set<Grupo> findGruposByIds(Long... ids) {
-        return new HashSet<>(grupoRepository.findAllById(Arrays.asList(ids)));
+        return new HashSet<>(grupoRepository.findAllById(List.of(ids)));
     }
 
     private Usuario createUsuarioPendente(String nome, String login, Long... idsGrupos) {

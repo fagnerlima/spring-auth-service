@@ -1,8 +1,7 @@
 package br.pro.fagnerlima.spring.auth.api.infrastructure.security.serializer;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -22,8 +21,8 @@ public class CustomOAuth2ExceptionSerializer extends StdSerializer<CustomOAuth2E
     public void serialize(CustomOAuth2Exception value, JsonGenerator gen, SerializerProvider provider) throws IOException {
         gen.writeStartObject();
         gen.writeObjectField("data", null);
-        gen.writeObjectField("errors", Arrays.asList(value.getMessage()));
-        gen.writeObjectField("links", new ArrayList<>());
+        gen.writeObjectField("errors", List.of(value.getMessage()));
+        gen.writeObjectField("links", List.of());
         gen.writeEndObject();
         gen.close();
     }

@@ -8,7 +8,6 @@ import static br.pro.fagnerlima.spring.auth.api.testcase.ServiceTestCase.mockAut
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -266,7 +265,7 @@ public class GrupoServiceImplTest {
                 .withNome(nome)
                 .withAtivo(ativo)
                 .withPermissoes(idsPermissoes != null && idsPermissoes.length > 0
-                        ? new HashSet<>(permissaoRepository.findAllById(Arrays.asList(idsPermissoes)))
+                        ? new HashSet<>(permissaoRepository.findAllById(List.of(idsPermissoes)))
                         : null)
                 .build();
     }

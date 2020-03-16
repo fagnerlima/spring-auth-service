@@ -2,7 +2,9 @@ package br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo;
 
 import java.io.Serializable;
 
-public class GrupoMinResponseTO implements Serializable {
+import org.springframework.hateoas.RepresentationModel;
+
+public class GrupoMinResponseTO extends RepresentationModel<GrupoMinResponseTO> implements Serializable {
 
     private static final long serialVersionUID = 6680724796313031974L;
 

@@ -3,9 +3,11 @@ package br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario;
 import java.io.Serializable;
 import java.util.Set;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoResponseTO;
 
-public class UsuarioResponseTO implements Serializable {
+public class UsuarioResponseTO extends RepresentationModel<UsuarioResponseTO> implements Serializable {
 
     private static final long serialVersionUID = -2629152547405312072L;
 

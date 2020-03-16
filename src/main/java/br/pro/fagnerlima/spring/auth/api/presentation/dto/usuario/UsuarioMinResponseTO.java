@@ -2,7 +2,9 @@ package br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario;
 
 import java.io.Serializable;
 
-public class UsuarioMinResponseTO implements Serializable {
+import org.springframework.hateoas.RepresentationModel;
+
+public class UsuarioMinResponseTO extends RepresentationModel<UsuarioMinResponseTO> implements Serializable {
 
     private static final long serialVersionUID = 2300401915261446061L;
 

@@ -2,9 +2,11 @@ package br.pro.fagnerlima.spring.auth.api.presentation.dto.permissao;
 
 import java.io.Serializable;
 
+import org.springframework.hateoas.RepresentationModel;
+
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Papel;
 
-public class PermissaoResponseTO implements Serializable {
+public class PermissaoResponseTO extends RepresentationModel<PermissaoResponseTO> implements Serializable {
 
     private static final long serialVersionUID = 9134172781125306932L;
 
