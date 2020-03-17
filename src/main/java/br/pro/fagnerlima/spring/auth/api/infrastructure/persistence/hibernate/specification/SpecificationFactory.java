@@ -18,6 +18,7 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.util.StringUtils;
 
 public class SpecificationFactory<T> {
 
+    private static final String SERIAL_VERSION_FIELD = "serialVersionUID";
     private static final String POSTGRESQL_UNACCENT_FUNCTION = "unaccent";
 
     public Specification<T> create(String property, Long value, Operation operation) {
@@ -116,8 +117,8 @@ public class SpecificationFactory<T> {
     }
 
     public Specification<T> create(Object filter, Class<T> entityClass) {
-        List<Field> filterFields = FieldUtils.getAllFields(filter.getClass());
-        List<Field> entityFields = FieldUtils.getAllFields(entityClass);
+        List<Field> filterFields = FieldUtils.getAllFields(filter.getClass(), SERIAL_VERSION_FIELD);
+        List<Field> entityFields = FieldUtils.getAllFields(entityClass, SERIAL_VERSION_FIELD);
         List<Specification<T>> specs = new ArrayList<>();
 
         for (Field filterField : filterFields) {

@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class FieldUtils {
 
@@ -29,6 +30,27 @@ public class FieldUtils {
         }
 
         return fields;
+    }
+
+    /**
+     * Retorna todos os campos da classe {@code type}, incluindo os campos de suas superclasses,
+     * e excetuando os campos em {@code ignoreProperties}.
+     *
+     * @param type classe alvo
+     * @return todos os campos da classe {@code type}
+     */
+    public static List<Field> getAllFields(Class<?> type, String ...ignoreProperties) {
+        List<Field> fields = getAllFields(type);
+
+        if (ignoreProperties == null || ignoreProperties.length == 0) {
+            return fields;
+        }
+
+        List<String> ignorePropertiesList = List.of(ignoreProperties);
+
+        return fields.stream()
+                .filter(f -> !ignorePropertiesList.contains(f.getName()))
+                .collect(Collectors.toList());
     }
 
     /**
