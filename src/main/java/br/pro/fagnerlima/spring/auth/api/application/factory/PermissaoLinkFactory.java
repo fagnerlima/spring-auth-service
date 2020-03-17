@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.spring.auth.api.presentation.factory;
+package br.pro.fagnerlima.spring.auth.api.application.factory;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;

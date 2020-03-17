@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.application.facade.ResponseEntityFacade;
+import br.pro.fagnerlima.spring.auth.api.application.factory.UsuarioLinkFactory;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioAutenticadoRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioSenhaRequestTO;
-import br.pro.fagnerlima.spring.auth.api.presentation.factory.UsuarioLinkFactory;
 
 @RestController
 @RequestMapping("/me")

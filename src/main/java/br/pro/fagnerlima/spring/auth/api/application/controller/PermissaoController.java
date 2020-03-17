@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.application.facade.ResponseEntityFacade;
+import br.pro.fagnerlima.spring.auth.api.application.factory.PermissaoLinkFactory;
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.service.PermissaoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.permissao.PermissaoResponseTO;
-import br.pro.fagnerlima.spring.auth.api.presentation.factory.PermissaoLinkFactory;
 
 @RestController
 @RequestMapping("/permissoes")

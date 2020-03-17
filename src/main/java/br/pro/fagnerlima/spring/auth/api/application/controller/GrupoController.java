@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.application.facade.ResponseEntityFacade;
+import br.pro.fagnerlima.spring.auth.api.application.factory.GrupoLinkFactory;
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.facade.ModelMapperFacade;
@@ -28,7 +29,6 @@ import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoMinResponse
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoReducedResponseTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoResponseTO;
-import br.pro.fagnerlima.spring.auth.api.presentation.factory.GrupoLinkFactory;
 
 @RestController
 @RequestMapping("/grupos")
