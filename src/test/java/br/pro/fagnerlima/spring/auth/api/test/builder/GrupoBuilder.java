@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.spring.auth.api.testcase.builder;
+package br.pro.fagnerlima.spring.auth.api.test.builder;
 
 import java.util.Set;
 

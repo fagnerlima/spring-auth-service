@@ -1,4 +1,4 @@
-package br.pro.fagnerlima.spring.auth.api.testcase;
+package br.pro.fagnerlima.spring.auth.api.test.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -15,7 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import br.pro.fagnerlima.spring.auth.api.domain.shared.AuditedBaseEntity;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
 
-public class ServiceTestCase {
+public class ServiceTestUtils {
 
     public static void mockAuthenticationForAuditing(String username) {
         Authentication authentication = mock(Authentication.class);
