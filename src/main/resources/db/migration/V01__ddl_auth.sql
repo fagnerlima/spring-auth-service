@@ -20,8 +20,11 @@ CREATE TABLE auth.usuario (
   updated_by VARCHAR(32) NOT NULL,
   version INTEGER NOT NULL DEFAULT 0,
   CONSTRAINT pk_usuario PRIMARY KEY(id),
-  CONSTRAINT uk_usuario_email UNIQUE(email)
+  CONSTRAINT uk_usuario_email UNIQUE(email),
+  CONSTRAINT uk_usuario_login UNIQUE(login)
 );
+
+CREATE INDEX idx_usuario_ativo ON auth.usuario (ativo);
 
 CREATE TABLE auth.grupo (
   id SERIAL,
@@ -34,6 +37,8 @@ CREATE TABLE auth.grupo (
   version INTEGER NOT NULL DEFAULT 0,
   CONSTRAINT pk_grupo PRIMARY KEY(id)
 );
+
+CREATE INDEX idx_grupo_ativo ON auth.grupo (ativo);
 
 CREATE TABLE auth.permissao (
   id SERIAL,
