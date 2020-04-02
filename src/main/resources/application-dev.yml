@@ -3,9 +3,3 @@ spring:
     properties:
       hibernate:
         show_sql: false
-
-auth-service:
-  security:
-    oauth2:
-      refresh-token:
-        secure-cookie: false

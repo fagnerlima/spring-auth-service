@@ -1,5 +1,0 @@
-auth-service:
-  security:
-    oauth2:
-      refresh-token:
-        secure-cookie: true
