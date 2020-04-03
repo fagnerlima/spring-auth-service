@@ -126,10 +126,10 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
 
     @Override
     public Usuario updateAutenticado(Usuario usuario) {
-        Long id = getUserDetailsService().getUsuarioAuth().getUsuario().getId();
-        usuario.ativar();
+        Usuario usuarioAutenticado = getUserDetailsService().getUsuarioAuth().getUsuario();
+        usuario.setGrupos(usuarioAutenticado.getGrupos());
 
-        return update(id, usuario);
+        return update(usuarioAutenticado.getId(), usuario);
     }
 
     @Override

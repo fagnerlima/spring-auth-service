@@ -1,10 +1,6 @@
 package br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario;
 
 import java.io.Serializable;
-import java.util.Set;
-
-import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.converter.IdReference;
 
 public class UsuarioAutenticadoRequestTO implements Serializable {
 
@@ -16,19 +12,15 @@ public class UsuarioAutenticadoRequestTO implements Serializable {
 
     private String login;
 
-    @IdReference(target = Grupo.class, property = "grupos")
-    private Set<Long> grupos;
-
     public UsuarioAutenticadoRequestTO() {
         super();
     }
 
-    public UsuarioAutenticadoRequestTO(String nome, String email, String login, Set<Long> grupos) {
+    public UsuarioAutenticadoRequestTO(String nome, String email, String login) {
         super();
         this.nome = nome;
         this.email = email;
         this.login = login;
-        this.grupos = grupos;
     }
 
     public String getNome() {
@@ -55,17 +47,9 @@ public class UsuarioAutenticadoRequestTO implements Serializable {
         this.login = login;
     }
 
-    public Set<Long> getGrupos() {
-        return grupos;
-    }
-
-    public void setGrupos(Set<Long> grupos) {
-        this.grupos = grupos;
-    }
-
     @Override
     public String toString() {
-        return String.format("UsuarioRequestTO [nome=%s, email=%s, login=%s, grupos=%s]", nome, email, login, grupos);
+        return String.format("UsuarioRequestTO [nome=%s, email=%s, login=%s]", nome, email, login);
     }
 
 }
