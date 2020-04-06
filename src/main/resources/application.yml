@@ -52,6 +52,11 @@ auth-service:
     allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:4200}
   security:
     oauth2:
+      basic:
+        username: ${OAUTH2_BASIC_USERNAME:angular}
+        password: ${OAUTH2_BASIC_PASSWORD:angular}
+      client: ${OAUTH2_CLIENT:angular}
+      secret: ${OAUTH2_SECRET:$2a$10$3yrT0M2xU9Qj24Mqv4xWkekbqLYm7p3nMeg4QPcHkOajGSG8rwsj2}
       access-token:
         validity-seconds: ${OAUTH2_ACCESS_TOKEN_VALIDITY_SECONDS:1800}
       refresh-token:

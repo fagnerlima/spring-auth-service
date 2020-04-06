@@ -45,8 +45,8 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         // TODO salvar em banco de dados
         clients.inMemory()
-                .withClient("angular")
-                .secret("$2a$10$3yrT0M2xU9Qj24Mqv4xWkekbqLYm7p3nMeg4QPcHkOajGSG8rwsj2")
+                .withClient(oauth2Properties.getClient())
+                .secret(oauth2Properties.getSecret())
                 .scopes("read", "write")
                 .authorizedGrantTypes("password", "refresh_token")
                 .accessTokenValiditySeconds(oauth2Properties.getAccessToken().getValiditySeconds())

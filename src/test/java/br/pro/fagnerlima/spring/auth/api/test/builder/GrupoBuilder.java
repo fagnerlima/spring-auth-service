@@ -9,6 +9,11 @@ public class GrupoBuilder {
 
     private Grupo grupo = new Grupo();
 
+    public GrupoBuilder withId(Long id) {
+        grupo.setId(id);
+        return this;
+    }
+
     public GrupoBuilder withNome(String nome) {
         grupo.setNome(nome);
         return this;

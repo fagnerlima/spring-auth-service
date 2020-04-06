@@ -48,6 +48,10 @@ public abstract class BaseEntity implements Serializable {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Boolean getAtivo() {
         return ativo;
     }

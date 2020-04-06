@@ -16,8 +16,21 @@ public class GrupoTestUtils {
                 .build();
     }
 
+    public static Grupo createGrupo(Long id, String nome, Boolean ativo, Set<Permissao> permissoes) {
+        return new GrupoBuilder()
+                .withId(id)
+                .withNome(nome)
+                .withPermissoes(permissoes)
+                .withAtivo(ativo)
+                .build();
+    }
+
     public static Grupo createGrupo(String nome, Boolean ativo) {
         return createGrupo(nome, ativo, null);
+    }
+
+    public static Grupo createGrupo(Long id, String nome, Boolean ativo) {
+        return createGrupo(id, nome, ativo, null);
     }
 
 }
