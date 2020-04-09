@@ -45,8 +45,10 @@ public class UsuarioTestUtils {
         return createUsuario(nome, login, true, false, true, null);
     }
 
-    public static Usuario createUsuario(String nome, String login, Boolean ativo, Boolean pendente, Boolean bloqueado, Set<Grupo> grupos) {
+    public static Usuario createUsuario(Long id, String nome, String login, Boolean ativo, Boolean pendente, Boolean bloqueado,
+            Set<Grupo> grupos) {
         return new UsuarioBuilder()
+                .withId(id)
                 .withNome(nome)
                 .withEmail(login + "@email.com")
                 .withLogin(login)
@@ -60,8 +62,12 @@ public class UsuarioTestUtils {
                 .build();
     }
 
-    public static Usuario createUsuario(String nome, String login, Boolean ativo, Boolean pendente, Boolean bloqueado) {
-        return createUsuario(nome, login, ativo, pendente, bloqueado, null);
+    public static Usuario createUsuario(String nome, String login, Boolean ativo, Boolean pendente, Boolean bloqueado, Set<Grupo> grupos) {
+        return createUsuario(null, nome, login, ativo, pendente, bloqueado, grupos);
+    }
+
+    public static Usuario createUsuarioAdminMock() {
+        return createUsuario(1L, "Administrador", "admin", true, false, false, Set.of(GrupoTestUtils.createGrupoAdminMock()));
     }
 
 }

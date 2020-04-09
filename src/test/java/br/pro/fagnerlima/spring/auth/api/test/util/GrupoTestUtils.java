@@ -33,4 +33,8 @@ public class GrupoTestUtils {
         return createGrupo(id, nome, ativo, null);
     }
 
+    public static Grupo createGrupoAdminMock() {
+        return createGrupo(1L, "Administrador", true, Set.of(PermissaoTestUtils.createPermissaoAdminMock()));
+    }
+
 }

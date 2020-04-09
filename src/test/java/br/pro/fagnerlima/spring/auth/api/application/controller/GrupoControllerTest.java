@@ -25,8 +25,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.OAuth2Properties;
+import br.pro.fagnerlima.spring.auth.api.application.service.exception.InformationNotFoundException;
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
-import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Papel;
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
@@ -51,7 +51,7 @@ public class GrupoControllerTest extends BaseControllerTest {
 
     private Page<Grupo> grupoPageMock;
 
-    private Grupo grupoAdministradorMock;
+    private Grupo grupoAdminMock;
 
     private Permissao permissaoAdminMock;
 
@@ -65,11 +65,11 @@ public class GrupoControllerTest extends BaseControllerTest {
     public void setUp() throws Exception {
         specificationFactoryMock = mock(SpecificationFactory.class);
 
-        permissaoAdminMock = PermissaoTestUtils.createPermissao(1L, Papel.ROLE_ADMIN, "Administrador");
-        grupoAdministradorMock = GrupoTestUtils.createGrupo(1L, "Administrador", true, Set.of(permissaoAdminMock));
+        permissaoAdminMock = PermissaoTestUtils.createPermissaoAdminMock();
+        grupoAdminMock = GrupoTestUtils.createGrupoAdminMock();
 
         grupoListMock = new ArrayList<>();
-        grupoListMock.add(grupoAdministradorMock);
+        grupoListMock.add(grupoAdminMock);
 
         for (Long i = 2L; i <= 8; i++) {
             grupoListMock.add(GrupoTestUtils.createGrupo(i, RandomStringUtils.random(10), true));
@@ -92,9 +92,9 @@ public class GrupoControllerTest extends BaseControllerTest {
 
         response.then()
                 .statusCode(HttpStatus.OK.value()).assertThat()
-                .body("content[0].id", equalTo(grupoAdministradorMock.getId().intValue()))
-                .body("content[0].nome", equalTo(grupoAdministradorMock.getNome()))
-                .body("content[0].ativo", equalTo(grupoAdministradorMock.getAtivo()))
+                .body("content[0].id", equalTo(grupoAdminMock.getId().intValue()))
+                .body("content[0].nome", equalTo(grupoAdminMock.getNome()))
+                .body("content[0].ativo", equalTo(grupoAdminMock.getAtivo()))
                 .body("content[0].links.size()", equalTo(3));
     }
 
@@ -108,16 +108,28 @@ public class GrupoControllerTest extends BaseControllerTest {
 
     @Test
     public void testFindById() {
-        when(grupoServiceMock.findById(any())).thenReturn(grupoAdministradorMock);
+        when(grupoServiceMock.findById(any())).thenReturn(grupoAdminMock);
 
         Response response = given()
                 .auth().oauth2(givenAccessTokenAsAdmin())
-                .when().get(buildUrl(BASE_PATH,1));
+                .when().get(buildUrl(BASE_PATH, 1));
 
         response.then()
                 .statusCode(HttpStatus.OK.value()).assertThat();
 
-        assertGrupoResponseTO(response, grupoAdministradorMock);
+        assertGrupoResponseTO(response, grupoAdminMock);
+    }
+
+    @Test
+    public void testFindById_whenNotFound() {
+        when(grupoServiceMock.findById(any())).thenThrow(InformationNotFoundException.class);
+
+        Response response = given()
+                .auth().oauth2(givenAccessTokenAsAdmin())
+                .when().get(buildUrl(BASE_PATH, 100));
+
+        response.then()
+                .statusCode(HttpStatus.NOT_FOUND.value()).assertThat();
     }
 
     @Test
@@ -131,8 +143,8 @@ public class GrupoControllerTest extends BaseControllerTest {
         response.then()
                 .statusCode(HttpStatus.OK.value()).assertThat()
                 .body("size()", equalTo(grupoListMock.size()))
-                .body("[0].id", equalTo(grupoAdministradorMock.getId().intValue()))
-                .body("[0].nome", equalTo(grupoAdministradorMock.getNome()));
+                .body("[0].id", equalTo(grupoAdminMock.getId().intValue()))
+                .body("[0].nome", equalTo(grupoAdminMock.getNome()));
     }
 
     @Test
@@ -171,7 +183,7 @@ public class GrupoControllerTest extends BaseControllerTest {
                 .auth().oauth2(givenAccessTokenAsAdmin())
                 .contentType(ContentType.JSON)
                 .body(requestBody)
-                .when().put(buildUrl(BASE_PATH,grupoMock.getId().intValue()));
+                .when().put(buildUrl(BASE_PATH, grupoMock.getId().intValue()));
 
         response.then()
                 .statusCode(HttpStatus.OK.value()).assertThat();

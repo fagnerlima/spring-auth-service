@@ -4,8 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-import br.pro.fagnerlima.spring.auth.api.infrastructure.util.StringUtils;
-
 public class StringUtilsTest {
 
     @Test
