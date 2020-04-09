@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,7 +30,6 @@ import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Papel;
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
-import br.pro.fagnerlima.spring.auth.api.test.auth.OAuth2AuthenticationTest;
 import br.pro.fagnerlima.spring.auth.api.test.util.ControllerTestUtils;
 import br.pro.fagnerlima.spring.auth.api.test.util.GrupoTestUtils;
 import br.pro.fagnerlima.spring.auth.api.test.util.PermissaoTestUtils;
@@ -42,54 +38,35 @@ import io.restassured.response.Response;
 
 @ActiveProfiles("test")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class GrupoControllerTest {
+public class GrupoControllerTest extends BaseControllerTest {
 
-    private static final String ADMIN_USERNAME = "admin";
-    private static final String ADMIN_PASSWORD = "Admin@123";
-    private static final String TOKEN_PATH = "/oauth/token";
     private static final String BASE_PATH = "/grupos";
-
-    private OAuth2Properties oauth2Properties;
-
-    @LocalServerPort
-    private Integer port;
-
-    private String baseUrl;
-
-    private String accessToken;
 
     @MockBean
     private GrupoService grupoServiceMock;
 
     private SpecificationFactory<Grupo> specificationFactoryMock;
 
-    List<Grupo> grupoListMock;
+    private List<Grupo> grupoListMock;
 
-    Page<Grupo> grupoPageMock;
+    private Page<Grupo> grupoPageMock;
 
     private Grupo grupoAdministradorMock;
 
-    private Grupo grupoTestMock;
+    private Permissao permissaoAdminMock;
 
     @Autowired
     public GrupoControllerTest(OAuth2Properties oauth2Properties) {
-        this.oauth2Properties = oauth2Properties;
-    }
-
-    @PostConstruct
-    public void init() {
-        baseUrl = "http://localhost:" + port;
+        super(oauth2Properties);
     }
 
     @SuppressWarnings("unchecked")
     @BeforeEach
     public void setUp() throws Exception {
-        accessToken = OAuth2AuthenticationTest.givenAccessToken(baseUrl + TOKEN_PATH, oauth2Properties, ADMIN_USERNAME, ADMIN_PASSWORD);
         specificationFactoryMock = mock(SpecificationFactory.class);
 
-        Permissao permissaoAdminMock = PermissaoTestUtils.createPermissao(1L, Papel.ROLE_ADMIN, "Administrador");
+        permissaoAdminMock = PermissaoTestUtils.createPermissao(1L, Papel.ROLE_ADMIN, "Administrador");
         grupoAdministradorMock = GrupoTestUtils.createGrupo(1L, "Administrador", true, Set.of(permissaoAdminMock));
-        grupoTestMock = GrupoTestUtils.createGrupo(21L, "Test", true, Set.of(permissaoAdminMock));
 
         grupoListMock = new ArrayList<>();
         grupoListMock.add(grupoAdministradorMock);
@@ -108,8 +85,8 @@ public class GrupoControllerTest {
         when(grupoServiceMock.findAll(any(), any())).thenReturn(grupoPageMock);
 
         Response response = given()
-                .auth().oauth2(accessToken)
-                .when().get(baseUrl + BASE_PATH);
+                .auth().oauth2(givenAccessTokenAsAdmin())
+                .when().get(buildUrl(BASE_PATH));
 
         ControllerTestUtils.assertPage(response, 10, 0, 8, 1, 8);
 
@@ -124,7 +101,7 @@ public class GrupoControllerTest {
     @Test
     public void testFindAll_whenUnauthorized() {
         given()
-                .when().get(baseUrl + BASE_PATH)
+                .when().get(buildUrl(BASE_PATH))
                 .then()
                 .statusCode(HttpStatus.UNAUTHORIZED.value()).assertThat();
     }
@@ -134,8 +111,8 @@ public class GrupoControllerTest {
         when(grupoServiceMock.findById(any())).thenReturn(grupoAdministradorMock);
 
         Response response = given()
-                .auth().oauth2(accessToken)
-                .when().get(baseUrl + BASE_PATH + "/" + 1);
+                .auth().oauth2(givenAccessTokenAsAdmin())
+                .when().get(buildUrl(BASE_PATH,1));
 
         response.then()
                 .statusCode(HttpStatus.OK.value()).assertThat();
@@ -148,8 +125,8 @@ public class GrupoControllerTest {
         when(grupoServiceMock.findAllActive()).thenReturn(grupoListMock);
 
         Response response = given()
-                .auth().oauth2(accessToken)
-                .when().get(baseUrl + BASE_PATH + "/ativos");
+                .auth().oauth2(givenAccessTokenAsAdmin())
+                .when().get(buildUrl(BASE_PATH, "ativos"));
 
         response.then()
                 .statusCode(HttpStatus.OK.value()).assertThat()
@@ -160,7 +137,8 @@ public class GrupoControllerTest {
 
     @Test
     public void testSave() {
-        when(grupoServiceMock.save(any())).thenReturn(grupoTestMock);
+        Grupo grupoMock = GrupoTestUtils.createGrupo(21L, "Test", true, Set.of(permissaoAdminMock));
+        when(grupoServiceMock.save(any())).thenReturn(grupoMock);
 
         String requestBody = "{\n" + 
                 "  \"nome\": \"Test\",\n" + 
@@ -168,20 +146,21 @@ public class GrupoControllerTest {
                 "  \"ativo\": true\n" + 
                 "}";
         Response response = given()
-                .auth().oauth2(accessToken)
+                .auth().oauth2(givenAccessTokenAsAdmin())
                 .contentType(ContentType.JSON)
                 .body(requestBody)
-                .when().post(baseUrl + BASE_PATH);
+                .when().post(buildUrl(BASE_PATH));
 
         response.then()
                 .statusCode(HttpStatus.CREATED.value()).assertThat();
 
-        assertGrupoResponseTO(response, grupoTestMock);
+        assertGrupoResponseTO(response, grupoMock);
     }
 
     @Test
     public void testUpdate() {
-        when(grupoServiceMock.update(any(), any())).thenReturn(grupoTestMock);
+        Grupo grupoMock = GrupoTestUtils.createGrupo(21L, "Test", true, Set.of(permissaoAdminMock));
+        when(grupoServiceMock.update(any(), any())).thenReturn(grupoMock);
 
         String requestBody = "{\n" + 
                 "  \"nome\": \"Test\",\n" + 
@@ -189,24 +168,25 @@ public class GrupoControllerTest {
                 "  \"ativo\": true\n" + 
                 "}";
         Response response = given()
-                .auth().oauth2(accessToken)
+                .auth().oauth2(givenAccessTokenAsAdmin())
                 .contentType(ContentType.JSON)
                 .body(requestBody)
-                .when().put(baseUrl + BASE_PATH + "/" + grupoTestMock.getId().intValue());
+                .when().put(buildUrl(BASE_PATH,grupoMock.getId().intValue()));
 
         response.then()
                 .statusCode(HttpStatus.OK.value()).assertThat();
 
-        assertGrupoResponseTO(response, grupoTestMock);
+        assertGrupoResponseTO(response, grupoMock);
     }
 
     @Test
     public void testSwitchActive() {
-        when(grupoServiceMock.switchActive(any())).thenReturn(grupoTestMock);
+        Grupo grupoMock = GrupoTestUtils.createGrupo(21L, "Test", true, Set.of(permissaoAdminMock));
+        when(grupoServiceMock.switchActive(any())).thenReturn(grupoMock);
 
         Response response = given()
-                .auth().oauth2(accessToken)
-                .when().patch(baseUrl + BASE_PATH + "/" + grupoTestMock.getId().intValue() + "/ativo");
+                .auth().oauth2(givenAccessTokenAsAdmin())
+                .when().patch(buildUrl(BASE_PATH, grupoMock.getId().intValue(), "ativo"));
 
         response.then()
                 .statusCode(HttpStatus.NO_CONTENT.value()).assertThat();
