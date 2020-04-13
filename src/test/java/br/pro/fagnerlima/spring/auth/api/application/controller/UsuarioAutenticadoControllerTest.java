@@ -1,12 +1,8 @@
 package br.pro.fagnerlima.spring.auth.api.application.controller;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,9 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.test.context.ActiveProfiles;
 
 import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.OAuth2Properties;
-import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
+import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioResponseTO;
 import br.pro.fagnerlima.spring.auth.api.test.util.UsuarioTestUtils;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -108,22 +104,9 @@ public class UsuarioAutenticadoControllerTest extends BaseControllerTest {
     }
 
     private void assertUsuarioResponseTO(Response response, Usuario usuario) {
-        response.then()
-                .body("id", equalTo(usuario.getId().intValue()))
-                .body("nome", equalTo(usuario.getNome()))
-                .body("email", equalTo(usuario.getEmail()))
-                .body("login", equalTo(usuario.getLogin()))
-                .body("pendente", equalTo(usuario.getPendente()))
-                .body("bloqueado", equalTo(usuario.getBloqueado()))
-                .body("ativo", equalTo(usuario.getAtivo()));
+        UsuarioResponseTO usuarioResponseTO = response.then().extract().as(UsuarioResponseTO.class);
 
-        List<Grupo> grupos = new ArrayList<>(usuario.getGrupos());
-
-        response.then()
-                .body("grupos.size()", equalTo(1))
-                .body("grupos[0].id", equalTo(grupos.get(0).getId().intValue()))
-                .body("grupos[0].nome", equalTo(grupos.get(0).getNome()))
-                .body("grupos[0].ativo", equalTo(grupos.get(0).getAtivo()));
+        UsuarioTestUtils.assertResponseTO(usuarioResponseTO, usuario);
     }
 
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.application.facade.ResponseEntityFacade;
+import br.pro.fagnerlima.spring.auth.api.application.factory.GrupoLinkFactory;
 import br.pro.fagnerlima.spring.auth.api.application.factory.UsuarioLinkFactory;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
@@ -37,7 +38,7 @@ public class UsuarioAutenticadoController {
         Usuario usuario = usuarioService.getAutenticado();
         UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
-        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
+        addLinks(responseTO);
 
         return ResponseEntityFacade.ok(responseTO);
     }
@@ -48,7 +49,7 @@ public class UsuarioAutenticadoController {
         Usuario updatedUsuario = usuarioService.updateAutenticado(usuario);
         UsuarioResponseTO responseTO = converterService.map(updatedUsuario, UsuarioResponseTO.class);
 
-        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
+        addLinks(responseTO);
 
         return ResponseEntityFacade.ok(responseTO);
     }
@@ -57,6 +58,11 @@ public class UsuarioAutenticadoController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateSenha(@RequestBody UsuarioSenhaRequestTO requestTO) {
         usuarioService.updateSenhaAutenticado(requestTO.getSenhaAtual(), requestTO.getSenhaNova());
+    }
+
+    private void addLinks(UsuarioResponseTO responseTO) {
+        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
+        responseTO.getGrupos().stream().forEach(grupo -> grupo.add(GrupoLinkFactory.create(grupo.getId())));
     }
 
 }

@@ -1,17 +1,40 @@
 package br.pro.fagnerlima.spring.auth.api.test.util;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.util.Optional;
 import java.util.Set;
 
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Senha;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.PasswordGeneratorUtils;
+import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioResponseTO;
 import br.pro.fagnerlima.spring.auth.api.test.builder.UsuarioBuilder;
 
 public class UsuarioTestUtils {
 
     private static final String MOCK_SENHA_PREFIX = "Senha123#";
     private static final String MOCK_RESET_TOKEN_PREFIX = "Token123#";
+
+    public static void assertResponseTO(UsuarioResponseTO usuarioResponseTO, Usuario usuario) {
+        assertThat(usuarioResponseTO.getId()).isEqualTo(usuario.getId());
+        assertThat(usuarioResponseTO.getNome()).isEqualTo(usuario.getNome());
+        assertThat(usuarioResponseTO.getEmail()).isEqualTo(usuario.getEmail());
+        assertThat(usuarioResponseTO.getLogin()).isEqualTo(usuario.getLogin());
+        assertThat(usuarioResponseTO.getPendente()).isEqualTo(usuario.getPendente());
+        assertThat(usuarioResponseTO.getBloqueado()).isEqualTo(usuario.getBloqueado());
+        assertThat(usuarioResponseTO.getAtivo()).isEqualTo(usuario.getAtivo());
+        assertThat(usuarioResponseTO.getLinks()).hasSize(3);
+
+        usuarioResponseTO.getGrupos().stream()
+                .forEach(grupoResponseTO -> {
+                    Optional<Grupo> grupoOpt = usuario.getGrupos().stream()
+                            .filter(permissao -> permissao.getId().equals(grupoResponseTO.getId()))
+                            .findFirst();
+                    GrupoTestUtils.assertResponseTO(grupoResponseTO, grupoOpt.get());
+                });
+    }
 
     public static Usuario createUsuarioPendente(String nome, String login, Set<Grupo> grupos) {
         return createUsuario(nome, login, true, true, false, grupos);

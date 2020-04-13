@@ -13,6 +13,7 @@ public class PermissaoTestUtils {
         assertThat(permissaoResponseTO.getId()).isEqualTo(permissao.getId());
         assertThat(permissaoResponseTO.getPapel()).isEqualTo(permissao.getPapel());
         assertThat(permissaoResponseTO.getDescricao()).isEqualTo(permissao.getDescricao());
+        assertThat(permissaoResponseTO.getLinks()).isNullOrEmpty();
     }
 
     public static Permissao createPermissao(Papel papel, String descricao) {

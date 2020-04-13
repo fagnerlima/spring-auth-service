@@ -30,6 +30,7 @@ import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.model.permissao.Permissao;
 import br.pro.fagnerlima.spring.auth.api.domain.service.GrupoService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.SpecificationFactory;
+import br.pro.fagnerlima.spring.auth.api.presentation.dto.grupo.GrupoResponseTO;
 import br.pro.fagnerlima.spring.auth.api.test.util.ControllerTestUtils;
 import br.pro.fagnerlima.spring.auth.api.test.util.GrupoTestUtils;
 import br.pro.fagnerlima.spring.auth.api.test.util.PermissaoTestUtils;
@@ -205,19 +206,9 @@ public class GrupoControllerTest extends BaseControllerTest {
     }
 
     private void assertGrupoResponseTO(Response response, Grupo grupo) {
-        response.then()
-                .body("id", equalTo(grupo.getId().intValue()))
-                .body("nome", equalTo(grupo.getNome()))
-                .body("ativo", equalTo(grupo.getAtivo()));
+        GrupoResponseTO grupoResponseTO = response.then().extract().as(GrupoResponseTO.class);
 
-        List<Permissao> permissoes = new ArrayList<>(grupo.getPermissoes());
-
-        response.then()
-                .body("permissoes.size()", equalTo(permissoes.size()))
-                .body("permissoes[0].id", equalTo(permissoes.get(0).getId().intValue()))
-                .body("permissoes[0].papel", equalTo(permissoes.get(0).getPapel().name()))
-                .body("permissoes[0].descricao", equalTo(permissoes.get(0).getDescricao()))
-                .body("links.size()", equalTo(3));
+        GrupoTestUtils.assertResponseTO(grupoResponseTO, grupo);
     }
 
 }

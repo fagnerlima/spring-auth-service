@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.pro.fagnerlima.spring.auth.api.application.facade.ResponseEntityFacade;
+import br.pro.fagnerlima.spring.auth.api.application.factory.GrupoLinkFactory;
 import br.pro.fagnerlima.spring.auth.api.application.factory.UsuarioLinkFactory;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
@@ -65,7 +66,7 @@ public class UsuarioController {
         Usuario usuario = usuarioService.findById(id);
         UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
 
-        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
+        addLinks(responseTO);
 
         return ResponseEntityFacade.ok(responseTO);
     }
@@ -88,7 +89,7 @@ public class UsuarioController {
         Usuario savedUsuario = usuarioService.save(usuario);
         UsuarioResponseTO responseTO = converterService.map(savedUsuario, UsuarioResponseTO.class);
 
-        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
+        addLinks(responseTO);
 
         return ResponseEntityFacade.created(responseTO);
     }
@@ -100,19 +101,14 @@ public class UsuarioController {
         Usuario updatedUsuario = usuarioService.update(id, usuario);
         UsuarioResponseTO responseTO = converterService.map(updatedUsuario, UsuarioResponseTO.class);
 
-        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
+        addLinks(responseTO);
 
         return ResponseEntityFacade.ok(responseTO);
     }
 
     @PatchMapping("/senha")
-    public ResponseEntity<UsuarioResponseTO> updateSenhaByResetToken(@RequestBody UsuarioSenhaResetTokenRequestTO requestTO) {
-        Usuario usuario = usuarioService.updateSenhaByResetToken(requestTO.getToken(), requestTO.getSenha());
-        UsuarioResponseTO responseTO = converterService.map(usuario, UsuarioResponseTO.class);
-
-        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
-
-        return ResponseEntityFacade.ok(responseTO);
+    public void updateSenhaByResetToken(@RequestBody UsuarioSenhaResetTokenRequestTO requestTO) {
+        usuarioService.updateSenhaByResetToken(requestTO.getToken(), requestTO.getSenha());
     }
 
     @PreAuthorize("hasAnyAuthority('ROLE_ROOT', 'ROLE_ADMIN', 'ROLE_USUARIO_ALTERAR_STATUS') and #oauth2.hasScope('write')")
@@ -132,6 +128,11 @@ public class UsuarioController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void recoverSenha(@Valid @RequestBody UsuarioEmailRequestTO requestTO) {
         usuarioService.recoverSenha(requestTO.getEmail());
+    }
+
+    private void addLinks(UsuarioResponseTO responseTO) {
+        responseTO.add(UsuarioLinkFactory.create(responseTO.getId()));
+        responseTO.getGrupos().stream().forEach(grupo -> grupo.add(GrupoLinkFactory.create(grupo.getId())));
     }
 
 }
