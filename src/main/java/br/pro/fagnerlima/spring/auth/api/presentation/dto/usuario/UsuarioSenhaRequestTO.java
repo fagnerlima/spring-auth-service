@@ -14,12 +14,6 @@ public class UsuarioSenhaRequestTO implements Serializable {
         super();
     }
 
-    public UsuarioSenhaRequestTO(String senhaAtual, String senhaNova) {
-        super();
-        this.senhaAtual = senhaAtual;
-        this.senhaNova = senhaNova;
-    }
-
     public String getSenhaAtual() {
         return senhaAtual;
     }

@@ -18,13 +18,6 @@ public class UsuarioMinResponseTO extends RepresentationModel<UsuarioMinResponse
         super();
     }
 
-    public UsuarioMinResponseTO(Long id, String nome, String login) {
-        super();
-        this.id = id;
-        this.nome = nome;
-        this.login = login;
-    }
-
     public Long getId() {
         return id;
     }

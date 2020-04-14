@@ -4,7 +4,6 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.OAuth2Properties;
@@ -27,7 +26,6 @@ public class OAuth2SecurityService {
 
     public void removeCookieRefreshToken(HttpServletRequest request, HttpServletResponse response) {
         createCookieRefreshToken(request, response, null, 0);
-        response.setStatus(HttpStatus.NO_CONTENT.value());
     }
 
     private void createCookieRefreshToken(HttpServletRequest request, HttpServletResponse response, String value, Integer validitySeconds) {

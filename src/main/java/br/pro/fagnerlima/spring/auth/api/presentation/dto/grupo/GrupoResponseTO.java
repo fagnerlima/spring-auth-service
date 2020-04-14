@@ -23,14 +23,6 @@ public class GrupoResponseTO extends RepresentationModel<GrupoResponseTO> implem
         super();
     }
 
-    public GrupoResponseTO(Long id, String nome, Boolean ativo, Set<PermissaoResponseTO> permissoes) {
-        super();
-        this.id = id;
-        this.nome = nome;
-        this.ativo = ativo;
-        this.permissoes = permissoes;
-    }
-
     public Long getId() {
         return id;
     }

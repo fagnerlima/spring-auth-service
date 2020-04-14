@@ -21,13 +21,6 @@ public class GrupoRequestTO implements Serializable {
         super();
     }
 
-    public GrupoRequestTO(String nome, Set<Long> permissoes, Boolean ativo) {
-        super();
-        this.nome = nome;
-        this.permissoes = permissoes;
-        this.ativo = ativo;
-    }
-
     public String getNome() {
         return nome;
     }

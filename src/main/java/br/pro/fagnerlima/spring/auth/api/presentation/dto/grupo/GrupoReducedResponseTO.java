@@ -17,12 +17,6 @@ public class GrupoReducedResponseTO extends RepresentationModel<GrupoReducedResp
     public GrupoReducedResponseTO() {
     }
 
-    public GrupoReducedResponseTO(Long id, String nome, Boolean ativo) {
-        this.id = id;
-        this.nome = nome;
-        this.ativo = ativo;
-    }
-
     public Long getId() {
         return id;
     }

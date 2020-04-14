@@ -16,13 +16,6 @@ public class UsuarioAutenticadoRequestTO implements Serializable {
         super();
     }
 
-    public UsuarioAutenticadoRequestTO(String nome, String email, String login) {
-        super();
-        this.nome = nome;
-        this.email = email;
-        this.login = login;
-    }
-
     public String getNome() {
         return nome;
     }

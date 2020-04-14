@@ -15,11 +15,6 @@ public class UsuarioEmailRequestTO implements Serializable {
         super();
     }
 
-    public UsuarioEmailRequestTO(@Email String email) {
-        super();
-        this.email = email;
-    }
-
     public String getEmail() {
         return email;
     }

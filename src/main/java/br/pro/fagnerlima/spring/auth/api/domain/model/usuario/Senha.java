@@ -39,13 +39,6 @@ public class Senha {
         this.resetToken = resetToken;
     }
 
-    public Senha(String valor, String resetToken, Integer tentativasErro) {
-        this();
-        this.valor = valor;
-        this.resetToken = resetToken;
-        this.tentativasErro = tentativasErro;
-    }
-
     public void clearResetToken() {
         resetToken = null;
     }

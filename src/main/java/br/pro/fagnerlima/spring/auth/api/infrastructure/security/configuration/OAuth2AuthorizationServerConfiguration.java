@@ -4,9 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.oauth2.common.exceptions.OAuth2Exception;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.AuthorizationServerEndpointsConfigurer;
@@ -18,7 +16,6 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
 import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.JwtProperties;
 import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.OAuth2Properties;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.CustomOAuth2Exception;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2UserDetailsService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.token.CustomTokenEnhancer;
 
@@ -62,8 +59,7 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
                 .tokenEnhancer(tokenEnhancerChain)
                 .reuseRefreshTokens(false)
                 .authenticationManager(authenticationManager)
-                .userDetailsService(userDetailsService)
-                .exceptionTranslator(exception -> exceptionTranslator(exception));
+                .userDetailsService(userDetailsService);
     }
 
     @Bean
@@ -82,18 +78,6 @@ public class OAuth2AuthorizationServerConfiguration extends AuthorizationServerC
     @Bean
     public TokenEnhancer tokenEnhancer() {
         return new CustomTokenEnhancer(userDetailsService);
-    }
-
-    private ResponseEntity<OAuth2Exception> exceptionTranslator(Exception exception) throws Exception {
-        if (exception instanceof OAuth2Exception) {
-            OAuth2Exception oAuth2Exception = (OAuth2Exception) exception;
-
-            return ResponseEntity
-                    .status(oAuth2Exception.getHttpErrorCode())
-                    .body(new CustomOAuth2Exception(oAuth2Exception.getMessage()));
-        }
-
-        throw exception;
     }
 
 }

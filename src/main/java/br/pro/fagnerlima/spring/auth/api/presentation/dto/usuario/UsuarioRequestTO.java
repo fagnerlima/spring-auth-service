@@ -25,15 +25,6 @@ public class UsuarioRequestTO implements Serializable {
         super();
     }
 
-    public UsuarioRequestTO(String nome, String email, String login, Set<Long> grupos, Boolean ativo) {
-        super();
-        this.nome = nome;
-        this.email = email;
-        this.login = login;
-        this.grupos = grupos;
-        this.ativo = ativo;
-    }
-
     public String getNome() {
         return nome;
     }

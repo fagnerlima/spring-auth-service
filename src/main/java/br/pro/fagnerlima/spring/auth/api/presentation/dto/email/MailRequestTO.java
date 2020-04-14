@@ -17,13 +17,6 @@ public class MailRequestTO implements Serializable {
         super();
     }
 
-    public MailRequestTO(List<String> recipients, String subject, String text) {
-        super();
-        this.recipients = recipients;
-        this.subject = subject;
-        this.text = text;
-    }
-
     public MailRequestTO(String recipient, String subject, String text) {
         super();
         this.recipients = List.of(recipient);

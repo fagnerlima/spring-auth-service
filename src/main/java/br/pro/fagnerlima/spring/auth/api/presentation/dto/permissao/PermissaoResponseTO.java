@@ -20,13 +20,6 @@ public class PermissaoResponseTO extends RepresentationModel<PermissaoResponseTO
         super();
     }
 
-    public PermissaoResponseTO(Long id, Papel papel, String descricao) {
-        super();
-        this.id = id;
-        this.papel = papel;
-        this.descricao = descricao;
-    }
-
     public Long getId() {
         return id;
     }

@@ -14,12 +14,6 @@ public class UsuarioSenhaResetTokenRequestTO implements Serializable {
         super();
     }
 
-    public UsuarioSenhaResetTokenRequestTO(String token, String senha) {
-        super();
-        this.token = token;
-        this.senha = senha;
-    }
-
     public String getToken() {
         return token;
     }

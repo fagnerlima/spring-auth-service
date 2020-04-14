@@ -16,12 +16,6 @@ public class GrupoMinResponseTO extends RepresentationModel<GrupoMinResponseTO> 
         super();
     }
 
-    public GrupoMinResponseTO(Long id, String nome) {
-        super();
-        this.id = id;
-        this.nome = nome;
-    }
-
     public Long getId() {
         return id;
     }

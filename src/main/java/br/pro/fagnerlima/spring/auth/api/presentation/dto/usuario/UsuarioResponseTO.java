@@ -31,19 +31,6 @@ public class UsuarioResponseTO extends RepresentationModel<UsuarioResponseTO> im
         super();
     }
 
-    public UsuarioResponseTO(Long id, String nome, String email, String login, Boolean pendente, Boolean bloqueado, Boolean ativo,
-            Set<GrupoResponseTO> grupos) {
-        super();
-        this.id = id;
-        this.nome = nome;
-        this.email = email;
-        this.login = login;
-        this.pendente = pendente;
-        this.bloqueado = bloqueado;
-        this.ativo = ativo;
-        this.grupos = grupos;
-    }
-
     public Long getId() {
         return id;
     }

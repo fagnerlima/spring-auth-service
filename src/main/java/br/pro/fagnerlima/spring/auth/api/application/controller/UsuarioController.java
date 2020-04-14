@@ -107,6 +107,7 @@ public class UsuarioController {
     }
 
     @PatchMapping("/senha")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateSenhaByResetToken(@RequestBody UsuarioSenhaResetTokenRequestTO requestTO) {
         usuarioService.updateSenhaByResetToken(requestTO.getToken(), requestTO.getSenha());
     }

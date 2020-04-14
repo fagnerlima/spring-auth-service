@@ -24,16 +24,6 @@ public class UsuarioReducedResponseTO extends RepresentationModel<UsuarioReduced
         super();
     }
 
-    public UsuarioReducedResponseTO(Long id, String nome, String login, Boolean pendente, Boolean bloqueado, Boolean ativo) {
-        super();
-        this.id = id;
-        this.nome = nome;
-        this.login = login;
-        this.pendente = pendente;
-        this.bloqueado = bloqueado;
-        this.ativo = ativo;
-    }
-
     public Long getId() {
         return id;
     }
