@@ -40,32 +40,20 @@ public class UsuarioTestUtils {
         return createUsuario(nome, login, true, true, false, grupos);
     }
 
-    public static Usuario createUsuarioPendente(String nome, String login) {
-        return createUsuario(nome, login, true, true, false, null);
-    }
-
     public static Usuario createUsuarioAtivo(String nome, String login, Set<Grupo> grupos) {
         return createUsuario(nome, login, true, false, false, grupos);
     }
 
-    public static Usuario createUsuarioAtivo(String nome, String login) {
-        return createUsuario(nome, login, true, false, false, null);
+    public static Usuario createUsuarioAtivo(Long id, String nome, String login, Set<Grupo> grupos) {
+        return createUsuario(id, nome, login, true, false, false, grupos);
     }
 
     public static Usuario createUsuarioInativo(String nome, String login, Set<Grupo> grupos) {
         return createUsuario(nome, login, false, false, false, grupos);
     }
 
-    public static Usuario createUsuarioInativo(String nome, String login) {
-        return createUsuario(nome, login, false, false, false, null);
-    }
-
     public static Usuario createUsuarioBloqueado(String nome, String login, Set<Grupo> grupos) {
         return createUsuario(nome, login, true, false, true, grupos);
-    }
-
-    public static Usuario createUsuarioBloqueado(String nome, String login) {
-        return createUsuario(nome, login, true, false, true, null);
     }
 
     public static Usuario createUsuario(Long id, String nome, String login, Boolean ativo, Boolean pendente, Boolean bloqueado,
@@ -83,6 +71,10 @@ public class UsuarioTestUtils {
                         pendente || bloqueado ? MOCK_RESET_TOKEN_PREFIX + login : null))
                 .withGrupos(grupos)
                 .build();
+    }
+
+    public static Usuario createUsuario(Long id, String nome, String login, Boolean ativo, Set<Grupo> grupos) {
+        return createUsuario(id, nome, login, ativo, false, false, grupos);
     }
 
     public static Usuario createUsuario(String nome, String login, Boolean ativo, Boolean pendente, Boolean bloqueado, Set<Grupo> grupos) {

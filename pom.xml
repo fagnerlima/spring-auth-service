@@ -26,7 +26,7 @@
     <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
     <springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
 
-    <jacoco.coverage>0.6</jacoco.coverage>
+    <jacoco.coverage>0.68</jacoco.coverage>
   </properties>
 
   <dependencies>

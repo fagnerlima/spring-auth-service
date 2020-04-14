@@ -73,7 +73,7 @@ public class GrupoControllerTest extends BaseControllerTest {
         grupoListMock.add(grupoAdminMock);
 
         for (Long i = 2L; i <= 8; i++) {
-            grupoListMock.add(GrupoTestUtils.createGrupo(i, RandomStringUtils.random(10), true));
+            grupoListMock.add(GrupoTestUtils.createGrupo(i, RandomStringUtils.random(10), true, Set.of(permissaoAdminMock)));
         }
 
         grupoPageMock = new PageImpl<>(grupoListMock, PageRequest.of(0, 10), 8);
@@ -145,7 +145,8 @@ public class GrupoControllerTest extends BaseControllerTest {
                 .statusCode(HttpStatus.OK.value()).assertThat()
                 .body("size()", equalTo(grupoListMock.size()))
                 .body("[0].id", equalTo(grupoAdminMock.getId().intValue()))
-                .body("[0].nome", equalTo(grupoAdminMock.getNome()));
+                .body("[0].nome", equalTo(grupoAdminMock.getNome()))
+                .body("[0].links.size()", equalTo(3));
     }
 
     @Test
