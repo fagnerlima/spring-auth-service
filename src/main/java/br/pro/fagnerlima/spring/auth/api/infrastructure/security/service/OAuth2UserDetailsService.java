@@ -18,6 +18,7 @@ import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.auth.UsuarioAuth;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.AuthenticationException;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.IncorrectUsernameOrPasswordException;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.exception.UnauthenticatedException;
 
 @Service
@@ -38,7 +39,7 @@ public class OAuth2UserDetailsService implements UserDetailsService {
 
             return new UsuarioAuth(usuario, getAuthorities(usuario));
         } catch (InformationNotFoundException informationNotFoundException) {
-            throw new UsernameNotFoundException("Usuário e/ou senha incorretos"); // TODO externalizar
+            throw new IncorrectUsernameOrPasswordException();
         }
     }
 
