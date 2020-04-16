@@ -40,7 +40,7 @@ import br.pro.fagnerlima.spring.auth.api.domain.service.UsuarioService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.GrupoRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.BaseEntitySpecification;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.PasswordGeneratorUtils;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.BcryptUtils;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MailService;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.email.MailRequestTO;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioFilterRequestTO;
@@ -383,7 +383,7 @@ public class UsuarioServiceImplTest {
         String valorSenha = MOCK_SENHA_PREFIX + "manoel.alves";
         Usuario usuarioAtualizado = usuarioService.updateSenhaByResetToken(usuario.getSenha().getResetToken(), valorSenha);
 
-        assertThat(PasswordGeneratorUtils.validate(valorSenha, usuarioAtualizado.getSenha().getValor())).isTrue();
+        assertThat(BcryptUtils.validate(valorSenha, usuarioAtualizado.getSenha().getValor())).isTrue();
         assertThat(usuarioAtualizado.getSenha().getResetToken()).isNull();
     }
 
@@ -403,7 +403,7 @@ public class UsuarioServiceImplTest {
 
         Usuario usuarioAtualizado = usuarioService.updateSenhaAutenticado(MOCK_SENHA_PREFIX + "alice.lima", "Alice.Lima@987");
 
-        assertThat(PasswordGeneratorUtils.validate("Alice.Lima@987", usuarioAtualizado.getSenha().getValor()));
+        assertThat(BcryptUtils.validate("Alice.Lima@987", usuarioAtualizado.getSenha().getValor()));
     }
 
     @Test

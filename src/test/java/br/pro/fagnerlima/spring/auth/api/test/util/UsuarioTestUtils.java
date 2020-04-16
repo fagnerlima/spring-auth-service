@@ -8,7 +8,7 @@ import java.util.Set;
 import br.pro.fagnerlima.spring.auth.api.domain.model.grupo.Grupo;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Senha;
 import br.pro.fagnerlima.spring.auth.api.domain.model.usuario.Usuario;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.PasswordGeneratorUtils;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.BcryptUtils;
 import br.pro.fagnerlima.spring.auth.api.presentation.dto.usuario.UsuarioResponseTO;
 import br.pro.fagnerlima.spring.auth.api.test.builder.UsuarioBuilder;
 
@@ -67,7 +67,7 @@ public class UsuarioTestUtils {
                 .withPendente(pendente)
                 .withBloqueado(bloqueado)
                 .withSenha(new Senha(
-                        !pendente && !bloqueado ? PasswordGeneratorUtils.encode(MOCK_SENHA_PREFIX + login) : null,
+                        !pendente && !bloqueado ? BcryptUtils.encode(MOCK_SENHA_PREFIX + login) : null,
                         pendente || bloqueado ? MOCK_RESET_TOKEN_PREFIX + login : null))
                 .withGrupos(grupos)
                 .build();

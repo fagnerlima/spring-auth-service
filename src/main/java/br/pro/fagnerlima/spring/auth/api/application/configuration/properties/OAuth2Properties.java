@@ -9,23 +9,17 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties("auth-service.security.oauth2")
 public class OAuth2Properties {
 
-    private BasicProperties basic;
-
     private String client;
 
     private String secret;
 
+    private String scopes;
+
+    private String authorizedGrantTypes;
+
     private AccessTokenProperties accessToken;
 
     private RefreshTokenProperties refreshToken;
-
-    public BasicProperties getBasic() {
-        return basic;
-    }
-
-    public void setBasic(BasicProperties basic) {
-        this.basic = basic;
-    }
 
     public String getClient() {
         return client;
@@ -41,6 +35,22 @@ public class OAuth2Properties {
 
     public void setSecret(String secret) {
         this.secret = secret;
+    }
+
+    public String getScopes() {
+        return scopes;
+    }
+
+    public void setScopes(String scopes) {
+        this.scopes = scopes;
+    }
+
+    public String getAuthorizedGrantTypes() {
+        return authorizedGrantTypes;
+    }
+
+    public void setAuthorizedGrantTypes(String authorizedGrantTypes) {
+        this.authorizedGrantTypes = authorizedGrantTypes;
     }
 
     public AccessTokenProperties getAccessToken() {
@@ -59,30 +69,6 @@ public class OAuth2Properties {
         this.refreshToken = refreshToken;
     }
 
-    public static class BasicProperties {
-
-        private String username;
-
-        private String password;
-
-        public String getUsername() {
-            return username;
-        }
-
-        public void setUsername(String username) {
-            this.username = username;
-        }
-
-        public String getPassword() {
-            return password;
-        }
-
-        public void setPassword(String password) {
-            this.password = password;
-        }
-
-    }
-
     public static class AccessTokenProperties {
 
         private Integer validitySeconds;
@@ -98,9 +84,19 @@ public class OAuth2Properties {
 
     public static class RefreshTokenProperties {
 
+        private Boolean enabled;
+
         private Boolean secureCookie;
 
         private Integer validitySeconds;
+
+        public Boolean getEnabled() {
+            return enabled;
+        }
+
+        public void setEnabled(Boolean enabled) {
+            this.enabled = enabled;
+        }
 
         public Boolean getSecureCookie() {
             return secureCookie;

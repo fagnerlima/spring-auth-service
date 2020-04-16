@@ -5,7 +5,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.OAuth2Properties;
-import br.pro.fagnerlima.spring.auth.api.test.auth.OAuth2AuthenticationTest;
+import br.pro.fagnerlima.spring.auth.api.test.auth.OAuth2AuthenticationTestUtils;
 
 public abstract class BaseControllerTest {
 
@@ -44,7 +44,7 @@ public abstract class BaseControllerTest {
     }
 
     protected String givenAccessToken(String username, String password) {
-        return OAuth2AuthenticationTest.givenAccessToken(baseUrl + TOKEN_PATH, oauth2Properties, username, password);
+        return OAuth2AuthenticationTestUtils.givenAccessToken(baseUrl + TOKEN_PATH, oauth2Properties, username, password);
     }
 
     protected String givenAccessTokenAsAdmin() {

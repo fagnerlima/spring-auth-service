@@ -15,6 +15,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.OAuth2Properties;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2SecurityService;
 
 @ControllerAdvice
@@ -24,8 +25,11 @@ public class OAuth2SecurityHandler implements ResponseBodyAdvice<OAuth2AccessTok
 
     private OAuth2SecurityService oauth2SecurityService;
 
-    public OAuth2SecurityHandler(OAuth2SecurityService oauth2SecurityService) {
+    private OAuth2Properties oauth2Properties;
+
+    public OAuth2SecurityHandler(OAuth2SecurityService oauth2SecurityService, OAuth2Properties oauth2Properties) {
         this.oauth2SecurityService = oauth2SecurityService;
+        this.oauth2Properties = oauth2Properties;
     }
 
     @Override
@@ -39,8 +43,11 @@ public class OAuth2SecurityHandler implements ResponseBodyAdvice<OAuth2AccessTok
         HttpServletRequest httpServletRequest = ((ServletServerHttpRequest) request).getServletRequest();
         HttpServletResponse httpServletResponse = ((ServletServerHttpResponse) response).getServletResponse();
 
-        String refreshToken = body.getRefreshToken().getValue();
-        oauth2SecurityService.addCookieRefreshToken(httpServletRequest, httpServletResponse, refreshToken);
+        if (oauth2Properties.getRefreshToken().getEnabled()) {
+            String refreshToken = body.getRefreshToken().getValue();
+            oauth2SecurityService.addCookieRefreshToken(httpServletRequest, httpServletResponse, refreshToken);
+        }
+
         deleteBodyRefreshToken((DefaultOAuth2AccessToken) body);
 
         return body;

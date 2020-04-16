@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import br.pro.fagnerlima.spring.auth.api.application.service.exception.InvalidPasswordException;
 
-public class PasswordGeneratorUtils {
+public class BcryptUtils {
 
     public static final String PASSWORD_PATTERN = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,30}";
 
@@ -18,7 +18,7 @@ public class PasswordGeneratorUtils {
     private static PasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public static void main(String[] args) {
-        System.out.println(PasswordGeneratorUtils.encode("Admin@123"));
+        System.out.println(BcryptUtils.encode("Admin@123"));
     }
 
     public static String encode(String password) {

@@ -17,6 +17,8 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
+import br.pro.fagnerlima.spring.auth.api.application.configuration.properties.OAuth2Properties;
+
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class OAuth2SecurityFilter implements Filter {
@@ -26,11 +28,17 @@ public class OAuth2SecurityFilter implements Filter {
     private static final String REFRESH_TOKEN_GRANT_TYPE = "refresh_token";
     private static final String REFRESH_TOKEN_COOKIE_NAME = "refresh_token";
 
+    private OAuth2Properties oauth2Properties;
+
+    public OAuth2SecurityFilter(OAuth2Properties oauth2Properties) {
+        this.oauth2Properties = oauth2Properties;
+    }
+
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
-        if (TOKEN_RESOURCE.equalsIgnoreCase(httpServletRequest.getRequestURI())
+        if (oauth2Properties.getRefreshToken().getEnabled() && TOKEN_RESOURCE.equalsIgnoreCase(httpServletRequest.getRequestURI())
                 && REFRESH_TOKEN_GRANT_TYPE.equals(httpServletRequest.getParameter(GRANT_TYPE_PARAMETER))
                 && httpServletRequest.getCookies() != null) {
             String refreshToken = Stream.of(httpServletRequest.getCookies())

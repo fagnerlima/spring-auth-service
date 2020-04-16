@@ -1,5 +1,6 @@
 package br.pro.fagnerlima.spring.auth.api.domain.model.usuario;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -10,7 +11,9 @@ import javax.validation.constraints.Size;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.annotation.bean.Nullable;
 
 @Embeddable
-public class Senha {
+public class Senha implements Serializable {
+
+    private static final long serialVersionUID = -5475578568584017033L;
 
     @Nullable
     @Size(min = 6, max = 64)

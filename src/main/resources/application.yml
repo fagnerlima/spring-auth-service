@@ -52,14 +52,14 @@ auth-service:
     allowed-origin: ${CORS_ALLOWED_ORIGIN:http://localhost:4200}
   security:
     oauth2:
-      basic:
-        username: ${OAUTH2_BASIC_USERNAME:angular}
-        password: ${OAUTH2_BASIC_PASSWORD:angular}
-      client: ${OAUTH2_CLIENT:angular}
-      secret: ${OAUTH2_SECRET:$2a$10$3yrT0M2xU9Qj24Mqv4xWkekbqLYm7p3nMeg4QPcHkOajGSG8rwsj2}
+      client: ${OAUTH2_CLIENT:auth}
+      secret: ${OAUTH2_SECRET:P@55-@uth-1937}
+      scopes: ${OAUTH2_SCOPES:read,write}
+      authorized-grant-types: ${OAUTH2_AUTHORIZED_GRANT_TYPES:password,refresh_token}
       access-token:
         validity-seconds: ${OAUTH2_ACCESS_TOKEN_VALIDITY_SECONDS:1800}
       refresh-token:
+        enabled: ${OAUTH2_REFRESH_TOKEN_ENABLED:true}
         secure-cookie: ${OAUTH2_REFRESH_TOKEN_SECURE_COOKIE:true}
         validity-seconds: ${OAUTH2_REFRESH_TOKEN_VALIDITY_SECONDS:86400}
     jwt:

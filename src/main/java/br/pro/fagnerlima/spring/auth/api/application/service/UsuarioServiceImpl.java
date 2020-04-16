@@ -21,7 +21,7 @@ import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.re
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.repository.UsuarioRepository;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.persistence.hibernate.specification.UsuarioSpecification;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.security.service.OAuth2UserDetailsService;
-import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.PasswordGeneratorUtils;
+import br.pro.fagnerlima.spring.auth.api.infrastructure.security.util.BcryptUtils;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MailService;
 import br.pro.fagnerlima.spring.auth.api.infrastructure.service.MessageService;
 
@@ -135,7 +135,7 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     @Override
     public Usuario updateSenhaByResetToken(String resetToken, String senha) {
         Usuario usuario = findBySenhaResetToken(resetToken);
-        usuario.updateSenha(PasswordGeneratorUtils.encode(senha));
+        usuario.updateSenha(BcryptUtils.encode(senha));
 
         return super.update(usuario.getId(), usuario);
     }
@@ -144,11 +144,11 @@ public class UsuarioServiceImpl extends BaseServiceImpl<Usuario> implements Usua
     public Usuario updateSenhaAutenticado(String senhaAtual, String senhaNova) {
         Usuario usuario = getAutenticado();
 
-        if (!PasswordGeneratorUtils.validate(senhaAtual, usuario.getSenha().getValor())) {
+        if (!BcryptUtils.validate(senhaAtual, usuario.getSenha().getValor())) {
             throw new InvalidActualPasswordException();
         }
 
-        usuario.updateSenha(PasswordGeneratorUtils.encode(senhaNova));
+        usuario.updateSenha(BcryptUtils.encode(senhaNova));
 
         return super.update(usuario.getId(), usuario);
     }
