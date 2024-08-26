@@ -24,7 +24,7 @@
     <jacoco.version>0.8.5</jacoco.version>
     <modelmapper.version>2.3.5</modelmapper.version>
     <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
-    <springfox-swagger-ui.version>2.9.2</springfox-swagger-ui.version>
+    <springfox-swagger-ui.version>2.10.0</springfox-swagger-ui.version>
 
     <jacoco.coverage>0.68</jacoco.coverage>
   </properties>
